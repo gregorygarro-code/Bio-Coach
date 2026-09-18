@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>FitCoach Casa · Coach de gimnasio con análisis biomecánico</title>
-  <link rel="stylesheet" href="css/styles.css?v=15" />
+  <link rel="stylesheet" href="css/styles.css?v=17" />
 </head>
 <body>
   <header class="topbar">
@@ -17,10 +17,10 @@
     </div>
     <nav class="tabs">
       <button class="tab active" data-view="entrenar">Entrenar</button>
-      <button class="tab" data-view="calendario">Calendario</button>
-      <button class="tab" data-view="historial">Historial</button>
+      <button class="tab" data-view="calendario" hidden>Calendario</button>
+      <button class="tab" data-view="historial" hidden>Historial</button>
       <button class="tab" data-view="perfil">Perfil</button>
-      <button class="tab" data-view="ajustes">Ajustes</button>
+      <button class="tab" data-view="ajustes" hidden>Ajustes</button>
     </nav>
   </header>
 
@@ -448,7 +448,7 @@
   <div id="loader" class="loader hidden"><div class="spinner"></div><p id="loader-msg">Cargando modelo de pose…</p></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-  <script src="js/config.js?v=15"></script>
-  <script type="module" src="js/app.js?v=15"></script>
+  <script src="js/config.js?v=17"></script>
+  <script type="module" src="js/app.js?v=17"></script>
 </body>
 </html>

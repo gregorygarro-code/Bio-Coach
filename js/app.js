@@ -1,11 +1,11 @@
 // ===== FitCoach Casa · app principal =====
-import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS } from './exercises.js?v=15';
-import { createPoseLandmarker } from './pose.js?v=15';
-import { createDemoPlayer } from './demos.js?v=15';
-import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=15';
-import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=15';
-import * as api from './api.js?v=15';
-import * as store from './storage.js?v=15';
+import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS } from './exercises.js?v=17';
+import { createPoseLandmarker } from './pose.js?v=17';
+import { createDemoPlayer } from './demos.js?v=17';
+import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=17';
+import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=17';
+import * as api from './api.js?v=17';
+import * as store from './storage.js?v=17';
 
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -917,28 +917,28 @@ $('#chk-prep').checked=settings.prep;
 $('#in-def-target').value=settings.targetReps;
 $('#in-def-secs').value=settings.holdSecs;
 
-$('#chk-mirror').addEventListener('change', e=>{ settings.mirror=e.target.checked; store.saveSettings(settings); applyMirror(); });
-$('#chk-voice').addEventListener('change', e=>{ settings.voice=e.target.checked; setVoice(settings.voice); store.saveSettings(settings); });
-$('#chk-sound').addEventListener('change', e=>{ settings.sound=e.target.checked; setSound(settings.sound); store.saveSettings(settings); if(settings.sound){ unlockAudio(); sfx.rep(1); } });
-$('#chk-prep').addEventListener('change', e=>{ settings.prep=e.target.checked; store.saveSettings(settings); });
-$('#in-def-target').addEventListener('change', e=>{ settings.targetReps=clampInt(e.target.value,1,100,10); e.target.value=settings.targetReps; store.saveSettings(settings); });
-$('#in-def-secs').addEventListener('change', e=>{ settings.holdSecs=clampInt(e.target.value,5,600,40); e.target.value=settings.holdSecs; store.saveSettings(settings); });
-$('#rng-rest').addEventListener('input', e=>{ settings.rest=+e.target.value; $('#rest-label').textContent=settings.rest+'s'; store.saveSettings(settings); });
+$('#chk-mirror').addEventListener('change', e=>{ settings.mirror=e.target.checked; persistSettings(); applyMirror(); });
+$('#chk-voice').addEventListener('change', e=>{ settings.voice=e.target.checked; setVoice(settings.voice); persistSettings(); });
+$('#chk-sound').addEventListener('change', e=>{ settings.sound=e.target.checked; setSound(settings.sound); persistSettings(); if(settings.sound){ unlockAudio(); sfx.rep(1); } });
+$('#chk-prep').addEventListener('change', e=>{ settings.prep=e.target.checked; persistSettings(); });
+$('#in-def-target').addEventListener('change', e=>{ settings.targetReps=clampInt(e.target.value,1,100,10); e.target.value=settings.targetReps; persistSettings(); });
+$('#in-def-secs').addEventListener('change', e=>{ settings.holdSecs=clampInt(e.target.value,5,600,40); e.target.value=settings.holdSecs; persistSettings(); });
+$('#rng-rest').addEventListener('input', e=>{ settings.rest=+e.target.value; $('#rest-label').textContent=settings.rest+'s'; persistSettings(); });
 $('#sel-model').addEventListener('change', async e=>{
-  settings.model=e.target.value; store.saveSettings(settings);
+  settings.model=e.target.value; persistSettings();
   if(landmarker){ try{ landmarker.close?.(); }catch{} landmarker=null; running=false; await ensureModel(); if(stream){ running=true; requestAnimationFrame(loop);} }
 });
-$('#sel-cam').addEventListener('change', e=>{ settings.camId=e.target.value; store.saveSettings(settings); if(stream) startCamera(); });
+$('#sel-cam').addEventListener('change', e=>{ settings.camId=e.target.value; persistSettings(); if(stream) startCamera(); });
 
 // --- Accesibilidad y nivel (Fase 1 y 2) ---
 $('#sel-scale').value=settings.textScale;
 $('#chk-contrast').checked=settings.contrast;
 $('#chk-motion').checked=settings.reduceMotion;
 $('#sel-level').value=settings.level;
-$('#sel-scale').addEventListener('change', e=>{ settings.textScale=e.target.value; store.saveSettings(settings); applyAccessibility(); });
-$('#chk-contrast').addEventListener('change', e=>{ settings.contrast=e.target.checked; store.saveSettings(settings); applyAccessibility(); });
-$('#chk-motion').addEventListener('change', e=>{ settings.reduceMotion=e.target.checked; store.saveSettings(settings); applyAccessibility(); });
-$('#sel-level').addEventListener('change', e=>{ settings.level=e.target.value; store.saveSettings(settings); renderGuidedPreview(); });
+$('#sel-scale').addEventListener('change', e=>{ settings.textScale=e.target.value; persistSettings(); applyAccessibility(); });
+$('#chk-contrast').addEventListener('change', e=>{ settings.contrast=e.target.checked; persistSettings(); applyAccessibility(); });
+$('#chk-motion').addEventListener('change', e=>{ settings.reduceMotion=e.target.checked; persistSettings(); applyAccessibility(); });
+$('#sel-level').addEventListener('change', e=>{ settings.level=e.target.value; persistSettings(); renderGuidedPreview(); });
 $('#btn-tutorial').addEventListener('click', ()=>startOnboarding(true));
 
 // ======================================================
@@ -961,7 +961,7 @@ function renderOnb(){
   $('#onb-dots').innerHTML=ONB_STEPS.map((_,i)=>`<i class="${i===onbIdx?'on':''}"></i>`).join('');
   $('#onb-next').textContent = onbIdx===ONB_STEPS.length-1 ? 'Empezar' : 'Siguiente';
 }
-function finishOnb(){ settings.onboardingDone=true; store.saveSettings(settings); $('#onboarding').classList.add('hidden'); }
+function finishOnb(){ settings.onboardingDone=true; persistSettings(); $('#onboarding').classList.add('hidden'); }
 $('#onb-next').addEventListener('click', ()=>{ if(onbIdx<ONB_STEPS.length-1){ onbIdx++; renderOnb(); } else finishOnb(); });
 $('#onb-skip').addEventListener('click', finishOnb);
 
@@ -1016,11 +1016,36 @@ let profileData = null;
 let authMode = 'login';
 let syncTimer = null;
 
+// Guarda ajustes en local y (si hay sesión) los sincroniza por usuario
+function persistSettings(){ store.saveSettings(settings); syncProgress(); }
+
 function syncProgress(now=false){
   if(!auth.loggedIn) return;
   clearTimeout(syncTimer);
-  const go = ()=> api.saveProgress(store.loadHistory(), store.loadPlans());
+  const go = ()=> api.saveProgress(store.loadHistory(), store.loadPlans(), settings);
   if(now) go(); else syncTimer = setTimeout(go, 800);
+}
+
+// Muestra/oculta las pestañas personales según la sesión
+function updateTabsAccess(){
+  const gated=['calendario','historial','ajustes'];
+  gated.forEach(v=>{ const b=document.querySelector(`.tab[data-view="${v}"]`); if(b) b.hidden = !auth.loggedIn; });
+  if(!auth.loggedIn){
+    const active=document.querySelector('.tab.active')?.dataset.view;
+    if(gated.includes(active)) document.querySelector('.tab[data-view="entrenar"]').click();
+  }
+}
+
+// Refleja los ajustes actuales en los controles de la vista Ajustes
+function applySettingsToUI(){
+  setVoice(settings.voice); setSound(settings.sound); applyAccessibility(); applyMirror();
+  const set=(id,val,prop='value')=>{ const el=$(id); if(el) el[prop]=val; };
+  set('#chk-mirror',settings.mirror,'checked'); set('#sel-model',settings.model);
+  set('#rng-rest',settings.rest); if($('#rest-label')) $('#rest-label').textContent=settings.rest+'s';
+  set('#chk-voice',settings.voice,'checked'); set('#chk-sound',settings.sound,'checked'); set('#chk-prep',settings.prep,'checked');
+  set('#in-def-target',settings.targetReps); set('#in-def-secs',settings.holdSecs);
+  set('#sel-scale',settings.textScale); set('#chk-contrast',settings.contrast,'checked'); set('#chk-motion',settings.reduceMotion,'checked');
+  set('#sel-level',settings.level);
 }
 
 // Aplica el perfil a los valores por defecto de la rutina guiada
@@ -1034,7 +1059,7 @@ function applyProfileDefaults(p){
   selectedEquip = capsFromDetail(equipDetail);
   if(p.goal && TRAIN_GOALS[p.goal]) currentGoal = p.goal;
   if(p.time && [30,45,60].includes(+p.time)) sessionMinutes = +p.time;
-  if(p.level){ settings.level = p.level; store.saveSettings(settings); const sl=$('#sel-level'); if(sl) sl.value=p.level; }
+  if(p.level){ settings.level = p.level; persistSettings(); const sl=$('#sel-level'); if(sl) sl.value=p.level; }
   renderEquip(); renderGoals(); renderTimeChips(); regenPlan();
 }
 
@@ -1122,12 +1147,12 @@ $('#auth-submit').addEventListener('click', async ()=>{
     profileData = r.profile || profileData;
     if(profileData){ applyProfileDefaults(profileData); if(!r.profile) api.saveProfile(profileData); }
     $('#auth-msg').textContent='';
-    renderPerfil(); renderHistory();
+    updateTabsAccess(); renderPerfil(); renderHistory();
   }else{
     $('#auth-msg').textContent = r.error || 'No se pudo completar.';
   }
 });
-$('#pf-logout').addEventListener('click', async ()=>{ await api.logout(); auth.loggedIn=false; auth.user=null; renderPerfil(); });
+$('#pf-logout').addEventListener('click', async ()=>{ await api.logout(); auth.loggedIn=false; auth.user=null; updateTabsAccess(); renderPerfil(); });
 $('#pf-save').addEventListener('click', async ()=>{
   const p = gatherProfile(); profileData = p;
   if(auth.loggedIn) await api.saveProfile(p); else store.saveProfileLocal(p);
@@ -1139,11 +1164,19 @@ $('#pf-save').addEventListener('click', async ()=>{
 async function loadAccountState(){
   const s = await api.me();
   auth.backend = s.backend; auth.loggedIn = !!s.loggedIn; auth.user = s.user || null;
-  if(s.loggedIn && s.progress) store.replaceAll(s.progress);
+  if(s.loggedIn && s.progress){
+    store.replaceAll(s.progress);                              // historial + planes del usuario
+    if(s.progress.settings){                                  // ajustes del usuario
+      settings = {...settings, ...s.progress.settings};
+      store.saveSettings(settings); applySettingsToUI();
+    }
+  }
   profileData = (s.loggedIn ? s.profile : null) || store.loadProfile();
   if(profileData) applyProfileDefaults(profileData);
+  updateTabsAccess();
   renderPerfil();
   if($('#view-historial').classList.contains('active')) renderHistory();
+  if($('#view-calendario').classList.contains('active')) renderCalendar();
 }
 async function initAccount(){
   await loadAccountState();

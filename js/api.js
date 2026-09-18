@@ -25,7 +25,8 @@ async function fetchData(sb, uid){
 export async function me(){
   const sb = client(); if(!sb) return { backend:false };
   try{
-    const { data:{ user } } = await sb.auth.getUser();
+    const { data:{ session } } = await sb.auth.getSession();  // lee de local, sin red si no hay sesión
+    const user = session?.user;
     if(!user) return { backend:true, loggedIn:false };
     const d = await fetchData(sb, user.id);
     return { backend:true, loggedIn:true, user:{id:user.id, email:user.email, name:nameOf(user)}, ...d };
@@ -66,9 +67,9 @@ export async function saveProfile(profile){
   return !error;
 }
 
-export async function saveProgress(history, plans){
+export async function saveProgress(history, plans, settings){
   const sb = client(); if(!sb) return false;
   const { data:{ user } } = await sb.auth.getUser(); if(!user) return false;
-  const { error } = await sb.from('fc_progress').upsert({ user_id:user.id, data:{ history, plans }, updated_at:new Date().toISOString() });
+  const { error } = await sb.from('fc_progress').upsert({ user_id:user.id, data:{ history, plans, settings }, updated_at:new Date().toISOString() });
   return !error;
 }
