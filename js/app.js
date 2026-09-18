@@ -1,11 +1,11 @@
 // ===== FitCoach Casa · app principal =====
-import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS } from './exercises.js?v=12';
-import { createPoseLandmarker } from './pose.js?v=12';
-import { createDemoPlayer } from './demos.js?v=12';
-import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=12';
-import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=12';
-import * as api from './api.js?v=12';
-import * as store from './storage.js?v=12';
+import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS } from './exercises.js?v=13';
+import { createPoseLandmarker } from './pose.js?v=13';
+import { createDemoPlayer } from './demos.js?v=13';
+import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=13';
+import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=13';
+import * as api from './api.js?v=13';
+import * as store from './storage.js?v=13';
 
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
