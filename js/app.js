@@ -1,11 +1,11 @@
 // ===== FitCoach Casa · app principal =====
-import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS } from './exercises.js?v=17';
-import { createPoseLandmarker } from './pose.js?v=17';
-import { createDemoPlayer } from './demos.js?v=17';
-import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=17';
-import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=17';
-import * as api from './api.js?v=17';
-import * as store from './storage.js?v=17';
+import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS } from './exercises.js?v=18';
+import { createPoseLandmarker } from './pose.js?v=18';
+import { createDemoPlayer } from './demos.js?v=18';
+import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=18';
+import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=18';
+import * as api from './api.js?v=18';
+import * as store from './storage.js?v=18';
 
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -70,7 +70,22 @@ $$('.tab').forEach(t => t.addEventListener('click', () => {
   if(t.dataset.view==='historial') renderHistory();
   if(t.dataset.view==='calendario') renderCalendar();
   if(t.dataset.view==='perfil') renderPerfil();
+  window.scrollTo({top:0, behavior:'instant'});
 }));
+
+// Navegación desde la landing (botones data-goto) y logo → Inicio
+function goTo(view){ const b=document.querySelector(`.tab[data-view="${view}"]`); if(b) b.click(); }
+document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click', ()=>goTo(b.dataset.goto)));
+document.querySelector('.brand')?.addEventListener('click', ()=>goTo('inicio'));
+
+// Animación biomecánica del hero
+(function heroDemo(){
+  const c=document.getElementById('hero-demo'); if(!c) return;
+  createDemoPlayer(c).play('squat', settings.reduceMotion);
+  const reps=document.getElementById('hero-reps'); if(reps && !settings.reduceMotion){
+    let n=0; setInterval(()=>{ n=(n%12)+1; reps.textContent=n; }, 2200);
+  }
+})();
 
 // ======================================================
 // Chips de equipamiento
@@ -1198,4 +1213,3 @@ renderTimeChips();
 regenPlan();
 applyMirror();
 initAccount();            // detecta backend/sesión, carga perfil y progreso
-startOnboarding(false);   // tutorial la primera vez

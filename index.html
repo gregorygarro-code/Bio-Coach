@@ -3,8 +3,65 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>FitCoach Casa · Coach de gimnasio con análisis biomecánico</title>
-  <link rel="stylesheet" href="css/styles.css?v=17" />
+
+  <!-- ===== SEO ===== -->
+  <title>FitCoach Casa · Entrenador con IA y análisis biomecánico en casa</title>
+  <meta name="description" content="Entrena en casa con un coach por webcam que corrige tu técnica en tiempo real con análisis biomecánico por IA. Rutinas guiadas según tu objetivo, grupo muscular, equipo y tiempo. Cuenta series y repeticiones y sigue tu progreso. Gratis y privado." />
+  <meta name="keywords" content="entrenar en casa, análisis biomecánico, corrección de técnica, coach con webcam, rutina guiada, IA fitness, contador de repeticiones, MediaPipe, fuerza, hipertrofia, potencia" />
+  <meta name="author" content="FitCoach Casa" />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#0e1117" />
+  <link rel="canonical" href="https://bio-coach.vercel.app/" />
+
+  <!-- ===== Open Graph / Twitter ===== -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="FitCoach Casa" />
+  <meta property="og:title" content="FitCoach Casa · Entrenador con IA y análisis biomecánico en casa" />
+  <meta property="og:description" content="Coach por webcam que corrige tu técnica en tiempo real. Rutinas guiadas que se adaptan a tu objetivo, equipo y tiempo. Cuenta reps y sigue tu progreso." />
+  <meta property="og:url" content="https://bio-coach.vercel.app/" />
+  <meta property="og:image" content="https://bio-coach.vercel.app/og-image.svg" />
+  <meta property="og:locale" content="es_ES" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="FitCoach Casa · Entrenador con IA en casa" />
+  <meta name="twitter:description" content="Corrige tu técnica en tiempo real con análisis biomecánico. Rutinas guiadas, conteo de reps y seguimiento del progreso." />
+  <meta name="twitter:image" content="https://bio-coach.vercel.app/og-image.svg" />
+
+  <!-- ===== Favicon ===== -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='88'%3E%F0%9F%8F%8B%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+
+  <!-- ===== Tipografías ===== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- ===== Datos estructurados ===== -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "FitCoach Casa",
+    "url": "https://bio-coach.vercel.app/",
+    "applicationCategory": "HealthApplication",
+    "operatingSystem": "Web",
+    "description": "Entrenador en casa con webcam y análisis biomecánico por IA: corrige la técnica en tiempo real, genera rutinas guiadas según objetivo, equipo y tiempo, cuenta series y repeticiones y sigue el progreso.",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "inLanguage": "es"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "¿Qué es el análisis biomecánico por webcam?", "acceptedAnswer": { "@type": "Answer", "text": "La app detecta tu postura con IA (visión por computador), mide los ángulos de tus articulaciones y te corrige la técnica en tiempo real mientras entrenas, sin sensores ni ropa especial." } },
+      { "@type": "Question", "name": "¿Necesito equipo de gimnasio?", "acceptedAnswer": { "@type": "Answer", "text": "No. Puedes entrenar solo con tu peso corporal, y la rutina se adapta automáticamente al equipo que indiques: mancuernas, bandas, barra, banca, etc." } },
+      { "@type": "Question", "name": "¿Es privado? ¿Se guarda mi vídeo?", "acceptedAnswer": { "@type": "Answer", "text": "El vídeo se procesa localmente en tu navegador y nunca sale de tu equipo. Solo tu perfil y tu progreso se guardan en tu cuenta." } },
+      { "@type": "Question", "name": "¿Cuánto cuesta?", "acceptedAnswer": { "@type": "Answer", "text": "Es gratis. Creas tu cuenta y empiezas a entrenar." } }
+    ]
+  }
+  </script>
+
+  <link rel="stylesheet" href="css/styles.css?v=18" />
 </head>
 <body>
   <header class="topbar">
@@ -16,7 +73,8 @@
       </div>
     </div>
     <nav class="tabs">
-      <button class="tab active" data-view="entrenar">Entrenar</button>
+      <button class="tab active" data-view="inicio">Inicio</button>
+      <button class="tab" data-view="entrenar">Entrenar</button>
       <button class="tab" data-view="calendario" hidden>Calendario</button>
       <button class="tab" data-view="historial" hidden>Historial</button>
       <button class="tab" data-view="perfil">Perfil</button>
@@ -25,8 +83,84 @@
   </header>
 
   <main>
+    <!-- ===================== VISTA INICIO (landing) ===================== -->
+    <section id="view-inicio" class="view active">
+      <div class="hero">
+        <div class="hero-copy">
+          <span class="pill">🎥 Análisis biomecánico por IA · en tu navegador</span>
+          <h1 class="hero-title">Tu <span class="grad">entrenador personal</span> con visión por computador, en casa.</h1>
+          <p class="hero-sub">Enciende la webcam y recibe <b>corrección de técnica en tiempo real</b>. La app diseña tu rutina según tu objetivo, tu equipo y tu tiempo, cuenta tus repeticiones y sigue tu progreso. Sin sensores, sin cuotas.</p>
+          <div class="hero-cta">
+            <button class="btn accent lg" data-goto="entrenar">▶ Empezar a entrenar</button>
+            <button class="btn ghost lg" data-goto="perfil">Crear cuenta gratis</button>
+          </div>
+          <div class="hero-trust">
+            <span>✅ Gratis</span><span>🔒 Privado (el vídeo no sale de tu equipo)</span><span>⚡ Sin instalar nada</span>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div class="hero-card">
+            <canvas id="hero-demo" width="220" height="240" aria-hidden="true"></canvas>
+            <div class="hero-badges">
+              <span class="hb"><b id="hero-reps">0</b> reps</span>
+              <span class="hb ok">Técnica ✔</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Beneficios -->
+      <section class="landing-sec">
+        <h2 class="sec-title">¿Por qué entrenar en casa con acompañamiento biomecánico?</h2>
+        <p class="sec-lead">Entrenar solo en casa suele significar dudas sobre la técnica y falta de constancia. Un coach que <b>ve cómo te mueves</b> cambia las reglas del juego.</p>
+        <div class="feat-grid">
+          <div class="feat"><div class="feat-ic">🎯</div><h3>Corrige tu técnica</h3><p>Mide los ángulos de tus articulaciones y te avisa de errores (profundidad, rodillas, espalda…) mientras entrenas.</p></div>
+          <div class="feat"><div class="feat-ic">🛡️</div><h3>Menos riesgo de lesión</h3><p>La buena ejecución protege articulaciones y columna. Recibes señales para parar o ajustar si algo no va bien.</p></div>
+          <div class="feat"><div class="feat-ic">🧠</div><h3>Rutinas inteligentes</h3><p>Elige objetivo (fuerza, hipertrofia, potencia…) y la app ajusta series, reps, descanso y ejercicios al instante.</p></div>
+          <div class="feat"><div class="feat-ic">🏠</div><h3>Adaptado a tu casa</h3><p>Desde solo peso corporal hasta barra y banca: usa lo que tengas. La sesión se arma con tu equipo real.</p></div>
+          <div class="feat"><div class="feat-ic">📈</div><h3>Progreso medible</h3><p>Historial, récords y volumen semanal. Ver avances es la mejor motivación para no abandonar.</p></div>
+          <div class="feat"><div class="feat-ic">🔒</div><h3>Privado y sin coste</h3><p>Todo el análisis ocurre en tu navegador; el vídeo nunca se sube. Y es gratis.</p></div>
+        </div>
+      </section>
+
+      <!-- Cómo funciona -->
+      <section class="landing-sec" id="como-funciona">
+        <h2 class="sec-title">Cómo funciona</h2>
+        <div class="steps">
+          <div class="step"><span class="step-n">1</span><h3>Dinos tu contexto</h3><p>Marca tu equipo, el grupo muscular, el objetivo y el tiempo del que dispones.</p></div>
+          <div class="step"><span class="step-n">2</span><h3>Recibe tu rutina</h3><p>La app combina ejercicios variados con series y repeticiones a tu medida. Cambia de variante con un toque.</p></div>
+          <div class="step"><span class="step-n">3</span><h3>Entrena con feedback</h3><p>Enciende la cámara: cuenta tus reps, corrige tu técnica y te lleva sola de un ejercicio al siguiente.</p></div>
+        </div>
+        <div class="mid-cta"><button class="btn accent lg" data-goto="entrenar">Probar una rutina ahora</button></div>
+      </section>
+
+      <!-- FAQ -->
+      <section class="landing-sec">
+        <h2 class="sec-title">Preguntas frecuentes</h2>
+        <div class="faq">
+          <details class="faq-item"><summary>¿Qué es el análisis biomecánico por webcam?</summary><p>La app detecta tu postura con IA (visión por computador), mide los ángulos de tus articulaciones y te corrige la técnica en tiempo real, sin sensores ni ropa especial.</p></details>
+          <details class="faq-item"><summary>¿Necesito equipo de gimnasio?</summary><p>No. Puedes entrenar solo con tu peso corporal, y la rutina se adapta al equipo que indiques: mancuernas, bandas, barra, banca, etc.</p></details>
+          <details class="faq-item"><summary>¿Es privado? ¿Se guarda mi vídeo?</summary><p>El vídeo se procesa localmente en tu navegador y nunca sale de tu equipo. Solo tu perfil y tu progreso se guardan en tu cuenta.</p></details>
+          <details class="faq-item"><summary>¿En qué dispositivos funciona?</summary><p>En el navegador de tu PC o portátil con webcam (Chrome o Edge recomendados). No hay que instalar nada.</p></details>
+          <details class="faq-item"><summary>¿Cuánto cuesta?</summary><p>Es gratis. Creas tu cuenta y empiezas a entrenar.</p></details>
+        </div>
+      </section>
+
+      <!-- CTA final -->
+      <section class="final-cta">
+        <h2>Tu gimnasio en casa, con un coach que te ve.</h2>
+        <p>Empieza hoy: elige tu objetivo y entrena con técnica correcta desde la primera serie.</p>
+        <button class="btn accent lg" data-goto="entrenar">▶ Empezar gratis</button>
+      </section>
+
+      <footer class="site-footer">
+        <span>🏋️ FitCoach Casa — entrenamiento en casa con análisis biomecánico.</span>
+        <span class="muted small">El vídeo se procesa en tu navegador. Herramienta de apoyo; no sustituye a un profesional de la salud.</span>
+      </footer>
+    </section>
+
     <!-- ===================== VISTA ENTRENAR ===================== -->
-    <section id="view-entrenar" class="view active">
+    <section id="view-entrenar" class="view">
 
       <!-- Paso 1: equipamiento + selección de ejercicio -->
       <div id="panel-setup" class="setup">
@@ -448,7 +582,7 @@
   <div id="loader" class="loader hidden"><div class="spinner"></div><p id="loader-msg">Cargando modelo de pose…</p></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-  <script src="js/config.js?v=17"></script>
-  <script type="module" src="js/app.js?v=17"></script>
+  <script src="js/config.js?v=18"></script>
+  <script type="module" src="js/app.js?v=18"></script>
 </body>
 </html>
