@@ -51,6 +51,14 @@ export async function login(email, password){
 
 export async function logout(){ const sb = client(); if(sb) await sb.auth.signOut(); }
 
+// Notifica cambios de sesión (login, logout, confirmación por email que llega
+// con el token en la URL, refresco de token). Devuelve una función para cancelar.
+export function onAuthChange(cb){
+  const sb = client(); if(!sb) return ()=>{};
+  const { data } = sb.auth.onAuthStateChange((event)=>cb(event));
+  return () => data?.subscription?.unsubscribe?.();
+}
+
 export async function saveProfile(profile){
   const sb = client(); if(!sb) return false;
   const { data:{ user } } = await sb.auth.getUser(); if(!user) return false;

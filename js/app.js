@@ -1,11 +1,11 @@
 // ===== FitCoach Casa · app principal =====
-import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS } from './exercises.js?v=14';
-import { createPoseLandmarker } from './pose.js?v=14';
-import { createDemoPlayer } from './demos.js?v=14';
-import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=14';
-import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=14';
-import * as api from './api.js?v=14';
-import * as store from './storage.js?v=14';
+import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS } from './exercises.js?v=15';
+import { createPoseLandmarker } from './pose.js?v=15';
+import { createDemoPlayer } from './demos.js?v=15';
+import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=15';
+import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=15';
+import * as api from './api.js?v=15';
+import * as store from './storage.js?v=15';
 
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -1136,13 +1136,23 @@ $('#pf-save').addEventListener('click', async ()=>{
   setTimeout(()=>{ $('#pf-msg').textContent=''; }, 3000);
 });
 
-async function initAccount(){
+async function loadAccountState(){
   const s = await api.me();
   auth.backend = s.backend; auth.loggedIn = !!s.loggedIn; auth.user = s.user || null;
   if(s.loggedIn && s.progress) store.replaceAll(s.progress);
   profileData = (s.loggedIn ? s.profile : null) || store.loadProfile();
   if(profileData) applyProfileDefaults(profileData);
   renderPerfil();
+  if($('#view-historial').classList.contains('active')) renderHistory();
+}
+async function initAccount(){
+  await loadAccountState();
+  // reacciona al login/confirmación por email (token en la URL) y logout
+  api.onAuthChange(async (event)=>{
+    if(event==='SIGNED_IN' || event==='SIGNED_OUT' || event==='TOKEN_REFRESHED'){
+      await loadAccountState();
+    }
+  });
 }
 
 // ======================================================
