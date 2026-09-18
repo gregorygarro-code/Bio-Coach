@@ -1,0 +1,470 @@
+{
+ "n_users": 1000,
+ "overall_satisfaction": 3.06,
+ "by_age": {
+  "30-44": {
+   "n": 349,
+   "sat": 3.07
+  },
+  "60-75": {
+   "n": 82,
+   "sat": 2.94
+  },
+  "45-59": {
+   "n": 202,
+   "sat": 3.05
+  },
+  "18-29": {
+   "n": 291,
+   "sat": 3.14
+  },
+  "13-17": {
+   "n": 76,
+   "sat": 2.93
+  }
+ },
+ "by_goal": {
+  "perder_peso": {
+   "n": 271,
+   "sat": 3.09
+  },
+  "ganar_musculo": {
+   "n": 238,
+   "sat": 3.02
+  },
+  "salud_general": {
+   "n": 230,
+   "sat": 3.09
+  },
+  "envejecim_activo": {
+   "n": 74,
+   "sat": 3.12
+  },
+  "movilidad_rehab": {
+   "n": 83,
+   "sat": 3.11
+  },
+  "rendimiento_dep": {
+   "n": 104,
+   "sat": 2.97
+  }
+ },
+ "pains": [
+  {
+   "tag": "seguim_progreso",
+   "label": "Seguimiento de progreso (récords, gráficas)",
+   "pct": 45.7,
+   "phase": 3
+  },
+  {
+   "tag": "falta_niveles",
+   "label": "Faltan niveles de dificultad",
+   "pct": 37.2,
+   "phase": 2
+  },
+  {
+   "tag": "encuadre_camara",
+   "label": "Cuesta encuadrar bien la cámara",
+   "pct": 33.0,
+   "phase": 1
+  },
+  {
+   "tag": "registrar_peso",
+   "label": "Poder registrar el peso (kg) usado",
+   "pct": 30.9,
+   "phase": 2
+  },
+  {
+   "tag": "conteo_impreciso",
+   "label": "Conteo impreciso en algunos ejercicios",
+   "pct": 26.2,
+   "phase": 2
+  },
+  {
+   "tag": "onboarding_confuso",
+   "label": "Primer uso confuso (falta tutorial)",
+   "pct": 25.0,
+   "phase": 1
+  },
+  {
+   "tag": "recordatorios",
+   "label": "Recordatorios / notificaciones",
+   "pct": 24.7,
+   "phase": 3
+  },
+  {
+   "tag": "mas_ejercicios",
+   "label": "Más variedad de ejercicios",
+   "pct": 24.2,
+   "phase": 3
+  },
+  {
+   "tag": "planes_nutricion",
+   "label": "Guía de nutrición",
+   "pct": 16.5,
+   "phase": 3
+  },
+  {
+   "tag": "texto_pequeno",
+   "label": "Texto pequeño / accesibilidad visual",
+   "pct": 16.1,
+   "phase": 1
+  },
+  {
+   "tag": "bajo_impacto",
+   "label": "Ejercicios de bajo impacto / adaptados",
+   "pct": 14.8,
+   "phase": 2
+  },
+  {
+   "tag": "quiere_calentamiento",
+   "label": "Calentamiento siempre incluido",
+   "pct": 14.4,
+   "phase": 2
+  },
+  {
+   "tag": "rpe_dolor",
+   "label": "Registrar esfuerzo (RPE) y avisar dolor",
+   "pct": 13.2,
+   "phase": 2
+  },
+  {
+   "tag": "export_csv",
+   "label": "Exportar datos en CSV",
+   "pct": 6.2,
+   "phase": 3
+  }
+ ],
+ "praises": [
+  {
+   "tag": "rutina_guiada_top",
+   "label": "La rutina guiada encanta",
+   "pct": 40.9
+  },
+  {
+   "tag": "audio_util",
+   "label": "Contador sonoro muy útil",
+   "pct": 31.5
+  },
+  {
+   "tag": "correccion_tecnica",
+   "label": "La corrección de técnica aporta",
+   "pct": 29.5
+  },
+  {
+   "tag": "demos_animadas",
+   "label": "Las demos animadas ayudan",
+   "pct": 22.0
+  },
+  {
+   "tag": "privacidad_local",
+   "label": "Valoran que sea local y privado",
+   "pct": 17.1
+  }
+ ],
+ "users_sample": [
+  {
+   "id": 1,
+   "age": "30-44",
+   "goal": "perder_peso",
+   "device": "pc_webcam",
+   "level": "principiante",
+   "satisfaction": 2.52,
+   "tags": [
+    "registrar_peso",
+    "seguim_progreso",
+    "bajo_impacto",
+    "quiere_calentamiento",
+    "rutina_guiada_top"
+   ]
+  },
+  {
+   "id": 2,
+   "age": "60-75",
+   "goal": "ganar_musculo",
+   "device": "pc_webcam",
+   "level": "principiante",
+   "satisfaction": 4.4,
+   "tags": [
+    "onboarding_confuso",
+    "audio_util",
+    "rutina_guiada_top",
+    "privacidad_local",
+    "correccion_tecnica",
+    "demos_animadas"
+   ]
+  },
+  {
+   "id": 3,
+   "age": "30-44",
+   "goal": "ganar_musculo",
+   "device": "pc_webcam",
+   "level": "principiante",
+   "satisfaction": 4.65,
+   "tags": [
+    "seguim_progreso",
+    "audio_util",
+    "rutina_guiada_top",
+    "correccion_tecnica",
+    "demos_animadas"
+   ]
+  },
+  {
+   "id": 4,
+   "age": "45-59",
+   "goal": "ganar_musculo",
+   "device": "laptop",
+   "level": "principiante",
+   "satisfaction": 2.99,
+   "tags": [
+    "falta_niveles",
+    "registrar_peso",
+    "mas_ejercicios",
+    "onboarding_confuso",
+    "audio_util",
+    "demos_animadas"
+   ]
+  },
+  {
+   "id": 5,
+   "age": "60-75",
+   "goal": "salud_general",
+   "device": "movil",
+   "level": "avanzado",
+   "satisfaction": 2.46,
+   "tags": [
+    "texto_pequeno",
+    "seguim_progreso",
+    "onboarding_confuso"
+   ]
+  },
+  {
+   "id": 6,
+   "age": "45-59",
+   "goal": "salud_general",
+   "device": "laptop",
+   "level": "intermedio",
+   "satisfaction": 2.66,
+   "tags": [
+    "texto_pequeno",
+    "encuadre_camara",
+    "falta_niveles",
+    "conteo_impreciso",
+    "recordatorios",
+    "mas_ejercicios",
+    "rutina_guiada_top"
+   ]
+  },
+  {
+   "id": 7,
+   "age": "30-44",
+   "goal": "perder_peso",
+   "device": "pc_webcam",
+   "level": "intermedio",
+   "satisfaction": 3.0,
+   "tags": [
+    "seguim_progreso",
+    "conteo_impreciso",
+    "recordatorios",
+    "planes_nutricion",
+    "mas_ejercicios",
+    "audio_util",
+    "correccion_tecnica"
+   ]
+  },
+  {
+   "id": 8,
+   "age": "18-29",
+   "goal": "perder_peso",
+   "device": "movil",
+   "level": "intermedio",
+   "satisfaction": 2.84,
+   "tags": [
+    "registrar_peso",
+    "seguim_progreso",
+    "planes_nutricion",
+    "rutina_guiada_top"
+   ]
+  },
+  {
+   "id": 9,
+   "age": "18-29",
+   "goal": "envejecim_activo",
+   "device": "pc_webcam",
+   "level": "avanzado",
+   "satisfaction": 3.2,
+   "tags": [
+    "encuadre_camara",
+    "conteo_impreciso",
+    "planes_nutricion",
+    "mas_ejercicios",
+    "audio_util"
+   ]
+  },
+  {
+   "id": 10,
+   "age": "30-44",
+   "goal": "salud_general",
+   "device": "pc_webcam",
+   "level": "principiante",
+   "satisfaction": 3.9,
+   "tags": [
+    "seguim_progreso",
+    "recordatorios",
+    "audio_util",
+    "rutina_guiada_top",
+    "correccion_tecnica"
+   ]
+  },
+  {
+   "id": 11,
+   "age": "30-44",
+   "goal": "salud_general",
+   "device": "pc_webcam",
+   "level": "avanzado",
+   "satisfaction": 2.75,
+   "tags": [
+    "falta_niveles",
+    "quiere_calentamiento",
+    "mas_ejercicios",
+    "audio_util"
+   ]
+  },
+  {
+   "id": 12,
+   "age": "45-59",
+   "goal": "salud_general",
+   "device": "laptop",
+   "level": "avanzado",
+   "satisfaction": 2.47,
+   "tags": [
+    "encuadre_camara",
+    "conteo_impreciso",
+    "quiere_calentamiento",
+    "onboarding_confuso",
+    "rutina_guiada_top"
+   ]
+  },
+  {
+   "id": 13,
+   "age": "30-44",
+   "goal": "ganar_musculo",
+   "device": "pc_webcam",
+   "level": "intermedio",
+   "satisfaction": 1.85,
+   "tags": [
+    "encuadre_camara",
+    "seguim_progreso",
+    "bajo_impacto",
+    "rpe_dolor",
+    "mas_ejercicios",
+    "onboarding_confuso"
+   ]
+  },
+  {
+   "id": 14,
+   "age": "18-29",
+   "goal": "perder_peso",
+   "device": "laptop",
+   "level": "avanzado",
+   "satisfaction": 3.81,
+   "tags": [
+    "falta_niveles",
+    "quiere_calentamiento",
+    "rutina_guiada_top",
+    "correccion_tecnica"
+   ]
+  },
+  {
+   "id": 15,
+   "age": "18-29",
+   "goal": "movilidad_rehab",
+   "device": "pc_webcam",
+   "level": "principiante",
+   "satisfaction": 3.09,
+   "tags": [
+    "encuadre_camara",
+    "falta_niveles",
+    "registrar_peso",
+    "seguim_progreso",
+    "onboarding_confuso",
+    "rutina_guiada_top",
+    "correccion_tecnica",
+    "demos_animadas"
+   ]
+  },
+  {
+   "id": 16,
+   "age": "45-59",
+   "goal": "ganar_musculo",
+   "device": "laptop",
+   "level": "intermedio",
+   "satisfaction": 2.89,
+   "tags": [
+    "seguim_progreso",
+    "planes_nutricion"
+   ]
+  },
+  {
+   "id": 17,
+   "age": "30-44",
+   "goal": "ganar_musculo",
+   "device": "pc_webcam",
+   "level": "principiante",
+   "satisfaction": 3.31,
+   "tags": [
+    "seguim_progreso",
+    "rpe_dolor",
+    "onboarding_confuso",
+    "correccion_tecnica",
+    "demos_animadas"
+   ]
+  },
+  {
+   "id": 18,
+   "age": "30-44",
+   "goal": "ganar_musculo",
+   "device": "laptop",
+   "level": "intermedio",
+   "satisfaction": 2.58,
+   "tags": [
+    "encuadre_camara",
+    "falta_niveles",
+    "registrar_peso",
+    "seguim_progreso",
+    "conteo_impreciso",
+    "recordatorios",
+    "rutina_guiada_top",
+    "demos_animadas"
+   ]
+  },
+  {
+   "id": 19,
+   "age": "18-29",
+   "goal": "envejecim_activo",
+   "device": "pc_webcam",
+   "level": "principiante",
+   "satisfaction": 3.85,
+   "tags": [
+    "falta_niveles",
+    "correccion_tecnica",
+    "demos_animadas"
+   ]
+  },
+  {
+   "id": 20,
+   "age": "45-59",
+   "goal": "salud_general",
+   "device": "laptop",
+   "level": "principiante",
+   "satisfaction": 2.51,
+   "tags": [
+    "texto_pequeno",
+    "encuadre_camara",
+    "falta_niveles",
+    "bajo_impacto",
+    "onboarding_confuso"
+   ]
+  }
+ ]
+}

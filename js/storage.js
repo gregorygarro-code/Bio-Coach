@@ -1,0 +1,124 @@
+// ===== Historial de entrenamientos (localStorage) =====
+const KEY='fitcoach.history.v1';
+const SETTINGS='fitcoach.settings.v1';
+const PLANS='fitcoach.plans.v1';
+const PROFILE='fitcoach.profile.v1';
+
+// Perfil local (modo invitado)
+export function loadProfile(){ try{ return JSON.parse(localStorage.getItem(PROFILE))||null; }catch{ return null; } }
+export function saveProfileLocal(p){ try{ localStorage.setItem(PROFILE, JSON.stringify(p)); }catch{} }
+
+// Reemplaza historial y planes locales con los del servidor (al iniciar sesión)
+export function replaceAll(progress){
+  try{
+    localStorage.setItem(KEY, JSON.stringify(progress?.history || []));
+    localStorage.setItem(PLANS, JSON.stringify(progress?.plans || {}));
+  }catch{}
+}
+
+export function loadHistory(){
+  try{ return JSON.parse(localStorage.getItem(KEY)) || []; }
+  catch{ return []; }
+}
+export function saveSet(entry){
+  // entry: {exerciseId, name, reps, avgRom, form, ts}
+  const h=loadHistory();
+  h.push({...entry, ts: entry.ts ?? Date.now()});
+  try{ localStorage.setItem(KEY, JSON.stringify(h)); }catch{}
+}
+export function clearHistory(){ try{ localStorage.removeItem(KEY); }catch{} }
+// Añade campos (RPE, molestia…) a la última serie guardada
+export function patchLastSet(fields){
+  const h=loadHistory(); if(!h.length) return;
+  Object.assign(h[h.length-1], fields);
+  try{ localStorage.setItem(KEY, JSON.stringify(h)); }catch{}
+}
+
+export function loadSettings(){
+  const def={mirror:true, model:'lite', rest:60, voice:true, camId:null,
+             sound:true, prep:true, targetReps:10, holdSecs:40,
+             textScale:'normal', contrast:false, reduceMotion:false, onboardingDone:false,
+             level:'intermedio'};
+  try{ return {...def, ...(JSON.parse(localStorage.getItem(SETTINGS))||{})}; }
+  catch{ return def; }
+}
+export function saveSettings(s){ try{ localStorage.setItem(SETTINGS, JSON.stringify(s)); }catch{} }
+
+// Agrupa el historial por día para la vista
+export function groupByDay(history){
+  const days={};
+  for(const e of history){
+    const d=new Date(e.ts);
+    const key=d.toLocaleDateString('es-ES',{weekday:'long', day:'numeric', month:'long', year:'numeric'});
+    (days[key] ||= []).push(e);
+  }
+  return days;
+}
+
+export function summary(history){
+  const totalSets=history.length;
+  const totalReps=history.reduce((s,e)=>s+(e.reps||0),0);
+  const days=new Set(history.map(e=>new Date(e.ts).toDateString())).size;
+  return {totalSets, totalReps, days};
+}
+
+// ===== Calendario: planificación de cargas =====
+// plans = { 'YYYY-MM-DD': {focus, intensity, note} }
+export function dateKey(d){
+  const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+export function loadPlans(){
+  try{ return JSON.parse(localStorage.getItem(PLANS)) || {}; }catch{ return {}; }
+}
+export function savePlan(key, plan){
+  const p=loadPlans(); p[key]=plan;
+  try{ localStorage.setItem(PLANS, JSON.stringify(p)); }catch{}
+}
+export function deletePlan(key){
+  const p=loadPlans(); delete p[key];
+  try{ localStorage.setItem(PLANS, JSON.stringify(p)); }catch{}
+}
+// Series realizadas agrupadas por fecha (dateKey → array de entradas)
+export function historyByDate(){
+  const h=loadHistory(), map={};
+  for(const e of h){ (map[dateKey(new Date(e.ts))] ||= []).push(e); }
+  return map;
+}
+// ===== Métricas de progreso =====
+// Racha de días entrenados (consecutivos hasta hoy/ayer)
+export function streak(){
+  const days=new Set(loadHistory().map(e=>dateKey(new Date(e.ts))));
+  if(!days.size) return 0;
+  let count=0; const d=new Date();
+  // permite que la racha siga viva si hoy aún no entrenó pero ayer sí
+  if(!days.has(dateKey(d))) d.setDate(d.getDate()-1);
+  while(days.has(dateKey(d))){ count++; d.setDate(d.getDate()-1); }
+  return count;
+}
+// Volumen (nº de series) por semana ISO de las últimas n semanas
+export function weeklyVolume(n=8){
+  const h=loadHistory(); const now=new Date();
+  const weeks=[];
+  for(let i=n-1;i>=0;i--){
+    const end=new Date(now); end.setDate(now.getDate()-i*7);
+    const start=new Date(end); start.setDate(end.getDate()-6);
+    const s=start.setHours(0,0,0,0), e=end.setHours(23,59,59,999);
+    const sets=h.filter(x=>x.ts>=s && x.ts<=e).length;
+    weeks.push({label:new Date(start).toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit'}), sets});
+  }
+  return weeks;
+}
+// Récords personales por ejercicio (mejores reps y mejor peso)
+export function personalRecords(){
+  const pr={};
+  for(const e of loadHistory()){
+    const p=pr[e.name] || (pr[e.name]={name:e.name, unit:e.unit, bestReps:0, bestWeight:0});
+    if((e.reps||0)>p.bestReps) p.bestReps=e.reps||0;
+    if((e.weight||0)>p.bestWeight) p.bestWeight=e.weight||0;
+  }
+  return Object.values(pr);
+}
+export function trainedToday(){
+  return loadHistory().some(e=>dateKey(new Date(e.ts))===dateKey(new Date()));
+}
