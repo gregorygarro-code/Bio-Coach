@@ -1,5 +1,5 @@
 // ===== Biblioteca de ejercicios + motor biomecánico =====
-import { LM, angle, angleFromVertical, midpoint, vis, clamp } from './utils.js?v=21';
+import { LM, angle, angleFromVertical, midpoint, vis, clamp } from './utils.js?v=22';
 
 // --- helpers de ángulos sobre landmarks ---
 function tri(lm, a, b, c){

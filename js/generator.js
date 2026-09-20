@@ -3,15 +3,15 @@
 // ejecuta el filtrado/selección según los parámetros del usuario. La parte
 // biomecánica (funciones de medición/checks) sigue viviendo en exercises.js;
 // aquí trabajamos solo con la parte declarativa + el historial (sobrecarga).
-import { buildGuidedPlan, getExercise } from './exercises.js?v=21';
-import { lastResultFor } from './storage.js?v=21';
+import { buildGuidedPlan, getExercise } from './exercises.js?v=22';
+import { lastResultFor } from './storage.js?v=22';
 
 // ---- Carga del catálogo JSON (con caché en memoria) ----
 let _catalog = null, _loading = null;
 export async function loadCatalog(){
   if(_catalog) return _catalog;
   if(_loading) return _loading;
-  _loading = fetch('data/exercises.json?v=21')
+  _loading = fetch('data/exercises.json?v=22')
     .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
     .then(j=>{ _catalog = j.exercises || []; return _catalog; })
     .catch(err=>{ console.warn('[generator] no se pudo cargar el catálogo JSON:', err.message); _catalog = []; return _catalog; });

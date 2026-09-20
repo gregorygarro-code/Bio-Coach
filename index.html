@@ -65,7 +65,7 @@
   }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=21" />
+  <link rel="stylesheet" href="css/styles.css?v=22" />
 </head>
 <body>
   <header class="topbar">
@@ -188,6 +188,11 @@
               <button id="btn-plan-month" class="btn accent">🗓️ Planificar mi mes</button>
               <button id="btn-freestyle" class="link">Entrenar algo libre ahora</button>
             </div>
+          </div>
+          <!-- Estado invitado: sin perfil aún → CTA principal -->
+          <div id="today-noprofile" hidden>
+            <p class="today-label">Empieza aquí</p>
+            <button id="btn-create-profile" class="btn accent today-start">👤 Crea tu perfil para poder crear tu plan de entrenamiento</button>
           </div>
         </div>
 
@@ -464,6 +469,16 @@
           <button id="pf-logout" class="btn ghost" hidden>Cerrar sesión</button>
         </div>
         <p id="pf-msg" class="muted small"></p>
+
+        <!-- Gestión del plan mensual (mesociclo) -->
+        <div class="setting col plan-manage">
+          <label>Plan mensual (mesociclo)</label>
+          <div id="plan-status" class="plan-status muted small"></div>
+          <div class="plan-actions">
+            <button id="pf-plan-month" class="btn accent" hidden>🗓️ Generar Plan Mensual</button>
+            <button id="pf-plan-regen" class="btn ghost" hidden>♻ Regenerar plan</button>
+          </div>
+        </div>
         <p class="muted small">Tu perfil ajusta automáticamente el equipamiento, el objetivo, el tiempo y el nivel de la rutina guiada.</p>
       </div>
     </section>
@@ -689,8 +704,8 @@
   <div id="loader" class="loader hidden"><div class="spinner"></div><p id="loader-msg">Cargando modelo de pose…</p></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-  <script src="js/config.js?v=21"></script>
-  <script type="module" src="js/app.js?v=21"></script>
+  <script src="js/config.js?v=22"></script>
+  <script type="module" src="js/app.js?v=22"></script>
 
   <!-- Registro del Service Worker (PWA / offline) -->
   <script>

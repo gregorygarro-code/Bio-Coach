@@ -87,8 +87,10 @@ export function setGeminiKey(k){ try{ k ? localStorage.setItem(GEMINI_KEY, k.tri
 export function hasGeminiKey(){ return !!getGeminiKey(); }
 
 const AI_SCHEMA_HINT = `Devuelve SOLO un objeto JSON válido, sin texto extra, con EXACTAMENTE estas claves:
-{"nivel":"", "equipo":[], "tiempo_minutos":0, "lesiones":[], "objetivo":""}
+{"nivel":"", "grupo":"", "equipo":[], "tiempo_minutos":0, "lesiones":[], "objetivo":""}
 - nivel: uno de "principiante","intermedio","avanzado" (por defecto "intermedio").
+- grupo: zona/foco a entrenar, uno de "full","upper","lower","core","prevencion","stretch"
+  ("stretch" si pide estiramiento/movilidad; "prevencion" si pide prevención de lesiones; por defecto "full").
 - equipo: subconjunto de ["peso corporal","mancuernas","kettlebell","bandas","barra","banca","dominadas"].
 - tiempo_minutos: entero (30, 45 o 60 aprox.).
 - lesiones: zonas mencionadas, p.ej. ["rodilla","hombro","espalda","lumbar","cadera","tobillo","muñeca","cuello"].
@@ -137,7 +139,14 @@ function localParse(text){
   let nivel='intermedio';
   if(has('principiante','empiezo','nuevo','novato')) nivel='principiante';
   else if(has('avanzado','experto')) nivel='avanzado';
-  return { nivel, equipo, tiempo_minutos: mins?+mins:45, lesiones, objetivo, _source:'local' };
+  // Foco/zona (grupo) por palabras clave
+  let grupo='full';
+  if(has('estira','movilidad','flexibilidad','relaj')) grupo='stretch';
+  else if(has('prevenc','rehab','lesion')) grupo='prevencion';
+  else if(has('inferior','pierna','glúteo','gluteo','cuádriceps','cuadriceps','sentadilla')) grupo='lower';
+  else if(has('superior','pecho','espalda','brazo','hombro','bíceps','biceps','tríceps','triceps')) grupo='upper';
+  else if(has('core','abdomen','abdominal','oblicuo')) grupo='core';
+  return { nivel, grupo, equipo, tiempo_minutos: mins?+mins:45, lesiones, objetivo, _source:'local' };
 }
 
 // API pública: texto libre → JSON estructurado (Gemini si hay clave, si no local).

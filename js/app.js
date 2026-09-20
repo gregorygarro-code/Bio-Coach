@@ -1,13 +1,13 @@
 // ===== FitCoach Casa · app principal =====
-import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS } from './exercises.js?v=21';
-import { createPoseLandmarker } from './pose.js?v=21';
-import { createDemoPlayer } from './demos.js?v=21';
-import * as generator from './generator.js?v=21';
-import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=21';
-import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=21';
-import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=21';
-import * as api from './api.js?v=21';
-import * as store from './storage.js?v=21';
+import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS } from './exercises.js?v=22';
+import { createPoseLandmarker } from './pose.js?v=22';
+import { createDemoPlayer } from './demos.js?v=22';
+import * as generator from './generator.js?v=22';
+import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=22';
+import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=22';
+import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=22';
+import * as api from './api.js?v=22';
+import * as store from './storage.js?v=22';
 
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -1316,8 +1316,12 @@ function gatherProfile(){
 function renderPerfil(){
   const gp=$('#pf-goal');
   if(!gp.dataset.built){ gp.innerHTML=Object.entries(TRAIN_GOALS).map(([k,g])=>`<option value="${k}">${g.label}</option>`).join(''); gp.dataset.built='1'; }
-  if(auth.backend && !auth.loggedIn){ $('#auth-card').hidden=false; $('#profile-card').hidden=true; updateAuthMode(); return; }
-  $('#auth-card').hidden=true; $('#profile-card').hidden=false;
+  // Invitado con backend: mostramos el login como OPCIÓN (para sincronizar en la nube),
+  // pero permitimos crear/editar el perfil localmente (modo invitado, localStorage).
+  const guest = auth.backend && !auth.loggedIn;
+  $('#auth-card').hidden = !guest;
+  if(guest) updateAuthMode();
+  $('#profile-card').hidden = false;
   if(auth.loggedIn){
     $('#profile-who').textContent = `${auth.user.name} · ${auth.user.email}`;
     $('#profile-mode').textContent = '';
@@ -1328,6 +1332,7 @@ function renderPerfil(){
     $('#pf-logout').hidden = true;
   }
   fillProfileForm(currentProfile());
+  renderPlanStatus();   // FIX 2: refleja si ya hay plan mensual activo
 }
 
 function updateAuthMode(){
@@ -1397,43 +1402,99 @@ async function initAccount(){
 // Dashboard "Hoy" (One-Click Start) + racha + planificador
 // ======================================================
 let todayFocus = null;
+let todaySession = null;   // {focus, goal, minutes} de la sesión de hoy (calendario, incl. ajuste IA)
 
+// ¿El usuario tiene un perfil creado? (cloud o guardado en localStorage)
+function hasProfile(){ return !!profileData || store.hasSavedProfile(); }
+
+// Renderiza el dashboard "Hoy". Es también renderTodayDashboard() (alias abajo).
 function renderToday(){
   const card=$('#today-card'); if(!card) return;
   const prof = profileData || {};
   const days = prof.days || 3;
+  // --- DOM: racha y fecha ---
   $('#streak-n').textContent = store.sessionStreak(days);
   const today=new Date();
   $('#today-date').textContent = today.toLocaleDateString('es-ES',{weekday:'long', day:'numeric', month:'long'});
+
+  // FIX 1 · Sin perfil → solo el CTA "Crea tu perfil"; oculta el plan de hoy.
+  const profileReady = hasProfile();
+  $('#today-noprofile').hidden = profileReady;
+  if(!profileReady){
+    $('#today-has').hidden = true;
+    $('#today-none').hidden = true;
+    todayFocus = null; todaySession = null;
+    return;
+  }
+
+  // --- localStorage: sesión programada para hoy ---
   const plan = store.loadPlans()[store.dateKey(today)];
   const has = !!(plan && plan.focus && plan.focus!=='rest');
   $('#today-has').hidden = !has;
   $('#today-none').hidden = has;
   if(has){
+    // La sesión puede traer goal/minutes propios (p.ej. tras un ajuste de IA)
+    const goalId = plan.goal || prof.goal || currentGoal;
+    const mins   = plan.minutes || prof.time || sessionMinutes;
     todayFocus = plan.focus;
-    const goalId = prof.goal || currentGoal;
-    const mins = prof.time || sessionMinutes;
+    todaySession = { focus:plan.focus, goal:goalId, minutes:mins };
+    // --- DOM: resumen de la sesión ---
     $('#today-summary').textContent = `${TRAIN_GOALS[goalId]?.label||'General'} · ${GROUPS[plan.focus]?.label||plan.focus} · ${mins} min`;
     const done = store.trainedToday();
     $('#today-done').hidden = !done;
     $('#btn-start-today').textContent = done ? '▶ Entrenar otra vez' : '▶ INICIAR SESIÓN';
   }else{
-    todayFocus = null;
+    todayFocus = null; todaySession = null;
   }
 }
+const renderTodayDashboard = renderToday;   // alias pedido en el requerimiento
 
-// One-Click Start: resuelve la rutina Just-In-Time (historial + RPE + lesiones) y arranca
+// One-Click Start: resuelve la rutina Just-In-Time con los parámetros de HOY
+// (incluye cualquier ajuste hecho por la IA, no la sesión original).
 async function startTodaySession(){
-  if(!todayFocus) return;
-  const prof = profileData || {};
-  currentGroup = todayFocus;
-  if(prof.goal && TRAIN_GOALS[prof.goal]) currentGoal = prof.goal;
-  if(prof.time && [30,45,60].includes(+prof.time)) sessionMinutes = +prof.time;
+  const s = todaySession; if(!s) return;
+  currentGroup = s.focus;
+  if(s.goal && TRAIN_GOALS[s.goal]) currentGoal = s.goal;
+  if(s.minutes && [30,45,60].includes(+s.minutes)) sessionMinutes = +s.minutes;
   renderGroups(); renderGoals(); renderTimeChips();
-  await regenPlan();          // JIT: arma la sesión en este instante
+  await regenPlan();          // JIT: arma la sesión en este instante (historial + RPE + lesiones)
   startGuided();              // enciende cámara + demo del primer ejercicio
 }
 $('#btn-start-today')?.addEventListener('click', startTodaySession);
+// CTA "Crea tu perfil" → lleva a la pestaña Perfil
+$('#btn-create-profile')?.addEventListener('click', ()=>goTo('perfil'));
+
+// FIX 2 · Estado del botón "Generar Plan Mensual" en el Perfil
+function renderPlanStatus(){
+  const status=$('#plan-status'), btnGen=$('#pf-plan-month'), btnRegen=$('#pf-plan-regen');
+  if(!status || !btnGen || !btnRegen) return;
+  const active = hasUpcomingPlan(14);   // ¿hay sesiones programadas a futuro? (localStorage)
+  if(active){
+    status.textContent = '✅ Plan activo: tienes sesiones programadas para las próximas semanas.';
+    btnGen.hidden = true; btnRegen.hidden = false;      // ya hay plan → ofrecer regenerar
+  }else{
+    status.textContent = 'Aún no tienes un plan mensual. Genera tu mesociclo para ver tu sesión cada día.';
+    btnGen.hidden = false; btnRegen.hidden = true;
+  }
+}
+function doGenerateMonthly(){
+  const prof = profileData || gatherProfile() || { days:3 };
+  const r = generateMonthlyPlan(prof);   // escribe el esqueleto en localStorage (calendario)
+  syncProgress();                        // sincroniza los planes si hay sesión en la nube
+  renderPlanStatus(); renderToday();
+  if($('#view-calendario')?.classList.contains('active')) renderCalendar();
+  return r;
+}
+$('#pf-plan-month')?.addEventListener('click', ()=>{
+  const r=doGenerateMonthly();
+  $('#pf-msg').textContent = `🗓️ Plan mensual creado: ${r.count} sesiones en 4 semanas (${r.days} días/sem).`;
+});
+$('#pf-plan-regen')?.addEventListener('click', ()=>{
+  // Advertencia de confirmación para no borrar el progreso por error
+  if(!confirm('Regenerar sobrescribirá tu planificación FUTURA (los días automáticos).\n\nNo se borra tu historial ni tu progreso, y se respetan los días que editaste a mano.\n\n¿Continuar?')) return;
+  const r=doGenerateMonthly();
+  $('#pf-msg').textContent = `♻ Plan regenerado: ${r.count} sesiones.`;
+});
 
 // "Modificar sesión de hoy" → despliega el input de IA
 function revealAI(focus=true){
@@ -1495,6 +1556,8 @@ function applyParsed(p){
     p.equipo.forEach(w=>{ const id=EQ_WORD_TO_ID[String(w).toLowerCase()]; if(id) ids.add(id); });
     equipDetail=ids; selectedEquip=capsFromDetail(equipDetail); renderEquip(); renderProfileEquip();
   }
+  // Foco/zona (grupo) que devuelve la IA → cambia el grupo muscular del día
+  if(p.grupo && GROUPS[p.grupo]){ currentGroup=p.grupo; renderGroups(); }
   if(p.objetivo && TRAIN_GOALS[p.objetivo]){ currentGoal=p.objetivo; renderGoals(); }
   if(p.tiempo_minutos){ // ajusta al chip más cercano (30/45/60)
     sessionMinutes=[30,45,60].reduce((a,b)=>Math.abs(b-p.tiempo_minutos)<Math.abs(a-p.tiempo_minutos)?b:a);
@@ -1502,7 +1565,16 @@ function applyParsed(p){
   }
   if(p.nivel){ settings.level=p.nivel; persistSettings(); const sl=$('#sel-level'); if(sl) sl.value=p.nivel; }
   currentInjuries = Array.isArray(p.lesiones) ? p.lesiones : [];
-  regenPlan();
+  regenPlan();   // reconstruye la vista previa de la rutina con los nuevos parámetros
+
+  // FIX 3 · Si hay perfil, la IA SOBREESCRIBE la sesión de hoy en localStorage,
+  // refresca el dashboard (DOM) y deja el botón START vinculado a la nueva rutina.
+  if(hasProfile()){
+    const key = store.dateKey(new Date());
+    store.savePlan(key, { focus:currentGroup, goal:currentGoal, minutes:sessionMinutes, intensity:'medio', note:'Ajuste IA', auto:true });  // localStorage
+    syncProgress();               // los planes se sincronizan si hay sesión en la nube
+    renderTodayDashboard();       // DOM: resumen y START reflejan la sesión modificada
+  }
 }
 async function runAI(){
   const inp=$('#ai-input'); if(!inp) return;

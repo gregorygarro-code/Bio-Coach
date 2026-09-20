@@ -8,6 +8,8 @@ const SESSIONS='fitcoach.sessions.v1';   // feedback por sesión (RPE/Likert)
 // Perfil local (modo invitado)
 export function loadProfile(){ try{ return JSON.parse(localStorage.getItem(PROFILE))||null; }catch{ return null; } }
 export function saveProfileLocal(p){ try{ localStorage.setItem(PROFILE, JSON.stringify(p)); }catch{} }
+// ¿Hay un perfil guardado en este navegador? (para el CTA "Crea tu perfil")
+export function hasSavedProfile(){ try{ return !!localStorage.getItem(PROFILE); }catch{ return false; } }
 
 // Reemplaza historial y planes locales con los del servidor (al iniciar sesión)
 export function replaceAll(progress){
