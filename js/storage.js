@@ -3,6 +3,7 @@ const KEY='fitcoach.history.v1';
 const SETTINGS='fitcoach.settings.v1';
 const PLANS='fitcoach.plans.v1';
 const PROFILE='fitcoach.profile.v1';
+const SESSIONS='fitcoach.sessions.v1';   // feedback por sesión (RPE/Likert)
 
 // Perfil local (modo invitado)
 export function loadProfile(){ try{ return JSON.parse(localStorage.getItem(PROFILE))||null; }catch{ return null; } }
@@ -141,8 +142,51 @@ export function lastResultFor(exerciseId){
   };
 }
 
+// ===== Feedback post-sesión (Escala Likert 1-5) =====
+export function loadSessions(){ try{ return JSON.parse(localStorage.getItem(SESSIONS))||[]; }catch{ return []; } }
+// feedback: { focus, goal, rpe (1-5) }
+export function saveSessionFeedback(feedback){
+  const s=loadSessions();
+  s.push({ ...feedback, date:dateKey(new Date()), ts:Date.now() });
+  try{ localStorage.setItem(SESSIONS, JSON.stringify(s)); }catch{}
+}
+// Último RPE (1-5) para un foco concreto (o el más reciente global si no hay del foco)
+export function lastSessionRPE(focus){
+  const s=loadSessions();
+  if(!s.length) return null;
+  const byFocus = s.filter(x=>x.focus===focus);
+  const pick = (byFocus.length?byFocus:s).reduce((a,b)=>b.ts>a.ts?b:a);
+  return pick.rpe ?? null;
+}
+
+// ===== Racha de entrenamientos (según el calendario) =====
+// Cuenta días consecutivos "cumpliendo" hacia atrás desde hoy:
+//  · Día entrenado           → +1 y reinicia el margen de descanso.
+//  · Día con sesión PLANIFICADA no entrenada → corta la racha (se saltó la sesión).
+//  · Día de descanso/sin plan → no cuenta ni corta, salvo que se superen los días
+//    de descanso permitidos seguidos (margen ≈ 7/díasPorSemana), que también corta.
+// El día en curso aún sin entrenar no penaliza (se empieza a contar desde ayer).
+export function sessionStreak(profileDays=3){
+  const plans=loadPlans();
+  const trained=new Set(loadHistory().map(e=>dateKey(new Date(e.ts))));
+  const allowedGap=Math.max(2, Math.ceil(7/Math.max(1,profileDays))+1);
+  let streak=0, gap=0;
+  const d=new Date(); d.setHours(0,0,0,0);
+  if(!trained.has(dateKey(d))) d.setDate(d.getDate()-1);   // hoy pendiente no rompe
+  for(let i=0;i<180;i++){
+    const key=dateKey(d);
+    const p=plans[key];
+    const planned = p && p.focus && p.focus!=='rest';
+    if(trained.has(key)){ streak++; gap=0; }
+    else if(planned){ break; }                    // faltó a una sesión planificada
+    else { gap++; if(gap>allowedGap) break; }      // demasiados días seguidos sin entrenar
+    d.setDate(d.getDate()-1);
+  }
+  return streak;
+}
+
 // ===== Portabilidad de datos (backup local) =====
-const BACKUP_KEYS = { history:KEY, settings:SETTINGS, plans:PLANS, profile:PROFILE };
+const BACKUP_KEYS = { history:KEY, settings:SETTINGS, plans:PLANS, profile:PROFILE, sessions:SESSIONS };
 
 // Empaqueta todo el estado relevante y descarga fitcoach_backup.json
 export function exportUserData(){

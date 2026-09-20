@@ -1,12 +1,13 @@
 // ===== FitCoach Casa · app principal =====
-import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS } from './exercises.js?v=20';
-import { createPoseLandmarker } from './pose.js?v=20';
-import { createDemoPlayer } from './demos.js?v=20';
-import * as generator from './generator.js?v=20';
-import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=20';
-import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=20';
-import * as api from './api.js?v=20';
-import * as store from './storage.js?v=20';
+import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS } from './exercises.js?v=21';
+import { createPoseLandmarker } from './pose.js?v=21';
+import { createDemoPlayer } from './demos.js?v=21';
+import * as generator from './generator.js?v=21';
+import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=21';
+import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=21';
+import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=21';
+import * as api from './api.js?v=21';
+import * as store from './storage.js?v=21';
 
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -83,6 +84,7 @@ $$('.tab').forEach(t => t.addEventListener('click', () => {
   t.classList.add('active');
   $$('.view').forEach(v=>v.classList.remove('active'));
   $(`#view-${t.dataset.view}`).classList.add('active');
+  if(t.dataset.view==='entrenar') renderToday();
   if(t.dataset.view==='historial') renderHistory();
   if(t.dataset.view==='calendario') renderCalendar();
   if(t.dataset.view==='perfil') renderPerfil();
@@ -207,6 +209,7 @@ async function regenPlan(){
     group: currentGroup, equip: selectedEquip, minutes: sessionMinutes,
     goal: currentGoal, level: settings.level, age: pc.age, sex: pc.sex,
     rest: settings.rest, injuries: currentInjuries,
+    feel: store.lastSessionRPE(currentGroup),   // RPE de la última sesión de este foco
   });
   renderGuidedPreview();
 }
@@ -313,9 +316,10 @@ function guidedFinish(){
   paused=false; updatePauseBtn(); updateSideBadge();
   speak('Rutina completada, buen trabajo',{force:true});
   const sub=`🎉 ¡Rutina completada! · ${total} series · ${GROUPS[currentGroup]?.label||'Full body'} · ${TRAIN_GOALS[currentGoal].label} · ${sessionMinutes} min`;
-  showReport('Informe de la rutina', sub);
   $('#panel-session').classList.add('hidden');
   $('#panel-setup').classList.remove('hidden');
+  // Primero el feedback de esfuerzo (Likert 1-5), luego el informe de técnica.
+  showSessionFeel(currentGroup, currentGoal, ()=>{ showReport('Informe de la rutina', sub); renderToday(); });
   regenPlan();   // propone una variante nueva para la próxima
 }
 
@@ -1356,6 +1360,7 @@ $('#pf-save').addEventListener('click', async ()=>{
   const p = gatherProfile(); profileData = p;
   if(auth.loggedIn) await api.saveProfile(p); else store.saveProfileLocal(p);
   applyProfileDefaults(p);
+  renderToday();
   $('#pf-msg').textContent = '✓ Perfil guardado. La rutina guiada se ha ajustado a tu perfil.';
   setTimeout(()=>{ $('#pf-msg').textContent=''; }, 3000);
 });
@@ -1374,6 +1379,7 @@ async function loadAccountState(){
   if(profileData) applyProfileDefaults(profileData);
   updateTabsAccess();
   renderPerfil();
+  renderToday();
   if($('#view-historial').classList.contains('active')) renderHistory();
   if($('#view-calendario').classList.contains('active')) renderCalendar();
 }
@@ -1386,6 +1392,97 @@ async function initAccount(){
     }
   });
 }
+
+// ======================================================
+// Dashboard "Hoy" (One-Click Start) + racha + planificador
+// ======================================================
+let todayFocus = null;
+
+function renderToday(){
+  const card=$('#today-card'); if(!card) return;
+  const prof = profileData || {};
+  const days = prof.days || 3;
+  $('#streak-n').textContent = store.sessionStreak(days);
+  const today=new Date();
+  $('#today-date').textContent = today.toLocaleDateString('es-ES',{weekday:'long', day:'numeric', month:'long'});
+  const plan = store.loadPlans()[store.dateKey(today)];
+  const has = !!(plan && plan.focus && plan.focus!=='rest');
+  $('#today-has').hidden = !has;
+  $('#today-none').hidden = has;
+  if(has){
+    todayFocus = plan.focus;
+    const goalId = prof.goal || currentGoal;
+    const mins = prof.time || sessionMinutes;
+    $('#today-summary').textContent = `${TRAIN_GOALS[goalId]?.label||'General'} · ${GROUPS[plan.focus]?.label||plan.focus} · ${mins} min`;
+    const done = store.trainedToday();
+    $('#today-done').hidden = !done;
+    $('#btn-start-today').textContent = done ? '▶ Entrenar otra vez' : '▶ INICIAR SESIÓN';
+  }else{
+    todayFocus = null;
+  }
+}
+
+// One-Click Start: resuelve la rutina Just-In-Time (historial + RPE + lesiones) y arranca
+async function startTodaySession(){
+  if(!todayFocus) return;
+  const prof = profileData || {};
+  currentGroup = todayFocus;
+  if(prof.goal && TRAIN_GOALS[prof.goal]) currentGoal = prof.goal;
+  if(prof.time && [30,45,60].includes(+prof.time)) sessionMinutes = +prof.time;
+  renderGroups(); renderGoals(); renderTimeChips();
+  await regenPlan();          // JIT: arma la sesión en este instante
+  startGuided();              // enciende cámara + demo del primer ejercicio
+}
+$('#btn-start-today')?.addEventListener('click', startTodaySession);
+
+// "Modificar sesión de hoy" → despliega el input de IA
+function revealAI(focus=true){
+  const ai=$('#ai-card'); if(ai){ ai.hidden=false; ai.classList.add('flash'); }
+  if(focus){ const inp=$('#ai-input'); if(inp){ inp.focus(); inp.scrollIntoView({behavior:'smooth',block:'center'}); } }
+}
+$('#btn-modify-today')?.addEventListener('click', ()=>revealAI(true));
+
+// Planificar el mes (mesociclo) e inyectarlo en el calendario
+$('#btn-plan-month')?.addEventListener('click', ()=>{
+  const prof = profileData || { days:3 };
+  const r = generateMonthlyPlan(prof);
+  syncProgress();                         // los planes van al backend si hay sesión
+  renderToday();
+  if($('#view-calendario')?.classList.contains('active')) renderCalendar();
+  alert(`🗓️ Plan mensual creado.\n\n${r.count} sesiones programadas para las próximas 4 semanas (${r.days} días/semana).\nCada día verás tu sesión lista para empezar de un toque.`);
+});
+$('#btn-freestyle')?.addEventListener('click', ()=>{ revealAI(false); $('#group-chips')?.scrollIntoView({behavior:'smooth',block:'start'}); });
+
+// ======================================================
+// Feedback post-sesión (Escala Likert 1-5)
+// ======================================================
+let feelThen = null;
+const FEEL_LABELS = {1:'Muy fácil', 2:'Fácil', 3:'Perfecto', 4:'Dura', 5:'Extenuante'};
+function showSessionFeel(focus, goal, then){
+  const box=$('#feel-modal');
+  if(!box){ then && then(); return; }
+  feelThen = then;
+  const sc=$('#feel-scale');
+  if(!sc.dataset.built){
+    for(let i=1;i<=5;i++){
+      const b=document.createElement('button');
+      b.className='feel-btn feel-'+i;
+      b.innerHTML=`<b>${i}</b><span>${FEEL_LABELS[i]}</span>`;
+      b.onclick=()=>submitFeel(i);
+      sc.appendChild(b);
+    }
+    sc.dataset.built='1';
+  }
+  box.dataset.focus = focus; box.dataset.goal = goal;
+  box.classList.remove('hidden');
+}
+function submitFeel(rpe){
+  const box=$('#feel-modal');
+  store.saveSessionFeedback({ focus:box.dataset.focus, goal:box.dataset.goal, rpe });
+  box.classList.add('hidden');
+  const cb=feelThen; feelThen=null; if(cb) cb();
+}
+$('#feel-skip')?.addEventListener('click', ()=>{ $('#feel-modal').classList.add('hidden'); const cb=feelThen; feelThen=null; if(cb) cb(); });
 
 // ======================================================
 // IA conversacional: texto libre → params → generador
@@ -1433,7 +1530,7 @@ $('#import-file')?.addEventListener('change', e=>{
     if(res.ok){
       settings=store.loadSettings(); applySettingsToUI();
       profileData=store.loadProfile()||profileData; if(profileData) applyProfileDefaults(profileData);
-      renderHistory();
+      renderHistory(); renderToday();
       $('#backup-msg').textContent='✓ Datos restaurados en este navegador.';
     }else{ $('#backup-msg').textContent='✗ '+res.error; }
   };

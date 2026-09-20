@@ -65,7 +65,7 @@
   }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=20" />
+  <link rel="stylesheet" href="css/styles.css?v=21" />
 </head>
 <body>
   <header class="topbar">
@@ -168,7 +168,30 @@
 
       <!-- Paso 1: equipamiento + selección de ejercicio -->
       <div id="panel-setup" class="setup">
-        <div class="card ai-card">
+
+        <!-- Dashboard "Hoy": arranque en un toque + racha -->
+        <div id="today-card" class="card today-card">
+          <div class="today-top">
+            <span class="streak" title="Racha de entrenamientos">🔥 <b id="streak-n">0</b> <span class="muted small">de racha</span></span>
+            <span id="today-date" class="muted small"></span>
+          </div>
+          <div id="today-has" hidden>
+            <p class="today-label">Tu sesión de hoy</p>
+            <h2 id="today-summary">—</h2>
+            <p id="today-done" class="today-done-tag" hidden>✅ Ya la completaste hoy</p>
+            <button id="btn-start-today" class="btn accent today-start">▶ INICIAR SESIÓN</button>
+            <button id="btn-modify-today" class="link">Modificar sesión de hoy</button>
+          </div>
+          <div id="today-none" hidden>
+            <p class="today-label">No tienes una sesión programada hoy</p>
+            <div class="today-none-actions">
+              <button id="btn-plan-month" class="btn accent">🗓️ Planificar mi mes</button>
+              <button id="btn-freestyle" class="link">Entrenar algo libre ahora</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="ai-card" class="card ai-card" hidden>
           <h2>🤖 Describe tu sesión</h2>
           <p class="muted small">Escríbelo con tus palabras y la IA ajusta objetivo, equipo, tiempo y lesiones. Ej.: <i>"Tengo 20 minutos, unas mancuernas y me duele la rodilla"</i>.</p>
           <div class="ai-row">
@@ -653,11 +676,21 @@
     </div>
   </div>
 
+  <!-- Feedback post-sesión (Escala Likert 1-5) -->
+  <div id="feel-modal" class="modal hidden">
+    <div class="modal-box modal-narrow feel-box">
+      <h2>¿Cómo sentiste el entrenamiento de hoy?</h2>
+      <p class="muted small">Tu respuesta ajusta la carga de la próxima sesión de este bloque.</p>
+      <div id="feel-scale" class="feel-scale"></div>
+      <div class="onb-actions" style="margin-top:14px"><button id="feel-skip" class="btn ghost">Omitir</button></div>
+    </div>
+  </div>
+
   <div id="loader" class="loader hidden"><div class="spinner"></div><p id="loader-msg">Cargando modelo de pose…</p></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-  <script src="js/config.js?v=20"></script>
-  <script type="module" src="js/app.js?v=20"></script>
+  <script src="js/config.js?v=21"></script>
+  <script type="module" src="js/app.js?v=21"></script>
 
   <!-- Registro del Service Worker (PWA / offline) -->
   <script>

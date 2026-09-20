@@ -3,15 +3,15 @@
 // ejecuta el filtrado/selección según los parámetros del usuario. La parte
 // biomecánica (funciones de medición/checks) sigue viviendo en exercises.js;
 // aquí trabajamos solo con la parte declarativa + el historial (sobrecarga).
-import { buildGuidedPlan, getExercise } from './exercises.js?v=20';
-import { lastResultFor } from './storage.js?v=20';
+import { buildGuidedPlan, getExercise } from './exercises.js?v=21';
+import { lastResultFor } from './storage.js?v=21';
 
 // ---- Carga del catálogo JSON (con caché en memoria) ----
 let _catalog = null, _loading = null;
 export async function loadCatalog(){
   if(_catalog) return _catalog;
   if(_loading) return _loading;
-  _loading = fetch('data/exercises.json?v=20')
+  _loading = fetch('data/exercises.json?v=21')
     .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
     .then(j=>{ _catalog = j.exercises || []; return _catalog; })
     .catch(err=>{ console.warn('[generator] no se pudo cargar el catálogo JSON:', err.message); _catalog = []; return _catalog; });
@@ -63,13 +63,42 @@ export function filterCandidates(params){
 }
 
 // ===== Sobrecarga progresiva (Progressive Overload) =====
-// Compara la prescripción de HOY contra el mejor resultado de la ÚLTIMA sesión
-// de ese ejercicio. Si el usuario alcanzó/superó lo prescrito, progresa.
-function applyProgressiveOverload(plan){
+// Dos señales combinadas:
+//  (A) Rendimiento por ejercicio: ¿alcanzó/superó lo prescrito la última vez?
+//  (B) Esfuerzo percibido de la ÚLTIMA sesión (feel, Likert 1-5):
+//      1 "muy fácil"  → progresa AGRESIVO   2 "fácil" → progresa moderado
+//      3 "perfecto"   → progresión normal   4 "duro"  → mantiene
+//      5 "extenuante" → REDUCE la carga
+// feelBump() traduce ese 1-5 en un delta de repeticiones/segundos a nivel de sesión.
+function feelDelta(feel){
+  // Δreps para ejercicios de repeticiones y Δsegundos para isométricos
+  switch(feel){
+    case 1: return { reps:+3, secs:+10, tag:'agresiva (fue muy fácil)' };
+    case 2: return { reps:+2, secs:+5,  tag:'(fue fácil)' };
+    case 4: return { reps:-1, secs:-5,  tag:'suave (fue dura)' };
+    case 5: return { reps:-2, secs:-10, tag:'baja carga (fue extenuante)' };
+    default: return { reps:0, secs:0, tag:'' };   // 3 o sin dato → sin cambio de sesión
+  }
+}
+
+function applyProgressiveOverload(plan, feel){
+  const fd = feelDelta(feel);
   for(const step of plan.steps){
     if(step.phase!=='main') continue;               // solo progresa el bloque principal
+
+    // (B) Ajuste global por esfuerzo percibido de la última sesión de este foco
+    if(fd.reps || fd.secs){
+      if(step.mode==='hold'){
+        step.secs = Math.max(10, step.secs + fd.secs);
+      }else{
+        step.reps = Math.max(5, step.reps + fd.reps);
+        step.repsLabel = `${step.reps}`;
+      }
+      if(fd.tag) step.overload = { note:`Ajuste ${fd.tag}` };
+    }
+
     const last = lastResultFor(step.id);
-    if(!last) continue;                              // sin historial → no se toca
+    if(!last) continue;                              // sin historial → solo aplica (B)
 
     if(step.mode==='hold'){
       // MATEMÁTICA (isométricos): si aguantó ≥ los segundos prescritos → +5 s
@@ -121,5 +150,6 @@ export async function generateRoutine(params){
 
   plan.candidateCount = candidates.length;
   plan.injuriesApplied = [...exclude];
-  return applyProgressiveOverload(plan);            // sobrecarga sobre el bloque principal
+  // feel = RPE (1-5) de la última sesión de este foco → modula la progresión
+  return applyProgressiveOverload(plan, params.feel);
 }

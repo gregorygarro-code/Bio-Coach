@@ -552,3 +552,27 @@ main{max-width:1200px;margin:0 auto;padding:16px}
 #ai-msg{margin-top:8px}
 .backup-actions{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0}
 .gp-phase.ov{color:#ffd9a8;border-color:var(--accent);background:rgba(255,90,31,.14)}
+
+/* ===== Dashboard de ejecución diaria (v21) ===== */
+.setup .today-card{grid-column:1 / -1;border-color:var(--accent);background:linear-gradient(180deg,rgba(255,90,31,.06),transparent 60%),var(--panel)}
+.today-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
+.streak{font-size:15px;font-weight:600}
+.streak b{font-size:22px;color:var(--accent);font-family:var(--font-head)}
+#today-date{text-transform:capitalize}
+.today-label{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin:2px 0}
+#today-summary{font-size:clamp(20px,4vw,28px);margin:2px 0 12px}
+.today-done-tag{color:var(--good);font-weight:600;margin:-6px 0 10px}
+.today-start{width:100%;font-size:clamp(18px,3.4vw,24px);padding:18px 20px;letter-spacing:.02em;border-radius:14px}
+#btn-modify-today{display:inline-block;margin-top:12px}
+.today-none-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:8px}
+.ai-card.flash{animation:aiflash 1.2s ease}
+@keyframes aiflash{0%{box-shadow:0 0 0 0 rgba(47,155,255,.5)}100%{box-shadow:0 0 0 14px rgba(47,155,255,0)}}
+
+/* Escala Likert 1-5 */
+.feel-box{max-width:520px;text-align:center}
+.feel-scale{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:16px 0 4px}
+.feel-btn{flex:1;min-width:84px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border-radius:12px;border:1px solid var(--line);background:var(--panel2);color:var(--txt)}
+.feel-btn b{font-size:22px;font-family:var(--font-head)}
+.feel-btn span{font-size:11px;color:var(--muted)}
+.feel-btn:hover{border-color:var(--accent);transform:translateY(-2px)}
+.feel-1:hover{border-color:var(--good)} .feel-5:hover{border-color:var(--bad)}
