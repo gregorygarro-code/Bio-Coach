@@ -1,19 +1,25 @@
 // ===== FitCoach Casa · app principal =====
-import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS } from './exercises.js?v=18';
-import { createPoseLandmarker } from './pose.js?v=18';
-import { createDemoPlayer } from './demos.js?v=18';
-import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=18';
-import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=18';
-import * as api from './api.js?v=18';
-import * as store from './storage.js?v=18';
+import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS } from './exercises.js?v=19';
+import { createPoseLandmarker } from './pose.js?v=19';
+import { createDemoPlayer } from './demos.js?v=19';
+import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=19';
+import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=19';
+import * as api from './api.js?v=19';
+import * as store from './storage.js?v=19';
 
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
+
+// Colores del esqueleto en vivo, tomados del tema (con fallback)
+const _css = getComputedStyle(document.documentElement);
+const OVERLAY_LINE = (_css.getPropertyValue('--accent').trim()||'#34d399');
+const OVERLAY_DOT  = (_css.getPropertyValue('--accent2').trim()||'#3b82f6');
 
 // ---------- Estado ----------
 let settings = store.loadSettings();
 let equipDetail = new Set(['bodyweight','dumbbells','bands','bench','barbell','pullup_bar']); // equipo detallado
 let equipWeights = {};                                                                        // pesos por equipo
+let equipOther = '';                                                                          // equipo extra escrito por el usuario
 let selectedEquip = capsFromDetail(equipDetail);                                              // capacidades derivadas
 let currentGroup = 'full';
 let currentEx = null;
@@ -35,6 +41,9 @@ let lastPhase = 'reset';
 let targetReached = false;
 let sessionMinutes = 45;                 // tiempo elegido para la rutina guiada
 let currentGoal = 'general';             // objetivo de entrenamiento
+let guestSex = '';                        // ajuste rápido para invitados (sexo)
+let guestAge = null;                      // ajuste rápido para invitados (edad)
+let paused = false;                       // pausa de la serie/temporizador en curso
 let currentGuidedPlan = null;            // plan generado (se reusa al empezar / regenerar variante)
 let guided = { active:false, plan:null, i:0, set:1, done:0, rest:60 };
 let guidedPreview = false;               // el modal de demo abre para el siguiente paso guiado
@@ -42,6 +51,11 @@ let lastVideoTs = -1;
 let fpsEma = 0, lastFrame = performance.now();
 let lastFormRun = 0;
 let sessionSetsSummary = [];  // resumen de las series del ejercicio actual
+let bilateralEx = false;      // el ejercicio actual se trabaja por lados
+let sidePhase = 0;            // 0 = no aplica · 1 = lado 1 · 2 = lado 2
+let sideAccum = 0;            // reps/segundos acumulados del primer lado
+let continuingSide = false;  // startSet viene de un cambio de lado (no reinicia el conteo bilateral)
+let formTally = {};          // informe de técnica: recuento por mensaje {good,warn,bad}
 
 // ---------- DOM ----------
 const video = $('#cam'), cvs = $('#overlay'), ctx = cvs.getContext('2d');
@@ -106,6 +120,31 @@ function toggleEquip(id){
   selectedEquip = capsFromDetail(equipDetail);
 }
 
+// Presets rápidos de equipamiento: adaptable sin ser una lista infinita.
+const EQUIP_PRESETS = {
+  none: ['bodyweight','yoga_mat'],
+  home: ['bodyweight','yoga_mat','dumbbells','bands'],
+  full: ['bodyweight','yoga_mat','dumbbells','kettlebell','bands','bench','squat_rack','barbell','pullup_bar'],
+};
+function applyEquipPreset(key){
+  const ids=EQUIP_PRESETS[key]; if(!ids) return;
+  equipDetail=new Set(ids); selectedEquip=capsFromDetail(equipDetail);
+  renderEquip(); renderProfileEquip(); regenPlan();
+}
+$$('[data-preset]').forEach(b=>b.addEventListener('click', ()=>{
+  $$('[data-preset]').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+  applyEquipPreset(b.dataset.preset);
+}));
+$('#equip-other')?.addEventListener('input', e=>{ equipOther=e.target.value; });
+
+// Ajuste rápido para invitados (sexo/edad) — el perfil lo sustituye al iniciar sesión
+$('#q-sex')?.addEventListener('change', e=>{ guestSex=e.target.value; regenPlan(); });
+$('#q-age')?.addEventListener('change', e=>{ guestAge=+e.target.value||null; regenPlan(); });
+function updateQuickPersonal(){
+  const box=$('#quick-personal'); if(!box) return;
+  box.hidden = auth.loggedIn;   // con sesión, manda el perfil
+}
+
 // ======================================================
 // Chips de grupo muscular
 // ======================================================
@@ -152,10 +191,17 @@ function renderTimeChips(){
   }
 }
 
+// Contexto personal (edad/sexo): del perfil si hay, si no del ajuste rápido de invitado
+function personalCtx(){
+  const p = profileData || {};
+  return { age: (p.age ?? guestAge) || null, sex: p.sex || guestSex || '' };
+}
+
 // Genera (y guarda) un plan nuevo con variedad y refresca la vista previa
 function regenPlan(){
+  const pc = personalCtx();
   currentGuidedPlan = buildGuidedPlan(currentGroup, selectedEquip, sessionMinutes,
-    {rest:settings.rest, level:settings.level, goal:currentGoal});
+    {rest:settings.rest, level:settings.level, goal:currentGoal, age:pc.age, sex:pc.sex});
   renderGuidedPreview();
 }
 
@@ -166,7 +212,8 @@ function renderGuidedPreview(){
   const label = GROUPS[currentGroup]?.label || 'Full body';
   const G = plan.goal;
   const items = plan.steps.map((s,i)=>{
-    const dose = s.mode==='hold' ? `${s.sets>1?s.sets+'× ':''}${s.secs}s` : `${s.sets} × ${s.repsLabel||s.reps}`;
+    const perSide = s.bilateral ? (s.mode==='hold' ? ' ×2 lados' : ' por lado') : '';
+    const dose = (s.mode==='hold' ? `${s.sets>1?s.sets+'× ':''}${s.secs}s` : `${s.sets} × ${s.repsLabel||s.reps}`) + perSide;
     const ph = s.phase!=='main' ? `<span class="gp-phase ${s.phase}">${PHASE_LABEL[s.phase]}</span>` : '';
     const cues = s.ex.cues.map(c=>`<li>${c}</li>`).join('');
     return `<details class="gp-item">
@@ -198,6 +245,10 @@ function startGuided(){
   unlockAudio();
   guided={ active:true, plan:currentGuidedPlan.steps, i:0, set:1, done:0, rest:currentGuidedPlan.goal.rest };
   guidedPreview=true;
+  formTally={};   // reinicia el informe de técnica de la rutina
+  // Enciende la cámara ya, mientras el usuario ve la demo del primer ejercicio,
+  // para no perder tiempo al empezar la primera serie.
+  if(!running) startCamera().catch(()=>{});
   openPreview(guided.plan[0].ex);   // muestra la demo del primer ejercicio; "Empezar" lo carga
 }
 
@@ -220,7 +271,8 @@ function updateGuidedBar(){
   $('#gb-title').textContent=`Rutina guiada · Ejercicio ${guided.i+1}/${n} · Serie ${guided.set}/${step.sets}`;
   $('#gb-fill').style.width=`${(guided.i/n)*100}%`;
   const next=guided.plan[guided.i+1];
-  const dose = step.mode==='hold' ? `${step.secs}s` : `${step.repsLabel||step.reps} reps`;
+  const perSide = step.bilateral ? (step.mode==='hold'?' ×2 lados':' por lado') : '';
+  const dose = (step.mode==='hold' ? `${step.secs}s` : `${step.repsLabel||step.reps} reps`) + perSide;
   $('#gb-next').innerHTML = next
     ? `Ahora: <b>${step.name}</b> (${dose}) · Siguiente: ${next.emoji} ${next.name}`
     : `Ahora: <b>${step.name}</b> (${dose}) · Último ejercicio`;
@@ -251,8 +303,10 @@ function guidedFinish(){
   guided.active=false;
   $('#guided-bar').classList.add('hidden');
   clearInterval(restInterval); $('#rest-timer').classList.add('hidden');
+  paused=false; updatePauseBtn(); updateSideBadge();
   speak('Rutina completada, buen trabajo',{force:true});
-  alert(`🎉 ¡Rutina completada!\n\nSeries realizadas: ${total}\nGrupo: ${GROUPS[currentGroup]?.label||'Full body'} · Objetivo: ${TRAIN_GOALS[currentGoal].label} · ${sessionMinutes} min`);
+  const sub=`🎉 ¡Rutina completada! · ${total} series · ${GROUPS[currentGroup]?.label||'Full body'} · ${TRAIN_GOALS[currentGoal].label} · ${sessionMinutes} min`;
+  showReport('Informe de la rutina', sub);
   $('#panel-session').classList.add('hidden');
   $('#panel-setup').classList.remove('hidden');
   regenPlan();   // propone una variante nueva para la próxima
@@ -308,6 +362,8 @@ function openSession(ex){
   currentEx=ex;
   counter=new RepCounter(ex);
   setNumber=1; setActive=false; sessionSetsSummary=[];
+  bilateralEx=!!ex.bilateral; sidePhase=bilateralEx?1:0; sideAccum=0; continuingSide=false;
+  if(!guided.active) formTally={};   // informe de técnica por ejercicio (en guiado se acumula toda la rutina)
   $('#panel-setup').classList.add('hidden');
   $('#panel-session').classList.remove('hidden');
   $('#guided-bar').classList.add('hidden');
@@ -470,8 +526,8 @@ function drawSkeleton(lm){
   const ox=(W-dw)/2, oy=(H-dh)/2;
   const pt=l=>{ let x=l.x*W0*scale+ox; const y=l.y*H0*scale+oy; return [x,y]; };
 
-  // conexiones
-  ctx.lineWidth=4; ctx.strokeStyle='rgba(63,185,80,.9)'; ctx.lineCap='round';
+  // conexiones (color del tema)
+  ctx.lineWidth=5; ctx.strokeStyle=OVERLAY_LINE; ctx.lineCap='round';
   for(const [a,b] of POSE_CONNECTIONS){
     if(!vis(lm[a])||!vis(lm[b])) continue;
     const [x1,y1]=pt(lm[a]),[x2,y2]=pt(lm[b]);
@@ -483,7 +539,7 @@ function drawSkeleton(lm){
     if(!vis(lm[i])) continue;
     const [x,y]=pt(lm[i]);
     ctx.beginPath(); ctx.arc(x,y,5,0,Math.PI*2);
-    ctx.fillStyle='#2f81f7'; ctx.fill();
+    ctx.fillStyle=OVERLAY_DOT; ctx.fill();
   }
 }
 
@@ -524,6 +580,7 @@ function analyze(lm){
     $('#cue-main').className = 'cue '+(fr.ok?'good':'warn');
     return;
   }
+  if(paused) return;   // en pausa no se cuenta ni se corrige
 
   // conteo de reps (el temporizador gestiona el tiempo en 'hold')
   if(setMode!=='hold'){
@@ -579,6 +636,13 @@ function runFormChecks(lm){
   if(checks.length){
     ul.innerHTML=checks.map(c=>`<li class="${c.level}">${iconFor(c.level)} ${c.msg}</li>`).join('');
   }
+  // recuento para el informe de técnica (solo con la serie activa)
+  if(setActive && !paused){
+    for(const c of checks){
+      const t = formTally[c.msg] || (formTally[c.msg] = {good:0,warn:0,bad:0, ex:currentEx.name});
+      t[c.level] = (t[c.level]||0)+1;
+    }
+  }
 }
 function iconFor(l){ return l==='good'?'✅':l==='warn'?'⚠️':'❌'; }
 
@@ -614,6 +678,25 @@ $('#btn-finish').addEventListener('click', ()=>{
   finishExercise();
 });
 
+// --- Pausa de la serie / temporizador en curso ---
+function togglePause(){
+  if(!setActive) return;
+  paused=!paused;
+  updatePauseBtn();
+  if(paused){ sfx.tick?.(); speak('Pausa',{force:true}); }
+  else{ sfx.go?.(); speak('Seguimos',{force:true}); }
+}
+function updatePauseBtn(){
+  const btn=$('#btn-pause'), ov=$('#pause-overlay');
+  if(btn){
+    btn.classList.toggle('hidden', !setActive);
+    btn.textContent = paused ? '▶ Reanudar' : '⏸ Pausar';
+    btn.classList.toggle('accent', paused);
+  }
+  if(ov) ov.classList.toggle('hidden', !(setActive && paused));
+}
+$('#btn-pause')?.addEventListener('click', togglePause);
+
 // --- Cuenta atrás / número grande sobre el vídeo ---
 function showBig(val, lbl='', urgent=false){
   const el=$('#big-timer');
@@ -648,7 +731,10 @@ function startSet(){
     setMode='reps'; targetReps=clampInt($('#in-target').value,1,100,settings.targetReps);
   }
   setTargetSecs=timeLeft;
-  targetReached=false; repsDone=0; lastPhase='reset';
+  targetReached=false; repsDone=0; lastPhase='reset'; paused=false;
+  if(bilateralEx && !continuingSide){ sidePhase=1; sideAccum=0; }  // serie nueva → empieza por el lado 1
+  continuingSide=false;
+  updatePauseBtn();
   $('#rest-timer').classList.add('hidden');
   // cuenta atrás de preparación
   runPrep(beginSet);
@@ -668,9 +754,10 @@ function runPrep(done){
 }
 
 function beginSet(){
-  setActive=true;
+  setActive=true; paused=false; updatePauseBtn();
   counter.reset(); smoother.reset(); lastPhase='reset';
   holdStart=performance.now();
+  updateSideBadge();
   $('#btn-set').textContent = currentEx.type==='hold' ? 'Terminar' : 'Terminar serie';
   $('#btn-set').classList.remove('accent'); $('#btn-set').classList.add('primary');
   $('#rep-adjust').classList.toggle('hidden', setMode==='hold');  // corrección manual solo en reps
@@ -698,6 +785,7 @@ function startCountdown(){
   showBig(timeLeft,'seg');
   if(setMode==='hold') $('#rep-count').textContent=timeLeft;
   timerInterval=setInterval(()=>{
+    if(paused) return;   // temporizador congelado durante la pausa
     timeLeft--;
     const urgent = timeLeft<=3;
     showBig(Math.max(timeLeft,0), timeLeft<=0?'':'seg', urgent);
@@ -713,7 +801,7 @@ function endSet(save){
   clearInterval(prepInterval); prepInterval=null;
   hideBig();
   $('#rep-adjust').classList.add('hidden');
-  setActive=false;
+  setActive=false; paused=false; updatePauseBtn(); updateSideBadge();
   $('#btn-set').disabled=false;
   $('#btn-set').textContent = currentEx.type==='hold' ? 'Iniciar' : 'Iniciar serie';
   $('#btn-set').classList.add('accent'); $('#btn-set').classList.remove('primary');
@@ -721,37 +809,118 @@ function endSet(save){
     let reps, unit;
     if(setMode==='hold'){ reps=Math.max(0, setTargetSecs-Math.max(timeLeft,0)); unit='seg'; }
     else { reps=counter.reps; unit='reps'; }
+
+    // Ejercicio unilateral: al terminar el lado 1, pasa automáticamente al lado 2 y suma ambos.
+    if(bilateralEx && sidePhase===1){
+      sideAccum = reps;
+      sidePhase = 2;
+      switchSide();
+      return;
+    }
+    if(bilateralEx && sidePhase===2) reps = sideAccum + reps;   // total de los dos lados
+    updateSideBadge();
+
     if(reps>0){
       const weight = currentEx.weighted ? Math.max(0, parseFloat($('#in-weight').value)||0) : 0;
       const entry={
         exerciseId:currentEx.id, name:currentEx.name, reps, unit,
         weight: weight>0 ? weight : null,
         avgRom: counter.lastRom!=null?Math.round(counter.lastRom):null,
+        bilateral: bilateralEx || undefined,
         set:setNumber, ts:Date.now(),
       };
       store.saveSet(entry);
       syncProgress();
       sessionSetsSummary.push(entry);
-      speak(`Serie completada, ${reps} ${unit==='seg'?'segundos':'repeticiones'}`, {force:true});
+      const sideMsg = bilateralEx ? ' entre los dos lados' : '';
+      speak(`Serie completada, ${reps} ${unit==='seg'?'segundos':'repeticiones'}${sideMsg}`, {force:true});
       setNumber++;
       $('#set-count').textContent=setNumber;
+      sidePhase = bilateralEx?1:0; sideAccum=0;   // preparar la siguiente serie
       if(guided.active){ guidedAfterSet(); }
       else { if(!askRPE()) startRest(); }   // en modo manual pregunta el esfuerzo antes del descanso
     }
   }
 }
 
+// Transición entre lados en ejercicios unilaterales
+function switchSide(){
+  hideBig();
+  showBig('LADO 2','cambia de lado', true);
+  speak('Cambia de lado',{force:true});
+  updateSideBadge();
+  setTimeout(()=>{ hideBig(); continuingSide=true; startSet(); }, 3200);
+}
+
+function updateSideBadge(){
+  const b=$('#badge-side'); if(!b) return;
+  if(bilateralEx && setActive){ b.classList.remove('hidden'); b.textContent = sidePhase===2?'▶ Lado derecho':'▶ Lado izquierdo'; }
+  else b.classList.add('hidden');
+}
+
 function clampInt(v,min,max,def){ v=parseInt(v,10); if(isNaN(v)) return def; return Math.max(min,Math.min(max,v)); }
 
 function finishExercise(){
-  if(sessionSetsSummary.length){
-    const total=sessionSetsSummary.reduce((s,e)=>s+e.reps,0);
-    alert(`¡Ejercicio terminado!\n\n${currentEx.name}\nSeries: ${sessionSetsSummary.length}\nTotal: ${total} ${sessionSetsSummary[0].unit}`);
-  }
+  const summary = sessionSetsSummary.length
+    ? `${sessionSetsSummary.length} ${sessionSetsSummary.length===1?'serie':'series'} · ${sessionSetsSummary.reduce((s,e)=>s+e.reps,0)} ${sessionSetsSummary[0].unit} en total`
+    : '';
+  showReport(`Informe · ${currentEx?.name||'Ejercicio'}`, summary);
   $('#panel-session').classList.add('hidden');
   $('#panel-setup').classList.remove('hidden');
   regenPlan();
 }
+
+// ======================================================
+// Informe de técnica (hallazgos de movilidad / fuerza + adaptaciones)
+// ======================================================
+function adaptationTip(msg){
+  const m=msg.toLowerCase();
+  if(/profundidad|baja más|baja un poco|rango|dorsiflex|sube más|más las piernas/.test(m))
+    return 'Sugerencia: mejora la movilidad (tobillo/cadera) o reduce el rango hasta donde controles sin molestias.';
+  if(/rodillas hacia dentro|valgo|rodillas no se metan/.test(m))
+    return 'Sugerencia: refuerza glúteo medio (almeja, banda) y empuja las rodillas hacia fuera.';
+  if(/recto|cadera en línea|espalda|neutra|alineac|no rompas|no subas la cadera/.test(m))
+    return 'Sugerencia: activa el core antes de cada rep y baja la carga/ritmo hasta dominar la postura.';
+  if(/extiende|bloqueo|arriba|aprieta glúteo|termina de pie/.test(m))
+    return 'Sugerencia: trabaja la fuerza en el rango final (pausas arriba) y activa el glúteo.';
+  if(/codo|escápula|hombro|banda hacia la cara|codos altos/.test(m))
+    return 'Sugerencia: añade trabajo de prevención de hombro (rotación externa, pull-apart).';
+  return 'Sugerencia: baja el ritmo y prioriza la técnica antes de subir la intensidad.';
+}
+
+function buildReportHTML(){
+  const entries=Object.entries(formTally);
+  if(!entries.length) return '<p class="muted">No se registraron suficientes datos de técnica en esta sesión. Enciende la cámara y colócate de cuerpo entero para el análisis biomecánico.</p>';
+  const good=[], improve=[];
+  for(const [msg,t] of entries){
+    const bad=t.bad||0, warn=t.warn||0, gd=t.good||0;
+    if(gd>=warn+bad) good.push({msg, ex:t.ex});
+    else improve.push({msg, ex:t.ex, score:warn+bad*2, level: bad>=warn?'bad':'warn'});
+  }
+  improve.sort((a,b)=>b.score-a.score);
+  let html='';
+  if(improve.length){
+    html+='<h3>⚠️ A trabajar</h3><ul class="rep-list">'+improve.slice(0,6).map(x=>
+      `<li class="${x.level}"><b>${iconFor(x.level)} ${x.msg}</b><span class="muted small"> · ${x.ex}</span><br><span class="rep-tip">${adaptationTip(x.msg)}</span></li>`).join('')+'</ul>';
+  }
+  if(good.length){
+    html+='<h3>✅ Bien ejecutado</h3><ul class="rep-list">'+good.slice(0,6).map(x=>
+      `<li class="good">✅ ${x.msg}<span class="muted small"> · ${x.ex}</span></li>`).join('')+'</ul>';
+  }
+  if(!improve.length) html='<p class="good" style="font-weight:600">🎉 Técnica sólida en toda la sesión. ¡Buen trabajo!</p>'+html;
+  return html;
+}
+
+function showReport(title, subtitle){
+  const box=$('#report-modal'); if(!box) return;
+  $('#report-title').textContent=title;
+  $('#report-sub').textContent=subtitle||'';
+  $('#report-body').innerHTML=buildReportHTML();
+  box.classList.remove('hidden');
+}
+$('#report-close')?.addEventListener('click', ()=>$('#report-modal').classList.add('hidden'));
+$('#report-close2')?.addEventListener('click', ()=>$('#report-modal').classList.add('hidden'));
+$('#report-modal')?.addEventListener('click', e=>{ if(e.target.id==='report-modal') $('#report-modal').classList.add('hidden'); });
 
 // ======================================================
 // Temporizador de descanso
@@ -765,6 +934,7 @@ function startRest(onDone){
   const el=$('#rest-timer'), val=$('#rest-val');
   el.classList.remove('hidden'); val.textContent=fmtTime(left);
   restInterval=setInterval(()=>{
+    if(paused) return;   // descanso congelado durante la pausa
     left--; val.textContent=fmtTime(left);
     if(left<=3 && left>0) sfx.urgent();
     if(left<=0){
@@ -1043,6 +1213,7 @@ function syncProgress(now=false){
 
 // Muestra/oculta las pestañas personales según la sesión
 function updateTabsAccess(){
+  updateQuickPersonal();
   const gated=['calendario','historial','ajustes'];
   gated.forEach(v=>{ const b=document.querySelector(`.tab[data-view="${v}"]`); if(b) b.hidden = !auth.loggedIn; });
   if(!auth.loggedIn){
@@ -1071,6 +1242,7 @@ function applyProfileDefaults(p){
     if(valid.length){ equipDetail = new Set(valid); }
   }
   if(p.equipWeights) equipWeights = {...p.equipWeights};
+  if(p.equipOther!==undefined) equipOther = p.equipOther;
   selectedEquip = capsFromDetail(equipDetail);
   if(p.goal && TRAIN_GOALS[p.goal]) currentGoal = p.goal;
   if(p.time && [30,45,60].includes(+p.time)) sessionMinutes = +p.time;
@@ -1080,8 +1252,8 @@ function applyProfileDefaults(p){
 
 function currentProfile(){
   return profileData || {
-    time: sessionMinutes, goal: currentGoal, level: settings.level,
-    equip: [...equipDetail], equipWeights: {...equipWeights},
+    time: sessionMinutes, goal: currentGoal, level: settings.level, sex: guestSex, age: guestAge,
+    equip: [...equipDetail], equipWeights: {...equipWeights}, equipOther,
   };
 }
 
@@ -1106,6 +1278,8 @@ function renderProfileEquip(){
 function fillProfileForm(p){
   p = p || {};
   $('#pf-age').value = p.age ?? '';
+  if($('#pf-sex')) $('#pf-sex').value = p.sex ?? '';
+  if($('#equip-other')){ equipOther = p.equipOther ?? equipOther; $('#equip-other').value = equipOther; }
   $('#pf-weight').value = p.weight ?? '';
   $('#pf-height').value = p.height ?? '';
   $('#pf-days').value = p.days ?? '';
@@ -1118,9 +1292,9 @@ function fillProfileForm(p){
 
 function gatherProfile(){
   return {
-    age:+$('#pf-age').value||null, weight:+$('#pf-weight').value||null, height:+$('#pf-height').value||null,
+    age:+$('#pf-age').value||null, sex:($('#pf-sex')?.value)||'', weight:+$('#pf-weight').value||null, height:+$('#pf-height').value||null,
     days:+$('#pf-days').value||null, time:+$('#pf-time').value, goal:$('#pf-goal').value,
-    level:$('#pf-level').value, equip:[...equipDetail], equipWeights:{...equipWeights},
+    level:$('#pf-level').value, equip:[...equipDetail], equipWeights:{...equipWeights}, equipOther,
     notes:$('#pf-notes').value.trim(),
   };
 }

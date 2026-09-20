@@ -1,12 +1,15 @@
 :root{
-  --bg:#0b0f16; --panel:#141a24; --panel2:#1b2430; --line:#28323f;
-  --txt:#e9eef5; --muted:#93a1b2; --accent:#34d399; --accent2:#3b82f6;
-  --warn:#e3b341; --bad:#f85149; --good:#34d399;
-  --grad:linear-gradient(120deg,#34d399 0%,#3b82f6 100%);
-  --grad-soft:linear-gradient(120deg,rgba(52,211,153,.16),rgba(59,130,246,.16));
+  /* Identidad "performance" (inspirada en marcas de fitness/endurance):
+     base casi negra, energía cálida (naranja→magenta) y contraste azul eléctrico. */
+  --bg:#0a0d13; --panel:#111722; --panel2:#1a2230; --line:#2a3444;
+  --txt:#f2f6fb; --muted:#9aa8ba; --accent:#ff5a1f; --accent2:#2f9bff;
+  --warn:#ffc043; --bad:#f43f5e; --good:#22c55e;
+  --grad:linear-gradient(120deg,#ff7a18 0%,#ff2e63 100%);
+  --grad-soft:linear-gradient(120deg,rgba(255,90,31,.18),rgba(255,46,99,.14));
+  --glow:0 6px 18px rgba(255,90,31,.30);
   --font-body:"Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-head:"Sora", var(--font-body);
-  --radius:16px; --shadow:0 10px 34px rgba(0,0,0,.42);
+  --radius:16px; --shadow:0 12px 36px rgba(0,0,0,.5);
   color-scheme: dark;
 }
 /* ===== Accesibilidad (Fase 1) ===== */
@@ -23,14 +26,14 @@ html[data-motion="off"] *{animation:none!important;transition:none!important;scr
 html,body{margin:0;height:100%}
 body{
   background:
-    radial-gradient(900px 500px at 85% -8%, rgba(59,130,246,.14), transparent 60%),
-    radial-gradient(800px 500px at 5% 0%, rgba(52,211,153,.12), transparent 55%),
+    radial-gradient(900px 520px at 88% -8%, rgba(255,90,31,.16), transparent 60%),
+    radial-gradient(820px 520px at 3% 0%, rgba(47,155,255,.13), transparent 55%),
     var(--bg);
   color:var(--txt);
   font:15px/1.55 var(--font-body);
   -webkit-font-smoothing:antialiased;
 }
-h1,h2,h3{margin:0 0 .3em;font-family:var(--font-head);letter-spacing:-.01em;line-height:1.2}
+h1,h2,h3{margin:0 0 .3em;font-family:var(--font-head);letter-spacing:-.015em;line-height:1.18;font-weight:700}
 .muted{color:var(--muted)}
 .small{font-size:12.5px}
 .hidden{display:none !important}
@@ -56,16 +59,24 @@ button{font:inherit;cursor:pointer}
   padding:8px 15px;border-radius:999px;transition:.15s;font-weight:600;
 }
 .tab:hover{color:var(--txt);background:rgba(255,255,255,.04)}
-.tab.active{color:#fff;border-color:transparent;background:var(--grad);box-shadow:0 4px 14px rgba(52,211,153,.25)}
+.tab.active{color:#fff;border-color:transparent;background:var(--grad);box-shadow:0 4px 14px rgba(255,90,31,.32)}
+.topbar h1{text-transform:uppercase;letter-spacing:.02em}
 
-main{max-width:1200px;margin:0 auto;padding:20px}
+main{max-width:1200px;margin:0 auto;padding:16px}
 .view{display:none}
 .view.active{display:block}
 
 .card{
   background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
-  padding:18px;margin-bottom:16px;box-shadow:var(--shadow);
+  padding:15px 16px;margin-bottom:12px;box-shadow:var(--shadow);
 }
+.card h2{font-size:17px}
+
+/* Paso 1-3 en rejilla para aprovechar el ancho (compactar) */
+.setup{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+.setup > .card{margin-bottom:0}
+.setup .guided-card{grid-column:1 / -1}
+@media(max-width:820px){ .setup{grid-template-columns:1fr} }
 .row-between{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 
 /* Chips equipamiento */
@@ -75,7 +86,9 @@ main{max-width:1200px;margin:0 auto;padding:20px}
   background:var(--panel2);border:1px solid var(--line);color:var(--muted);user-select:none;transition:.15s;
 }
 .chip .ic{font-size:18px}
-.chip.on{border-color:var(--accent);color:var(--txt);background:#16351f}
+.chip.on{border-color:var(--accent);color:var(--txt);background:rgba(255,90,31,.16)}
+.chip.preset{background:var(--panel);border-style:dashed}
+.chip.preset.on{border-style:solid}
 
 .search{
   background:var(--panel2);border:1px solid var(--line);color:var(--txt);
@@ -126,7 +139,7 @@ main{max-width:1200px;margin:0 auto;padding:20px}
 .gp-detail li{margin:3px 0}
 .gp-demo{margin-top:10px;font-size:13px}
 .guided-time{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:10px 0}
-.chip.time.on{border-color:var(--accent);background:#16351f}
+.chip.time.on{border-color:var(--accent);background:rgba(255,90,31,.16)}
 .guided-preview{margin:6px 0 14px}
 .gp-head{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:13px;margin-bottom:8px}
 .gp-head b{color:var(--accent);font-size:15px}
@@ -165,7 +178,8 @@ main{max-width:1200px;margin:0 auto;padding:20px}
 .ex-card .ex-muscles{font-size:12px;color:var(--muted)}
 
 /* Sesión */
-.session{display:grid;grid-template-columns:1fr 360px;gap:16px;align-items:start}
+.session{display:grid;grid-template-columns:1fr 340px;gap:14px;align-items:start}
+.session-side .card{margin-bottom:10px}
 .video-wrap{position:relative;background:#000;border-radius:var(--radius);overflow:hidden;aspect-ratio:4/3;border:1px solid var(--line)}
 #cam,#overlay{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 #overlay{pointer-events:none}
@@ -225,8 +239,8 @@ main{max-width:1200px;margin:0 auto;padding:20px}
 .btn:hover:not(:disabled){filter:brightness(1.08);transform:translateY(-1px)}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .btn.primary{background:var(--accent2);border-color:var(--accent2);color:#04121f}
-.btn.accent{background:var(--grad);border:none;color:#05231a;box-shadow:0 6px 18px rgba(52,211,153,.28)}
-.btn.accent:hover:not(:disabled){box-shadow:0 10px 26px rgba(52,211,153,.4)}
+.btn.accent{background:var(--grad);border:none;color:#fff;box-shadow:var(--glow)}
+.btn.accent:hover:not(:disabled){box-shadow:0 10px 26px rgba(255,90,31,.45)}
 .btn.ghost{background:rgba(255,255,255,.03)}
 .btn.lg{padding:14px 22px;font-size:16px;border-radius:12px}
 
@@ -297,7 +311,7 @@ main{max-width:1200px;margin:0 auto;padding:20px}
 .equip-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .equip-row .pf-w{background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:6px 10px;font:inherit;min-width:180px;flex:1}
 .chip-check{display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;background:var(--panel2);border:1px solid var(--line);color:var(--muted);cursor:pointer;user-select:none}
-.chip-check.on{border-color:var(--accent);color:var(--txt);background:#16351f}
+.chip-check.on{border-color:var(--accent);color:var(--txt);background:rgba(255,90,31,.16)}
 .auth-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:12px}
 #profile-who{max-width:60%;text-align:right;overflow:hidden;text-overflow:ellipsis}
 @media(max-width:640px){ .pf-grid{grid-template-columns:1fr} }
@@ -495,3 +509,36 @@ main{max-width:1200px;margin:0 auto;padding:20px}
   .hero-visual{order:-1}
   .feat-grid,.steps{grid-template-columns:1fr}
 }
+
+/* ===== Paquete de mejoras: nuevos componentes ===== */
+/* Presets y equipo extra (item 10) */
+.equip-presets{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:4px 0 12px}
+.equip-other{width:100%;margin-top:12px;background:var(--panel2);border:1px dashed var(--line);color:var(--txt);padding:9px 12px;border-radius:10px;font:inherit}
+.equip-other:focus{outline:none;border-color:var(--accent)}
+
+/* Ajuste rápido invitado (item 6) */
+.quick-personal .quick-row{display:flex;gap:16px;flex-wrap:wrap;margin-top:6px}
+.quick-personal label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+.quick-personal select,.quick-personal input{background:var(--panel2);border:1px solid var(--line);color:var(--txt);padding:8px 10px;border-radius:8px;font:inherit;min-width:120px}
+
+/* Pausa (item 3) */
+.pause-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:6;
+  background:rgba(6,8,12,.6);backdrop-filter:blur(2px);color:#fff;font-family:var(--font-head);
+  font-weight:800;font-size:clamp(28px,7vw,54px);letter-spacing:.02em;text-transform:uppercase}
+#btn-pause.accent{color:#fff}
+
+/* Indicador de lado (item 2) */
+.badge.side{background:var(--grad);border:none;color:#fff;font-weight:700}
+
+/* Informe de técnica (item 9) */
+.report-body{margin:10px 0}
+.report-body h3{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin:14px 0 6px}
+.rep-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.rep-list li{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13.5px}
+.rep-list li.good{border-left:3px solid var(--good)}
+.rep-list li.warn{border-left:3px solid var(--warn)}
+.rep-list li.bad{border-left:3px solid var(--bad)}
+.rep-tip{color:var(--muted);font-size:12.5px}
+
+/* Sesión: apila en pantallas estrechas */
+@media(max-width:820px){ .session{grid-template-columns:1fr} }

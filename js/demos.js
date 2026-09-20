@@ -96,13 +96,38 @@ export const DEMOS = {
   push_press:{ a:{hipX:100,hipY:126,torso:-90,uarm:-135,farm:-92,thigh:70,shin:110}, b:{uarm:-90,farm:-90,thigh:90,shin:90}, speed:1.3 },
   thruster:{ a:{hipX:96,hipY:150,torso:-58,uarm:-130,farm:-96,thigh:40,shin:126}, b:{uarm:-90,farm:-90,thigh:90,shin:90}, speed:1.2 },
   jumping_jacks:{ a:{uarm:88,farm:88,thigh:96,shin:88}, b:{uarm:-64,farm:-64,thigh:66,shin:104}, speed:1.5 },
+
+  // ===== PREVENCIÓN DE LESIONES / PREHAB =====
+  band_pull_apart:{ a:{uarm:6,farm:6}, b:{uarm:2,farm:-14}, speed:0.8 },
+  ext_rotation:{ a:{uarm:70,farm:12}, b:{uarm:70,farm:70}, speed:0.7 },
+  wall_slide:{ a:{torso:-90,uarm:-40,farm:-40}, b:{torso:-90,uarm:-92,farm:-92}, speed:0.6 },
+  clamshell:{ a:{hipX:100,hipY:150,torso:176,uarm:150,farm:150,thigh:-30,shin:30}, b:{hipX:100,hipY:150,torso:176,uarm:150,farm:150,thigh:-58,shin:6}, speed:0.7 },
+  glute_med_raise:{ a:{hipX:100,hipY:150,torso:178,uarm:150,farm:150,thigh:2,shin:2}, b:{hipX:100,hipY:150,torso:178,uarm:150,farm:150,thigh:-24,shin:-24}, speed:0.7 },
+  dead_bug:{ a:{hipX:100,hipY:150,torso:178,uarm:-70,farm:-70,thigh:-70,shin:-10}, b:{hipX:100,hipY:150,torso:178,uarm:120,farm:120,thigh:6,shin:60}, speed:0.6 },
+  ankle_mob:{ a:{hipX:100,hipY:130,torso:-85,thigh:60,shin:120}, b:{hipX:100,hipY:136,torso:-85,thigh:48,shin:126}, speed:0.5 },
+  nordic_curl:{ a:{hipX:100,hipY:120,torso:-90,thigh:90,shin:90,uarm:80,farm:80}, b:{hipX:100,hipY:120,torso:-52,thigh:90,shin:90,uarm:40,farm:40}, speed:0.4 },
+  scapular_pushup:{ a:{hipX:96,hipY:122,torso:-12,uarm:92,farm:92,thigh:192,shin:192}, b:{hipX:96,hipY:118,torso:-12,uarm:92,farm:92,thigh:192,shin:192}, speed:0.6 },
+  calf_raise_prehab:{ a:{hipX:100,hipY:122,uarm:70,farm:70}, b:{hipX:100,hipY:112,uarm:70,farm:70}, speed:0.7 },
 };
 
 const BONES=[['head','sh'],['sh','hip'],['sh','el'],['el','ha'],['hip','kn'],['kn','an']];
 
+// Lee un color de las variables CSS del tema (con fallback), para que las
+// demostraciones combinen con la identidad visual actual.
+function themeColors(canvas){
+  let accent='#ff5a1f', accent2='#ffd21e', skin='#f1f5f9';
+  try{
+    const cs=getComputedStyle(canvas);
+    const a=cs.getPropertyValue('--accent').trim(); if(a) accent=a;
+    const b=cs.getPropertyValue('--accent2').trim(); if(b) accent2=b;
+  }catch{}
+  return {accent, accent2, skin};
+}
+
 export function createDemoPlayer(canvas){
   const ctx=canvas.getContext('2d');
   let raf=null, ex=null, start=0;
+  let col=themeColors(canvas);
 
   function frame(now){
     if(!ex){ return; }
@@ -114,36 +139,60 @@ export function createDemoPlayer(canvas){
     raf=requestAnimationFrame(frame);
   }
 
+  // Dibuja un hueso como cápsula redondeada (más grueso = más cuerpo, menos "monigote").
+  function limb(X,Y,a,b,w){
+    ctx.lineWidth=w; ctx.beginPath();
+    ctx.moveTo(X(a),Y(a)); ctx.lineTo(X(b),Y(b)); ctx.stroke();
+  }
+
   function render(t){
     const d=DEMOS[ex]; if(!d) return;
     const P=lerpPose(d.a, d.b, t);
     const pts=build(P);
     const W=canvas.width, H=canvas.height;
     ctx.clearRect(0,0,W,H);
-    // escala del sistema 200x220 al canvas
-    const sx=W/200, sy=H/220;
+    const sx=W/200, sy=H/220, s=(sx+sy)/2;
     const X=p=>p[0]*sx, Y=p=>p[1]*sy;
-    // suelo
-    ctx.strokeStyle='rgba(255,255,255,.10)'; ctx.lineWidth=2;
+    ctx.lineCap='round'; ctx.lineJoin='round';
+
+    // suelo con sombra suave del cuerpo
+    ctx.fillStyle='rgba(0,0,0,.18)';
+    ctx.beginPath(); ctx.ellipse(X(pts.hip), 194*sy, 46*sx, 6*sy, 0, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.08)'; ctx.lineWidth=2;
     ctx.beginPath(); ctx.moveTo(0,192*sy); ctx.lineTo(W,192*sy); ctx.stroke();
-    // huesos
-    ctx.strokeStyle='#3fb950'; ctx.lineWidth=6; ctx.lineCap='round'; ctx.lineJoin='round';
-    for(const [a,b] of BONES){
-      ctx.beginPath(); ctx.moveTo(X(pts[a]),Y(pts[a])); ctx.lineTo(X(pts[b]),Y(pts[b])); ctx.stroke();
-    }
+
+    // --- lado lejano (offset y más tenue → sensación de volumen/3D) ---
+    const off=7*sx;
+    ctx.save(); ctx.translate(off,0); ctx.globalAlpha=0.35;
+    ctx.strokeStyle=col.accent;
+    limb(X,Y,pts.sh,pts.el,9*s); limb(X,Y,pts.el,pts.ha,7*s);
+    limb(X,Y,pts.hip,pts.kn,11*s); limb(X,Y,pts.kn,pts.an,9*s);
+    ctx.restore();
+
+    // --- torso relleno (cápsula) ---
+    ctx.globalAlpha=1; ctx.strokeStyle=col.accent2; ctx.lineWidth=22*s;
+    ctx.beginPath(); ctx.moveTo(X(pts.hip),Y(pts.hip)); ctx.lineTo(X(pts.sh),Y(pts.sh)); ctx.stroke();
+
+    // --- lado cercano ---
+    ctx.strokeStyle=col.accent;
+    limb(X,Y,pts.sh,pts.el,10*s); limb(X,Y,pts.el,pts.ha,8*s);
+    limb(X,Y,pts.hip,pts.kn,12*s); limb(X,Y,pts.kn,pts.an,10*s);
+
     // articulaciones
-    ctx.fillStyle='#2f81f7';
+    ctx.fillStyle=col.accent2;
     for(const k of ['sh','el','ha','hip','kn','an']){
-      ctx.beginPath(); ctx.arc(X(pts[k]),Y(pts[k]),4,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(X(pts[k]),Y(pts[k]),4.5*s,0,Math.PI*2); ctx.fill();
     }
-    // cabeza
-    ctx.fillStyle='#e6edf3';
-    ctx.beginPath(); ctx.arc(X(pts.head),Y(pts.head),9*sx,0,Math.PI*2); ctx.fill();
+    // cuello + cabeza
+    ctx.strokeStyle=col.skin; ctx.lineWidth=7*s;
+    ctx.beginPath(); ctx.moveTo(X(pts.sh),Y(pts.sh)); ctx.lineTo(X(pts.head),Y(pts.head)); ctx.stroke();
+    ctx.fillStyle=col.skin;
+    ctx.beginPath(); ctx.arc(X(pts.head),Y(pts.head),11*s,0,Math.PI*2); ctx.fill();
   }
 
   return {
     play(id, still=false){
-      ex=id; cancelAnimationFrame(raf); raf=null;
+      ex=id; col=themeColors(canvas); cancelAnimationFrame(raf); raf=null;
       if(still){ render(0.5); return; }         // reducir movimiento: fotograma estático
       start=performance.now(); raf=requestAnimationFrame(frame);
     },

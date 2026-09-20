@@ -1,5 +1,5 @@
 // ===== Biblioteca de ejercicios + motor biomecánico =====
-import { LM, angle, angleFromVertical, midpoint, vis, clamp } from './utils.js?v=18';
+import { LM, angle, angleFromVertical, midpoint, vis, clamp } from './utils.js?v=19';
 
 // --- helpers de ángulos sobre landmarks ---
 function tri(lm, a, b, c){
@@ -636,6 +636,71 @@ const DYNAMIC = [
 ];
 EXERCISES.push(...DYNAMIC);
 
+// ================= PREVENCIÓN DE LESIONES / PREHAB (ejercicios focalizados) =================
+// Trabajo focalizado y de bajo riesgo: manguito rotador, escápulas, glúteo medio,
+// core anti-extensión, movilidad de tobillo e isquios excéntricos. Muchos son
+// unilaterales (bilateral:true → se trabajan ambos lados) y varios son isométricos.
+const shoulderAbd = lm => bilateral(lm, SHLDR_L, SHLDR_R);
+const PREHAB = [
+  { id:'band_pull_apart', name:'Aperturas con banda (pull-apart)', emoji:'🎗️', group:'prevencion', category:'prevencion', bilateral:false,
+    equipment:['band'], muscles:'Manguito · deltoides posterior · escápulas', view:'De frente, medio cuerpo', prehabFocus:'Salud de hombro',
+    rep:{ measure:shoulderAbd, effort:'high', effortThresh:95, resetThresh:55 },
+    gauges:[{label:'Hombros', get:shoulderAbd, min:20, max:120}],
+    cues:['Brazos al frente a la altura del pecho','Abre la banda llevando las manos a los lados','Aprieta las escápulas atrás y abajo','Vuelve controlando, sin encoger el cuello'],
+    checks(lm,c){ const out=[]; const rom=c.lastRom; if(rom!=null) out.push(rom>=35?ok('Buena apertura escapular'):warn('Abre más, junta las escápulas')); return out; } },
+  { id:'ext_rotation', name:'Rotación externa de hombro', emoji:'🔄', group:'prevencion', category:'prevencion', bilateral:true,
+    equipment:['band','dumbbell'], muscles:'Manguito rotador (infraespinoso)', view:'De frente, medio cuerpo', prehabFocus:'Salud de hombro',
+    rep:{ measure:lm=>bestSide(lm,ELBOW_L,ELBOW_R), effort:'high', effortThresh:150, resetThresh:110 },
+    gauges:[{label:'Codo', get:lm=>bestSide(lm,ELBOW_L,ELBOW_R), min:70, max:180}],
+    cues:['Codo pegado al costado, flexionado a 90°','Gira el antebrazo hacia fuera','Movimiento lento y controlado','No separes el codo del cuerpo'],
+    checks(lm){ const out=[]; const drift=Math.min(...[[LM.L_SHOULDER,LM.L_ELBOW],[LM.R_SHOULDER,LM.R_ELBOW]].map(([s,e])=>(vis(lm[s])&&vis(lm[e]))?angleFromVertical(lm[s],lm[e]):999)); if(drift<900) out.push(drift<=20?ok('Codo pegado, correcto'):warn('Mantén el codo pegado al costado')); return out; } },
+  { id:'wall_slide', name:'Deslizamiento en pared', emoji:'🧱', group:'prevencion', category:'prevencion', bilateral:false,
+    equipment:['bodyweight'], muscles:'Escápulas · movilidad de hombro', view:'De frente, medio cuerpo', prehabFocus:'Postura y hombro',
+    rep:{ measure:shoulderAbd, effort:'high', effortThresh:130, resetThresh:80 },
+    gauges:[{label:'Hombros', get:shoulderAbd, min:40, max:170}],
+    cues:['Espalda y brazos apoyados en la pared','Desliza los brazos hacia arriba','Mantén codos y muñecas pegados','Baja apretando las escápulas'],
+    checks(lm,c){ const out=[]; const top=c.lastRepMax; if(top!=null) out.push(top>=140?ok('Buena elevación'):warn('Sube un poco más los brazos')); return out; } },
+  { id:'clamshell', name:'Almeja (clamshell)', emoji:'🐚', group:'prevencion', category:'prevencion', type:'hold', bilateral:true,
+    equipment:['bodyweight','band'], muscles:'Glúteo medio · cadera', view:'Lateral, tumbado', prehabFocus:'Estabilidad de cadera/rodilla', holdDefault:30,
+    gauges:[], cues:['Tumbado de lado, rodillas flexionadas','Abre la rodilla de arriba sin girar la cadera','Aprieta el glúteo en la apertura','Controla la bajada'],
+    checks(){ return [ok('Abre desde el glúteo, cadera quieta')]; } },
+  { id:'glute_med_raise', name:'Elevación lateral de pierna', emoji:'🦵', group:'prevencion', category:'prevencion', bilateral:true,
+    equipment:['bodyweight','band'], muscles:'Glúteo medio', view:'Lateral, tumbado', prehabFocus:'Estabilidad de cadera/rodilla',
+    rep:{ measure:lm=>bestSide(lm,[LM.L_SHOULDER,LM.L_HIP,LM.L_ANKLE],[LM.R_SHOULDER,LM.R_HIP,LM.R_ANKLE]), effort:'high', effortThresh:172, resetThresh:160 },
+    gauges:[{label:'Cadera', get:lm=>bestSide(lm,[LM.L_SHOULDER,LM.L_HIP,LM.L_ANKLE],[LM.R_SHOULDER,LM.R_HIP,LM.R_ANKLE]), min:150, max:185}],
+    cues:['Tumbado de lado, pierna estirada','Sube la pierna sin rotar la cadera','Talón ligeramente atrás','Baja controlando'],
+    checks(){ return [ok('Sube desde el glúteo medio, sin balanceo')]; } },
+  { id:'dead_bug', name:'Dead bug (core)', emoji:'🐞', group:'prevencion', category:'prevencion', type:'hold', bilateral:false,
+    equipment:['bodyweight'], muscles:'Core anti-extensión · lumbar', view:'Lateral, tumbado', prehabFocus:'Salud lumbar y core', holdDefault:30,
+    gauges:[], cues:['Boca arriba, brazos y rodillas arriba','Extiende brazo y pierna opuestos','Lumbar pegada al suelo','Alterna con control y respirando'],
+    checks(){ return [ok('Mantén la lumbar pegada al suelo')]; } },
+  { id:'ankle_mob', name:'Movilidad de tobillo', emoji:'🦶', group:'prevencion', category:'prevencion', type:'hold', bilateral:true,
+    equipment:['bodyweight'], muscles:'Tobillo · dorsiflexión', view:'Lateral, cuerpo entero', prehabFocus:'Movilidad de tobillo', holdDefault:30,
+    gauges:[{label:'Rodilla', get:knee, min:90, max:180}],
+    cues:['En zancada, rodilla hacia delante sobre la punta','El talón no se levanta','Empuja la rodilla más allá de los dedos','Sin dolor, rango cómodo'],
+    checks(lm){ const out=[]; const k=knee(lm); if(k!=null) out.push(k<=140?ok('Buena dorsiflexión'):warn('Lleva más la rodilla hacia delante')); return out; } },
+  { id:'nordic_curl', name:'Curl nórdico (isquios excéntrico)', emoji:'🔻', group:'prevencion', category:'prevencion', bilateral:false,
+    equipment:['bodyweight'], muscles:'Isquiosurales (excéntrico)', view:'Lateral, cuerpo entero', prehabFocus:'Prevención de rotura de isquios',
+    rep:{ measure:hip, effort:'low', effortThresh:130, resetThresh:168 },
+    gauges:[{label:'Cadera', get:hip, min:90, max:185}],
+    cues:['De rodillas, pies fijados','Baja el tronco recto muy despacio (frena)','Cadera y hombros en línea','Ayúdate con las manos al llegar abajo'],
+    checks(lm){ const out=[]; const bl=bodyLineAngle(lm); if(bl!=null) out.push(bl>=160?ok('Cuerpo recto, buen control'):warn('No rompas la cadera, baja recto')); return out; } },
+  { id:'scapular_pushup', name:'Flexión escapular', emoji:'🔩', group:'prevencion', category:'prevencion', bilateral:false,
+    equipment:['bodyweight'], muscles:'Serrato · escápulas', view:'Lateral, cuerpo entero', prehabFocus:'Estabilidad de hombro',
+    rep:{ measure:bodyLineAngle, effort:'high', effortThresh:178, resetThresh:170 },
+    gauges:[{label:'Cuerpo', get:bodyLineAngle, min:150, max:185}],
+    cues:['Posición de plancha alta, brazos rectos','Junta las escápulas dejando caer el pecho','Empuja separando las escápulas','Codos siempre extendidos'],
+    checks(){ return [ok('Mueve solo las escápulas, brazos rectos')]; } },
+  { id:'calf_raise_prehab', name:'Elevación de talones', emoji:'🦶', group:'prevencion', category:'prevencion', bilateral:false,
+    equipment:['bodyweight'], muscles:'Gemelos · sóleo · tendón de Aquiles', view:'Lateral, cuerpo entero', prehabFocus:'Salud de tobillo/Aquiles',
+    rep:{ measure:knee, effort:'high', effortThresh:176, resetThresh:172 },
+    gauges:[{label:'Rodilla', get:knee, min:160, max:185}],
+    cues:['De pie, sube sobre las puntas','Sube lo máximo, pausa arriba','Baja lento controlando','Rodillas extendidas'],
+    checks(){ return [ok('Sube alto y baja lento, controla el tobillo')]; } },
+];
+PREHAB.forEach(e=>{ e.equipment = e.equipment || ['bodyweight']; e.gauges = e.gauges || []; if(!e.rep) e.rep = { measure:()=>null, effort:'low', effortThresh:0, resetThresh:999 }; });
+EXERCISES.push(...PREHAB);
+
 // --- Grupo muscular, categoría, atributos y enlace de vídeo por ejercicio ---
 const GROUP_MAP = {
   squat:'lower', pushup:'upper', lunge:'lower', plank:'core', curl:'upper',
@@ -646,6 +711,11 @@ const A_EXPLOSIVE = new Set(['swing','jump_squat','thruster','push_press','jumpi
 const A_CARDIO    = new Set(['mountain_climber','bicycle','jumping_jacks','marching','jump_squat','thruster']);
 const A_ISOLATION = new Set(['curl','lateral','triceps_ext','facepull','upright_row']);
 const A_COMPOUND  = new Set(['squat','lunge','rdl','bulgarian','glute_bridge','pushup','ohp','row','pullup','dip','bench','thruster','push_press','chair_squat','wall_pushup','jump_squat']);
+// Ejercicios unilaterales: se ejecutan y cuentan por cada lado (izquierdo y derecho).
+const A_BILATERAL = new Set([
+  'lunge','bulgarian','seated_knee','side_plank',
+  'hamstring','quad','hip_flexor','calf','lat_side','glute_fig4','thoracic_rot','neck',
+]);
 EXERCISES.forEach(e=>{
   e.group = e.group || GROUP_MAP[e.id] || 'full';
   e.category = e.category || 'fuerza';
@@ -655,6 +725,8 @@ EXERCISES.forEach(e=>{
   e.cardio    = A_CARDIO.has(e.id);
   e.isolation = A_ISOLATION.has(e.id);
   e.compound  = A_COMPOUND.has(e.id);
+  e.prehab    = e.category==='prevencion';
+  if(e.bilateral===undefined) e.bilateral = A_BILATERAL.has(e.id);   // los prehab ya traen su flag
   e.yt = 'https://www.youtube.com/results?search_query='+encodeURIComponent('técnica '+e.name+' ejercicio en casa');
 });
 
@@ -673,6 +745,7 @@ export const GROUPS = {
   upper:  {label:'Tren superior',  ic:'💪'},
   lower:  {label:'Tren inferior',  ic:'🦵'},
   core:   {label:'Core',           ic:'🎯'},
+  prevencion:{label:'Prevención',  ic:'🛡️'},
   stretch:{label:'Estiramiento',   ic:'🧘'},
 };
 
@@ -690,10 +763,11 @@ export function getGoal(id){ return TRAIN_GOALS[id] || TRAIN_GOALS.general; }
 
 function matchGroup(e, group){
   if(group==='all')    return true;
-  if(group==='full')   return e.group!=='stretch';       // full body = fuerza, la rutina hace el balance
+  if(group==='full')   return e.group!=='stretch' && e.group!=='prevencion';  // full body = fuerza; prevención es su propia sesión
   if(group==='upper')  return e.group==='upper' || e.group==='core';
   if(group==='lower')  return e.group==='lower';
   if(group==='core')   return e.group==='core';
+  if(group==='prevencion')return e.group==='prevencion';
   if(group==='stretch')return e.group==='stretch';
   return true;
 }
@@ -768,10 +842,11 @@ export function buildGuidedPlan(group, equip, minutes, opts={}){
   const g = (group==='all') ? 'full' : group;
   const stretchPool = exercisesForGroup('stretch', equip);
   const byId = id => stretchPool.find(e=>e.id===id);
-  const workOf = (mode,reps,secs)=> mode==='hold' ? secs : Math.round(reps*3.2);
+  const sidesOf = ex => ex.bilateral ? 2 : 1;   // unilaterales = dos lados
+  const workOf = (mode,reps,secs,sides=1)=> (mode==='hold' ? secs : Math.round(reps*3.2))*sides + (sides>1?8:0);
   // tiempo realista: principal = series*(trabajo+descanso)+transición; movilidad = duración + transición corta
-  const estOf = (mode,sets,reps,secs,phase)=> phase==='main' ? sets*(workOf(mode,reps,secs)+restS)+trans : (secs+15);
-  const mk = (ex,mode,sets,reps,secs,phase,repsLabel)=>({ id:ex.id, ex, name:ex.name, emoji:ex.emoji, type:ex.type, mode, sets, reps, secs, phase, repsLabel, est:estOf(mode,sets,reps,secs,phase) });
+  const estOf = (mode,sets,reps,secs,phase,sides=1)=> phase==='main' ? sets*(workOf(mode,reps,secs,sides)+restS)+trans : (workOf(mode,reps,secs,sides)+15);
+  const mk = (ex,mode,sets,reps,secs,phase,repsLabel)=>{ const sides=sidesOf(ex); return { id:ex.id, ex, name:ex.name, emoji:ex.emoji, type:ex.type, mode, sets, reps, secs, phase, repsLabel, bilateral:ex.bilateral, sides, est:estOf(mode,sets,reps,secs,phase,sides) }; };
   const meta = { key: opts.goal||'general', ...goal };
   const steps=[];
 
@@ -782,10 +857,33 @@ export function buildGuidedPlan(group, equip, minutes, opts={}){
     return { steps, estMin:Math.round(steps.reduce((s,x)=>s+x.est,0)/60), minutes, goal:meta };
   }
 
+  // Sesión de prevención de lesiones / prehab (holds + reps controladas, sin objetivo de fuerza)
+  if(g==='prevencion'){
+    const prehabPool = shuffle(exercisesForGroup('prevencion', equip).slice());
+    const target = {30:6,45:9,60:12}[minutes] || 8;
+    const setsP = ({30:1,45:2,60:2}[minutes] || 2) + (level==='avanzado'?1:0);
+    const budgetP = minutes*60; const totP=()=>steps.reduce((s,x)=>s+x.est,0);
+    for(const ex of prehabPool){
+      const mainCount = steps.filter(s=>s.phase==='main').length;
+      if(mainCount>=target) break;
+      const st = ex.type==='hold' ? mk(ex,'hold',setsP,0,ex.holdDefault||30,'main')
+                                  : mk(ex,'reps',setsP,15,0,'main','12-15');
+      if(mainCount<3 || totP()+st.est <= budgetP*1.05) steps.push(st);
+    }
+    return { steps, estMin:Math.round(totP()/60), minutes, goal:{...meta, label:'Prevención de lesiones', load:'Ligero y controlado', tempo:'Lento, sin dolor'} };
+  }
+
   const cfgBase = {30:{warm:0,cool:1}, 45:{warm:1,cool:2}, 60:{warm:2,cool:3}}[minutes] || {warm:1,cool:2};
   const baseSets = {30:3,45:3,60:4}[minutes] || 3;
-  const sets = Math.max(2, baseSets + goal.setsDelta + (level==='avanzado'?1:0) - (level==='principiante'?1:0));
-  const pool = exercisesForGroup(g, equip).filter(e=>e.group!=='stretch');
+  // Personalización por edad (impacto/potencia) — no restrictiva, solo ajusta la selección
+  const age = +opts.age || 0, sex = opts.sex || '';
+  let bias = goal.bias;
+  let adjSets = 0;
+  if(age>=60){ if(bias==='explosive'||bias==='cardio') bias='balanced'; adjSets = -1; }
+  if(age && age<=15){ if(bias==='explosive') bias='balanced'; }
+  const sets = Math.max(2, baseSets + goal.setsDelta + adjSets + (level==='avanzado'?1:0) - (level==='principiante'?1:0));
+  let pool = exercisesForGroup(g, equip).filter(e=>e.group!=='stretch' && e.group!=='prevencion');
+  if(age>=60) pool = pool.filter(e=>!e.explosive) .length ? pool.filter(e=>!e.explosive) : pool;  // mayores: evita explosivos si hay alternativa
   const warmIds=['shoulder_circles','cat_cow','thoracic_rot','hip_flexor'];
   const coolIds=['hamstring','quad','chest_open','forward_fold','child_pose','glute_fig4'];
 
@@ -797,7 +895,15 @@ export function buildGuidedPlan(group, equip, minutes, opts={}){
   for(let k=0;k<cfgBase.warm;k++){ const ex=byId(warmIds[k]); if(ex) steps.push(mk(ex,'hold',1,0,Math.min(ex.holdDefault||30,30),'warmup')); }
 
   // Añade principales ajustándose al TIEMPO disponible (mín 3). Con descansos largos → menos ejercicios.
-  const mainList = selectMain(pool, MAX_MAIN, goal.bias);
+  const mainList = selectMain(pool, MAX_MAIN, bias);
+  // Nudge suave por sexo (no restrictivo): asegura una zona a menudo infra-entrenada.
+  // Solo aplica en full body, donde hay margen para equilibrar.
+  if(g==='full' && sex){
+    const wantIds = sex==='femenino' ? ['glute_bridge','rdl','hip_thrust','bulgarian']
+                  : sex==='masculino' ? ['row','facepull','pullup','rdl'] : [];
+    const has = wantIds.some(id=>mainList.some(e=>e.id===id));
+    if(!has){ const add = pool.find(e=>wantIds.includes(e.id) && !mainList.some(m=>m.id===e.id)); if(add && mainList.length) mainList[mainList.length-1]=add; }
+  }
   for(const ex of mainList){
     let st;
     if(ex.type==='hold'){
