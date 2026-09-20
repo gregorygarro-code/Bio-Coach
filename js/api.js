@@ -81,9 +81,14 @@ export async function saveProgress(history, plans, settings){
 // navegador. Si no hay clave, se usa un parser local por palabras clave (sin
 // llamadas externas), para mantener el modo 100% local/offline.
 // ============================================================
-const GEMINI_KEY = 'fitcoach.geminiKey';
-export function getGeminiKey(){ try{ return localStorage.getItem(GEMINI_KEY) || (window.APP_CONFIG&&window.APP_CONFIG.geminiKey) || ''; }catch{ return ''; } }
-export function setGeminiKey(k){ try{ k ? localStorage.setItem(GEMINI_KEY, k.trim()) : localStorage.removeItem(GEMINI_KEY); }catch{} }
+// ⚠️ SEGURIDAD: una clave escrita aquí queda EXPUESTA. Este archivo se sirve tal
+// cual al navegador y está en el repositorio público, así que cualquiera puede
+// leerla y gastar tu cuota/facturación de Gemini. Úsala solo si es una clave
+// restringida (por dominio HTTP referrer y a la API de Gemini) o para pruebas.
+// Déjala vacía ("") para usar el intérprete local (por defecto, sin configuración).
+const GEMINI_API_KEY = "";   // ← pega aquí tu clave para activar la IA "nativa"
+
+export function getGeminiKey(){ return GEMINI_API_KEY || (window.APP_CONFIG && window.APP_CONFIG.geminiKey) || ''; }
 export function hasGeminiKey(){ return !!getGeminiKey(); }
 
 const AI_SCHEMA_HINT = `Devuelve SOLO un objeto JSON válido, sin texto extra, con EXACTAMENTE estas claves:

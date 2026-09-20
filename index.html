@@ -65,7 +65,7 @@
   }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=22" />
+  <link rel="stylesheet" href="css/styles.css?v=23" />
 </head>
 <body>
   <header class="topbar">
@@ -96,7 +96,7 @@
           <p class="hero-sub">Enciende la webcam y recibe <b>corrección de técnica en tiempo real</b>. La app diseña tu rutina según tu objetivo, tu equipo y tu tiempo, cuenta tus repeticiones y sigue tu progreso. Sin sensores, sin cuotas.</p>
           <div class="hero-cta">
             <button class="btn accent lg" data-goto="entrenar">▶ Empezar a entrenar</button>
-            <button class="btn ghost lg" data-goto="perfil">Crear cuenta gratis</button>
+            <button id="cta-create-account" class="btn ghost lg" data-goto="perfil">Crear cuenta gratis</button>
           </div>
           <div class="hero-trust">
             <span>✅ Gratis</span><span>🔒 Privado (el vídeo no sale de tu equipo)</span><span>⚡ Sin instalar nada</span>
@@ -436,6 +436,17 @@
           <span id="profile-who" class="muted small"></span>
         </div>
         <div id="profile-mode" class="muted small"></div>
+
+        <!-- Estado vacío (invitado sin perfil): solo un botón para empezar -->
+        <div id="profile-empty" class="profile-empty" hidden>
+          <div class="pe-emoji">👤</div>
+          <h3>Aún no tienes un perfil</h3>
+          <p class="muted">Crea tu perfil para que la app arme tu plan de entrenamiento a tu medida.</p>
+          <button id="btn-open-profile-form" class="btn accent">Crear Perfil</button>
+        </div>
+
+        <!-- Formulario detallado (se revela al crear/editar el perfil) -->
+        <div id="profile-form">
         <div class="pf-grid">
           <div class="setting"><label for="pf-age">Edad</label><input id="pf-age" type="number" min="12" max="100" /></div>
           <div class="setting"><label for="pf-sex">Sexo</label>
@@ -480,6 +491,7 @@
           </div>
         </div>
         <p class="muted small">Tu perfil ajusta automáticamente el equipamiento, el objetivo, el tiempo y el nivel de la rutina guiada.</p>
+        </div><!-- /#profile-form -->
       </div>
     </section>
 
@@ -575,17 +587,6 @@
           <input id="import-file" type="file" accept="application/json,.json" hidden />
         </div>
         <p id="backup-msg" class="muted small"></p>
-      </div>
-
-      <div class="card">
-        <h2>Asistente IA (opcional)</h2>
-        <p class="muted small">Para interpretar tu petición en lenguaje natural con Gemini (<code>gemini-1.5-flash</code>). Es <b>opcional</b>: sin clave, la app usa un intérprete local. Tu clave se guarda solo en este navegador y las llamadas van directas a Google.</p>
-        <div class="setting">
-          <label for="in-gemini">Clave API de Gemini</label>
-          <input id="in-gemini" type="password" placeholder="AIza… (opcional)" autocomplete="off" />
-        </div>
-        <button id="btn-gemini-save" class="btn ghost" style="max-width:200px">Guardar clave</button>
-        <p id="gemini-msg" class="muted small"></p>
       </div>
     </section>
   </main>
@@ -704,8 +705,8 @@
   <div id="loader" class="loader hidden"><div class="spinner"></div><p id="loader-msg">Cargando modelo de pose…</p></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-  <script src="js/config.js?v=22"></script>
-  <script type="module" src="js/app.js?v=22"></script>
+  <script src="js/config.js?v=23"></script>
+  <script type="module" src="js/app.js?v=23"></script>
 
   <!-- Registro del Service Worker (PWA / offline) -->
   <script>

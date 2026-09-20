@@ -1,13 +1,13 @@
 // ===== FitCoach Casa · app principal =====
-import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS } from './exercises.js?v=22';
-import { createPoseLandmarker } from './pose.js?v=22';
-import { createDemoPlayer } from './demos.js?v=22';
-import * as generator from './generator.js?v=22';
-import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=22';
-import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=22';
-import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=22';
-import * as api from './api.js?v=22';
-import * as store from './storage.js?v=22';
+import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS } from './exercises.js?v=23';
+import { createPoseLandmarker } from './pose.js?v=23';
+import { createDemoPlayer } from './demos.js?v=23';
+import * as generator from './generator.js?v=23';
+import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=23';
+import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=23';
+import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=23';
+import * as api from './api.js?v=23';
+import * as store from './storage.js?v=23';
 
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -84,6 +84,7 @@ $$('.tab').forEach(t => t.addEventListener('click', () => {
   t.classList.add('active');
   $$('.view').forEach(v=>v.classList.remove('active'));
   $(`#view-${t.dataset.view}`).classList.add('active');
+  updateAuthCTAs();   // FIX 4: mantiene ocultos los CTA de crear perfil en Modo Usuario
   if(t.dataset.view==='entrenar') renderToday();
   if(t.dataset.view==='historial') renderHistory();
   if(t.dataset.view==='calendario') renderCalendar();
@@ -1225,9 +1226,11 @@ function syncProgress(now=false){
 // Muestra/oculta las pestañas personales según la sesión
 function updateTabsAccess(){
   updateQuickPersonal();
+  // Con perfil (local o en la nube) se desbloquean Calendario/Historial/Ajustes.
+  const unlocked = hasProfile();
   const gated=['calendario','historial','ajustes'];
-  gated.forEach(v=>{ const b=document.querySelector(`.tab[data-view="${v}"]`); if(b) b.hidden = !auth.loggedIn; });
-  if(!auth.loggedIn){
+  gated.forEach(v=>{ const b=document.querySelector(`.tab[data-view="${v}"]`); if(b) b.hidden = !unlocked; });
+  if(!unlocked){
     const active=document.querySelector('.tab.active')?.dataset.view;
     if(gated.includes(active)) document.querySelector('.tab[data-view="entrenar"]').click();
   }
@@ -1331,9 +1334,21 @@ function renderPerfil(){
     $('#profile-mode').textContent = 'Tu perfil y tu progreso se guardan en este navegador (localStorage).';
     $('#pf-logout').hidden = true;
   }
+  // FIX 1 · Sin perfil guardado → estado vacío con un único botón "Crear Perfil".
+  //         El formulario detallado solo se revela tras pulsarlo (o si ya hay perfil).
+  const showForm = hasProfile() || profileFormRevealed;
+  $('#profile-empty').hidden = showForm;
+  $('#profile-form').hidden = !showForm;
+
   fillProfileForm(currentProfile());
-  renderPlanStatus();   // FIX 2: refleja si ya hay plan mensual activo
+  renderPlanStatus();   // FIX 5: botón inteligente Generar/Revisar
 }
+// Revela el formulario de perfil desde el estado vacío
+$('#btn-open-profile-form')?.addEventListener('click', ()=>{
+  profileFormRevealed = true;
+  renderPerfil();
+  $('#profile-form')?.scrollIntoView({behavior:'smooth', block:'start'});
+});
 
 function updateAuthMode(){
   $('#auth-title').textContent = authMode==='login' ? 'Iniciar sesión' : 'Crear cuenta';
@@ -1365,7 +1380,8 @@ $('#pf-save').addEventListener('click', async ()=>{
   const p = gatherProfile(); profileData = p;
   if(auth.loggedIn) await api.saveProfile(p); else store.saveProfileLocal(p);
   applyProfileDefaults(p);
-  renderToday();
+  updateTabsAccess();        // FIX: al crear perfil se desbloquean Calendario/Historial/Ajustes
+  renderToday();             // refresca dashboard + oculta CTAs (FIX 2 y 4)
   $('#pf-msg').textContent = '✓ Perfil guardado. La rutina guiada se ha ajustado a tu perfil.';
   setTimeout(()=>{ $('#pf-msg').textContent=''; }, 3000);
 });
@@ -1403,22 +1419,38 @@ async function initAccount(){
 // ======================================================
 let todayFocus = null;
 let todaySession = null;   // {focus, goal, minutes} de la sesión de hoy (calendario, incl. ajuste IA)
+let profileFormRevealed = false;   // FIX 1: el invitado abrió el formulario de perfil
 
 // ¿El usuario tiene un perfil creado? (cloud o guardado en localStorage)
 function hasProfile(){ return !!profileData || store.hasSavedProfile(); }
+
+// FIX 4 · Oculta CTAs de "crear cuenta/perfil" cuando ya existe usuario
+function updateAuthCTAs(){
+  const ready = hasProfile();
+  document.querySelectorAll('#cta-create-account, #btn-create-profile')
+    .forEach(el=>{ el.hidden = ready; });   // en Modo Usuario no se muestran
+}
 
 // Renderiza el dashboard "Hoy". Es también renderTodayDashboard() (alias abajo).
 function renderToday(){
   const card=$('#today-card'); if(!card) return;
   const prof = profileData || {};
   const days = prof.days || 3;
-  // --- DOM: racha y fecha ---
-  $('#streak-n').textContent = store.sessionStreak(days);
+  const profileReady = hasProfile();
+
+  // FIX 2 · La racha (🔥) solo tiene sentido con perfil → se oculta a invitados.
+  const streakEl = card.querySelector('.streak');
+  if(streakEl){
+    streakEl.hidden = !profileReady;
+    if(profileReady) $('#streak-n').textContent = store.sessionStreak(days);
+  }
   const today=new Date();
   $('#today-date').textContent = today.toLocaleDateString('es-ES',{weekday:'long', day:'numeric', month:'long'});
 
+  // FIX 4 · Oculta los CTA de crear cuenta/perfil cuando ya hay usuario.
+  updateAuthCTAs();
+
   // FIX 1 · Sin perfil → solo el CTA "Crea tu perfil"; oculta el plan de hoy.
-  const profileReady = hasProfile();
   $('#today-noprofile').hidden = profileReady;
   if(!profileReady){
     $('#today-has').hidden = true;
@@ -1466,15 +1498,21 @@ $('#btn-create-profile')?.addEventListener('click', ()=>goTo('perfil'));
 
 // FIX 2 · Estado del botón "Generar Plan Mensual" en el Perfil
 function renderPlanStatus(){
-  const status=$('#plan-status'), btnGen=$('#pf-plan-month'), btnRegen=$('#pf-plan-regen');
-  if(!status || !btnGen || !btnRegen) return;
+  const status=$('#plan-status'), btnMain=$('#pf-plan-month'), btnRegen=$('#pf-plan-regen');
+  if(!status || !btnMain || !btnRegen) return;
   const active = hasUpcomingPlan(14);   // ¿hay sesiones programadas a futuro? (localStorage)
+  btnMain.hidden = false;
   if(active){
+    // FIX 5 · Ya hay plan → el botón principal REVISA (va al Calendario), no regenera.
     status.textContent = '✅ Plan activo: tienes sesiones programadas para las próximas semanas.';
-    btnGen.hidden = true; btnRegen.hidden = false;      // ya hay plan → ofrecer regenerar
+    btnMain.textContent = '📅 Revisar mi plan de entrenamiento';
+    btnMain.dataset.mode = 'review';
+    btnRegen.hidden = false;             // regenerar queda como opción secundaria
   }else{
     status.textContent = 'Aún no tienes un plan mensual. Genera tu mesociclo para ver tu sesión cada día.';
-    btnGen.hidden = false; btnRegen.hidden = true;
+    btnMain.textContent = '🗓️ Generar Plan Mensual';
+    btnMain.dataset.mode = 'generate';
+    btnRegen.hidden = true;
   }
 }
 function doGenerateMonthly(){
@@ -1486,6 +1524,8 @@ function doGenerateMonthly(){
   return r;
 }
 $('#pf-plan-month')?.addEventListener('click', ()=>{
+  // FIX 5 · Si ya hay plan, este botón lleva al Calendario en vez de regenerar.
+  if($('#pf-plan-month').dataset.mode === 'review'){ goTo('calendario'); return; }
   const r=doGenerateMonthly();
   $('#pf-msg').textContent = `🗓️ Plan mensual creado: ${r.count} sesiones en 4 semanas (${r.days} días/sem).`;
 });
@@ -1602,22 +1642,11 @@ $('#import-file')?.addEventListener('change', e=>{
     if(res.ok){
       settings=store.loadSettings(); applySettingsToUI();
       profileData=store.loadProfile()||profileData; if(profileData) applyProfileDefaults(profileData);
-      renderHistory(); renderToday();
+      updateTabsAccess(); renderHistory(); renderToday();
       $('#backup-msg').textContent='✓ Datos restaurados en este navegador.';
     }else{ $('#backup-msg').textContent='✗ '+res.error; }
   };
   r.readAsText(f); e.target.value='';
-});
-
-// ======================================================
-// Clave de Gemini (opcional)
-// ======================================================
-if($('#in-gemini')) $('#in-gemini').value = api.getGeminiKey();
-$('#btn-gemini-save')?.addEventListener('click', ()=>{
-  api.setGeminiKey($('#in-gemini').value);
-  $('#gemini-msg').textContent = api.hasGeminiKey()
-    ? '✓ Clave guardada (solo en este navegador).'
-    : 'Sin clave: se usará el intérprete local.';
 });
 
 // ======================================================
