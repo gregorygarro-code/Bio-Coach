@@ -1,0 +1,2347 @@
+{
+  "version": 1,
+  "generated": "2026-09-20",
+  "count": 57,
+  "exercises": [
+    {
+      "id": "squat",
+      "name": "Sentadilla",
+      "emoji": "🦵",
+      "type": "reps",
+      "equipment": [
+        "bodyweight",
+        "dumbbell",
+        "band"
+      ],
+      "muscles": "Cuádriceps · glúteo · core",
+      "view": "De frente o 45°, cuerpo entero",
+      "group": "lower",
+      "category": "fuerza",
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 110,
+        "resetThresh": 155
+      },
+      "gauges": [
+        {
+          "label": "Rodilla",
+          "min": 70,
+          "max": 175
+        },
+        {
+          "label": "Cadera",
+          "min": 60,
+          "max": 180
+        }
+      ],
+      "cues": [
+        "Pecho arriba y espalda neutra",
+        "Rodillas hacia fuera, en línea con los pies",
+        "Baja hasta muslos paralelos",
+        "Empuja desde el talón"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Sentadilla%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "pushup",
+      "name": "Flexiones",
+      "emoji": "💪",
+      "type": "reps",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Pecho · tríceps · hombro",
+      "view": "De lado o 45°, cuerpo entero",
+      "group": "upper",
+      "category": "fuerza",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 100,
+        "resetThresh": 150
+      },
+      "gauges": [
+        {
+          "label": "Codo",
+          "min": 60,
+          "max": 175
+        },
+        {
+          "label": "Cuerpo",
+          "min": 130,
+          "max": 185
+        }
+      ],
+      "cues": [
+        "Cuerpo en línea recta (no subas la cadera)",
+        "Codos ~45° del cuerpo",
+        "Baja el pecho cerca del suelo",
+        "Aprieta el abdomen"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Flexiones%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "lunge",
+      "name": "Zancadas",
+      "emoji": "🚶",
+      "type": "reps",
+      "equipment": [
+        "bodyweight",
+        "dumbbell"
+      ],
+      "muscles": "Cuádriceps · glúteo",
+      "view": "De lado, cuerpo entero",
+      "group": "lower",
+      "category": "fuerza",
+      "bilateral": true,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 105,
+        "resetThresh": 155
+      },
+      "gauges": [
+        {
+          "label": "Rodilla",
+          "min": 70,
+          "max": 175
+        },
+        {
+          "label": "Cadera",
+          "min": 80,
+          "max": 180
+        }
+      ],
+      "cues": [
+        "Tronco erguido",
+        "Rodilla delantera a 90°",
+        "La rodilla no pasa la punta del pie",
+        "Peso repartido"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Zancadas%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "plank",
+      "name": "Plancha",
+      "emoji": "🧘",
+      "type": "hold",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Core · hombro",
+      "view": "De lado, cuerpo entero",
+      "group": "core",
+      "category": "fuerza",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [
+        {
+          "label": "Cuerpo",
+          "min": 130,
+          "max": 185
+        }
+      ],
+      "cues": [
+        "Cuerpo en línea recta",
+        "No hundas ni subas la cadera",
+        "Aprieta abdomen y glúteo",
+        "Respira"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Plancha%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "curl",
+      "name": "Curl de bíceps",
+      "emoji": "💪",
+      "type": "reps",
+      "equipment": [
+        "dumbbell",
+        "band"
+      ],
+      "muscles": "Bíceps",
+      "view": "De frente o de lado",
+      "group": "upper",
+      "category": "fuerza",
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": true,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 60,
+        "resetThresh": 150
+      },
+      "gauges": [
+        {
+          "label": "Codo",
+          "min": 30,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "Codos pegados al cuerpo",
+        "Sube controlando, no balancees",
+        "Extiende del todo abajo",
+        "Sin impulso de la espalda"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Curl%20de%20b%C3%ADceps%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "ohp",
+      "name": "Press de hombro",
+      "emoji": "🙆",
+      "type": "reps",
+      "equipment": [
+        "dumbbell",
+        "band"
+      ],
+      "muscles": "Hombro · tríceps",
+      "view": "De frente, medio cuerpo",
+      "group": "upper",
+      "category": "fuerza",
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "high",
+        "effortThresh": 155,
+        "resetThresh": 100
+      },
+      "gauges": [
+        {
+          "label": "Codo",
+          "min": 70,
+          "max": 180
+        }
+      ],
+      "cues": [
+        "Aprieta el core, no arquees la espalda",
+        "Sube hasta extender los codos",
+        "Muñecas sobre los hombros",
+        "Baja controlado a la altura del mentón"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Press%20de%20hombro%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "row",
+      "name": "Remo inclinado",
+      "emoji": "🚣",
+      "type": "reps",
+      "equipment": [
+        "dumbbell",
+        "band"
+      ],
+      "muscles": "Espalda · bíceps",
+      "view": "De lado, medio cuerpo",
+      "group": "upper",
+      "category": "fuerza",
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 75,
+        "resetThresh": 150
+      },
+      "gauges": [
+        {
+          "label": "Codo",
+          "min": 40,
+          "max": 175
+        },
+        {
+          "label": "Cadera",
+          "min": 60,
+          "max": 180
+        }
+      ],
+      "cues": [
+        "Cadera en bisagra, espalda neutra",
+        "Lleva el codo hacia atrás y arriba",
+        "Aprieta la escápula",
+        "No tires con impulso"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Remo%20inclinado%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "rdl",
+      "name": "Peso muerto rumano",
+      "emoji": "🏋️",
+      "type": "reps",
+      "equipment": [
+        "dumbbell",
+        "band"
+      ],
+      "muscles": "Isquios · glúteo · espalda",
+      "view": "De lado, cuerpo entero",
+      "group": "lower",
+      "category": "fuerza",
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "high",
+        "effortThresh": 165,
+        "resetThresh": 120
+      },
+      "gauges": [
+        {
+          "label": "Cadera",
+          "min": 60,
+          "max": 180
+        },
+        {
+          "label": "Rodilla",
+          "min": 120,
+          "max": 180
+        }
+      ],
+      "cues": [
+        "Bisagra de cadera, no sentadilla",
+        "Espalda recta todo el recorrido",
+        "Rodillas ligeramente flexionadas",
+        "Termina de pie apretando glúteo"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Peso%20muerto%20rumano%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "swing",
+      "name": "Swing (kettlebell)",
+      "emoji": "🔔",
+      "type": "reps",
+      "equipment": [
+        "dumbbell"
+      ],
+      "muscles": "Glúteo · isquios · core",
+      "view": "De lado, cuerpo entero",
+      "group": "full",
+      "category": "fuerza",
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": true,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "high",
+        "effortThresh": 165,
+        "resetThresh": 120
+      },
+      "gauges": [
+        {
+          "label": "Cadera",
+          "min": 60,
+          "max": 180
+        }
+      ],
+      "cues": [
+        "Potencia desde la cadera, no los brazos",
+        "Espalda neutra en la bisagra",
+        "Aprieta glúteo arriba",
+        "Ritmo explosivo y controlado"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Swing%20(kettlebell)%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "facepull",
+      "name": "Face pull (banda)",
+      "emoji": "🎗️",
+      "type": "reps",
+      "equipment": [
+        "band"
+      ],
+      "muscles": "Deltoides posterior · espalda alta",
+      "view": "De frente, medio cuerpo",
+      "group": "upper",
+      "category": "fuerza",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": true,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 85,
+        "resetThresh": 150
+      },
+      "gauges": [
+        {
+          "label": "Codo",
+          "min": 50,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "Codos altos, a la altura de los hombros",
+        "Lleva la banda hacia la cara",
+        "Aprieta la escápula",
+        "Controla la vuelta"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Face%20pull%20(banda)%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "lateral",
+      "name": "Elevaciones laterales",
+      "emoji": "🕊️",
+      "type": "reps",
+      "equipment": [
+        "dumbbell",
+        "band"
+      ],
+      "muscles": "Deltoides lateral",
+      "view": "De frente, medio cuerpo",
+      "group": "upper",
+      "category": "fuerza",
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": true,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "high",
+        "effortThresh": 78,
+        "resetThresh": 40
+      },
+      "gauges": [
+        {
+          "label": "Hombro",
+          "min": 10,
+          "max": 110
+        }
+      ],
+      "cues": [
+        "Sube los brazos a los lados hasta la altura del hombro",
+        "No pases de la horizontal",
+        "Codos ligeramente flexionados",
+        "Baja controlando"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Elevaciones%20laterales%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "pullup",
+      "name": "Dominadas",
+      "emoji": "🧗",
+      "type": "reps",
+      "equipment": [
+        "bar"
+      ],
+      "muscles": "Dorsal · bíceps · espalda",
+      "view": "De frente, cuerpo entero",
+      "group": "upper",
+      "category": "fuerza",
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 80,
+        "resetThresh": 160
+      },
+      "gauges": [
+        {
+          "label": "Codo",
+          "min": 40,
+          "max": 180
+        }
+      ],
+      "cues": [
+        "Cuelga con brazos extendidos",
+        "Lleva el pecho a la barra",
+        "Aprieta la escápula abajo",
+        "Controla la bajada"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Dominadas%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "dip",
+      "name": "Fondos en banco",
+      "emoji": "🪑",
+      "type": "reps",
+      "equipment": [
+        "bar",
+        "bodyweight"
+      ],
+      "muscles": "Tríceps · pecho · hombro",
+      "view": "De lado, medio cuerpo",
+      "group": "upper",
+      "category": "fuerza",
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 100,
+        "resetThresh": 155
+      },
+      "gauges": [
+        {
+          "label": "Codo",
+          "min": 60,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "Codos hacia atrás, no hacia fuera",
+        "Baja hasta ~90° de codo",
+        "Hombros abajo, lejos de las orejas",
+        "Empuja hasta extender"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Fondos%20en%20banco%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "bench",
+      "name": "Press de banca",
+      "emoji": "🛏️",
+      "type": "reps",
+      "equipment": [
+        "bar",
+        "dumbbell"
+      ],
+      "muscles": "Pecho · tríceps · hombro",
+      "view": "De lado, medio cuerpo",
+      "group": "upper",
+      "category": "fuerza",
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 95,
+        "resetThresh": 155
+      },
+      "gauges": [
+        {
+          "label": "Codo",
+          "min": 60,
+          "max": 180
+        }
+      ],
+      "cues": [
+        "Escápulas retraídas y apoyadas",
+        "Baja la barra al pecho controlando",
+        "Codos ~45-75° del torso",
+        "Empuja hasta extender"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Press%20de%20banca%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "crunch",
+      "name": "Crunch abdominal",
+      "emoji": "🔻",
+      "type": "reps",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Abdominales (recto)",
+      "view": "De lado, tumbado",
+      "group": "core",
+      "category": "fuerza",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 112,
+        "resetThresh": 132
+      },
+      "gauges": [
+        {
+          "label": "Tronco",
+          "min": 95,
+          "max": 150
+        }
+      ],
+      "cues": [
+        "Tumbado, rodillas flexionadas",
+        "Sube los hombros con el abdomen, no con el cuello",
+        "Mentón separado del pecho",
+        "Baja controlando"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Crunch%20abdominal%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "leg_raise",
+      "name": "Elevación de piernas",
+      "emoji": "🦵",
+      "type": "reps",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Abdomen inferior · flexores de cadera",
+      "view": "De lado, tumbado",
+      "group": "core",
+      "category": "fuerza",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 115,
+        "resetThresh": 150
+      },
+      "gauges": [
+        {
+          "label": "Cadera",
+          "min": 80,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "Tumbado boca arriba, piernas rectas",
+        "Sube las piernas hacia la vertical",
+        "Baja sin tocar el suelo",
+        "Zona lumbar pegada al suelo"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Elevaci%C3%B3n%20de%20piernas%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "mountain_climber",
+      "name": "Escaladores",
+      "emoji": "⛰️",
+      "type": "reps",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Core · cardio · hombro",
+      "view": "De lado, cuerpo entero",
+      "group": "core",
+      "category": "fuerza",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": true,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 95,
+        "resetThresh": 150
+      },
+      "gauges": [
+        {
+          "label": "Rodilla",
+          "min": 60,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "Posición de plancha alta",
+        "Lleva las rodillas al pecho alternando",
+        "Cadera baja y estable",
+        "Ritmo constante"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Escaladores%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "bicycle",
+      "name": "Bicicleta abdominal",
+      "emoji": "🚴",
+      "type": "reps",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Abdomen · oblicuos",
+      "view": "De lado, tumbado",
+      "group": "core",
+      "category": "fuerza",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": true,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 95,
+        "resetThresh": 150
+      },
+      "gauges": [
+        {
+          "label": "Rodilla",
+          "min": 60,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "Codo hacia la rodilla contraria",
+        "Alterna con control",
+        "No tires del cuello",
+        "Lumbar apoyada"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Bicicleta%20abdominal%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "side_plank",
+      "name": "Plancha lateral",
+      "emoji": "🧍",
+      "type": "hold",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Oblicuos · core",
+      "view": "Lateral, cuerpo entero",
+      "group": "core",
+      "category": "fuerza",
+      "bilateral": true,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [
+        {
+          "label": "Cuerpo",
+          "min": 130,
+          "max": 185
+        }
+      ],
+      "cues": [
+        "Antebrazo bajo el hombro",
+        "Cuerpo en línea recta",
+        "Cadera arriba",
+        "Aprieta el core"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Plancha%20lateral%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "bird_dog",
+      "name": "Bird dog",
+      "emoji": "🐦",
+      "type": "hold",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Core · lumbar · glúteo",
+      "view": "De lado, cuerpo entero",
+      "group": "core",
+      "category": "fuerza",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [
+        {
+          "label": "Cadera",
+          "min": 120,
+          "max": 185
+        }
+      ],
+      "cues": [
+        "Cuadrupedia, espalda neutra",
+        "Extiende brazo y pierna opuestos",
+        "Cadera nivelada",
+        "No arquees la lumbar"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Bird%20dog%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "superman",
+      "name": "Superman",
+      "emoji": "🦸",
+      "type": "hold",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Lumbar · glúteo · espalda",
+      "view": "De lado, boca abajo",
+      "group": "core",
+      "category": "fuerza",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [],
+      "cues": [
+        "Boca abajo, brazos al frente",
+        "Eleva brazos y piernas a la vez",
+        "Aprieta glúteo y espalda",
+        "Cuello neutro"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Superman%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "glute_bridge",
+      "name": "Puente de glúteo",
+      "emoji": "🌉",
+      "type": "reps",
+      "equipment": [
+        "bodyweight",
+        "dumbbell"
+      ],
+      "muscles": "Glúteo · isquios",
+      "view": "De lado, tumbado",
+      "group": "lower",
+      "category": "fuerza",
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "high",
+        "effortThresh": 160,
+        "resetThresh": 120
+      },
+      "gauges": [
+        {
+          "label": "Cadera",
+          "min": 90,
+          "max": 185
+        }
+      ],
+      "cues": [
+        "Tumbado, pies apoyados",
+        "Empuja la cadera arriba",
+        "Aprieta el glúteo en el tope",
+        "No arquees la lumbar"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Puente%20de%20gl%C3%BAteo%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "bulgarian",
+      "name": "Sentadilla búlgara",
+      "emoji": "🦿",
+      "type": "reps",
+      "equipment": [
+        "bodyweight",
+        "dumbbell"
+      ],
+      "muscles": "Cuádriceps · glúteo",
+      "view": "De lado, cuerpo entero",
+      "group": "lower",
+      "category": "fuerza",
+      "bilateral": true,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 105,
+        "resetThresh": 155
+      },
+      "gauges": [
+        {
+          "label": "Rodilla",
+          "min": 70,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "Pie trasero elevado en un banco",
+        "Baja recto, rodilla delantera a 90°",
+        "Tronco erguido",
+        "Empuja con el talón delantero"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Sentadilla%20b%C3%BAlgara%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "triceps_ext",
+      "name": "Extensión de tríceps",
+      "emoji": "🔨",
+      "type": "reps",
+      "equipment": [
+        "dumbbell",
+        "band"
+      ],
+      "muscles": "Tríceps",
+      "view": "De lado, medio cuerpo",
+      "group": "upper",
+      "category": "fuerza",
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": true,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "high",
+        "effortThresh": 155,
+        "resetThresh": 95
+      },
+      "gauges": [
+        {
+          "label": "Codo",
+          "min": 50,
+          "max": 180
+        }
+      ],
+      "cues": [
+        "Codos arriba y pegados",
+        "Extiende del todo arriba",
+        "Baja detrás de la cabeza controlando",
+        "No muevas los hombros"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Extensi%C3%B3n%20de%20tr%C3%ADceps%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "upright_row",
+      "name": "Remo al mentón",
+      "emoji": "🏋️",
+      "type": "reps",
+      "equipment": [
+        "dumbbell",
+        "band"
+      ],
+      "muscles": "Hombro · trapecio",
+      "view": "De frente, medio cuerpo",
+      "group": "upper",
+      "category": "fuerza",
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": true,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 95,
+        "resetThresh": 150
+      },
+      "gauges": [
+        {
+          "label": "Codo",
+          "min": 50,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "Guía el movimiento con los codos altos",
+        "Peso cerca del cuerpo",
+        "Sube hasta el pecho",
+        "Baja controlando"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Remo%20al%20ment%C3%B3n%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "hamstring",
+      "name": "Estiramiento de isquios",
+      "emoji": "🦵",
+      "type": "hold",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Isquiosurales",
+      "view": "Cámara opcional",
+      "group": "stretch",
+      "category": "estiramiento",
+      "bilateral": true,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": 30,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [],
+      "cues": [
+        "Sentado o de pie, pierna estirada",
+        "Lleva el pecho hacia el muslo",
+        "Espalda recta, no encorves",
+        "Respira, sin rebotes"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Estiramiento%20de%20isquios%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "quad",
+      "name": "Estiramiento de cuádriceps",
+      "emoji": "🦵",
+      "type": "hold",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Cuádriceps",
+      "view": "Cámara opcional",
+      "group": "stretch",
+      "category": "estiramiento",
+      "bilateral": true,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": 30,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [],
+      "cues": [
+        "De pie, sujeta el tobillo por detrás",
+        "Rodillas juntas",
+        "Empuja la cadera al frente",
+        "Mantén el equilibrio"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Estiramiento%20de%20cu%C3%A1driceps%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "hip_flexor",
+      "name": "Estiramiento de flexor de cadera",
+      "emoji": "🚶",
+      "type": "hold",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Psoas · flexor de cadera",
+      "view": "Cámara opcional",
+      "group": "stretch",
+      "category": "estiramiento",
+      "bilateral": true,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": 30,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [],
+      "cues": [
+        "Zancada, rodilla trasera en el suelo",
+        "Empuja la cadera hacia delante",
+        "Tronco erguido",
+        "Aprieta el glúteo trasero"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Estiramiento%20de%20flexor%20de%20cadera%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "calf",
+      "name": "Estiramiento de gemelos",
+      "emoji": "🦶",
+      "type": "hold",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Gemelos · sóleo",
+      "view": "Cámara opcional",
+      "group": "stretch",
+      "category": "estiramiento",
+      "bilateral": true,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": 30,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [],
+      "cues": [
+        "Manos en la pared, una pierna atrás",
+        "Talón en el suelo",
+        "Empuja el talón hacia abajo",
+        "Cambia de pierna"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Estiramiento%20de%20gemelos%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "chest_open",
+      "name": "Estiramiento de pecho",
+      "emoji": "🫁",
+      "type": "hold",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Pectoral · hombro",
+      "view": "Cámara opcional",
+      "group": "stretch",
+      "category": "estiramiento",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": 30,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [],
+      "cues": [
+        "Antebrazo apoyado en el marco de una puerta",
+        "Gira el tronco hacia fuera",
+        "Pecho abierto",
+        "Hombros abajo"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Estiramiento%20de%20pecho%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "lat_side",
+      "name": "Estiramiento lateral (dorsal)",
+      "emoji": "🙆",
+      "type": "hold",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Dorsal · costado",
+      "view": "Cámara opcional",
+      "group": "stretch",
+      "category": "estiramiento",
+      "bilateral": true,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": 30,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [],
+      "cues": [
+        "De pie, brazo por encima de la cabeza",
+        "Inclina el tronco al lado contrario",
+        "Estira el costado",
+        "Alterna lados"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Estiramiento%20lateral%20(dorsal)%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "glute_fig4",
+      "name": "Estiramiento de glúteo (figura 4)",
+      "emoji": "🍑",
+      "type": "hold",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Glúteo · piramidal",
+      "view": "Cámara opcional",
+      "group": "stretch",
+      "category": "estiramiento",
+      "bilateral": true,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": 30,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [],
+      "cues": [
+        "Tumbado, cruza el tobillo sobre la rodilla",
+        "Lleva la rodilla al pecho",
+        "Nota el estiramiento en el glúteo",
+        "Relaja"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Estiramiento%20de%20gl%C3%BAteo%20(figura%204)%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "cat_cow",
+      "name": "Gato-camello",
+      "emoji": "🐱",
+      "type": "hold",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Columna · movilidad",
+      "view": "Cámara opcional",
+      "group": "stretch",
+      "category": "estiramiento",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": 40,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [],
+      "cues": [
+        "Cuadrupedia",
+        "Alterna arquear y redondear la espalda",
+        "Mueve con la respiración",
+        "Lento y controlado"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Gato-camello%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "child_pose",
+      "name": "Postura del niño",
+      "emoji": "🧎",
+      "type": "hold",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Espalda · cadera",
+      "view": "Cámara opcional",
+      "group": "stretch",
+      "category": "estiramiento",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": 40,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [],
+      "cues": [
+        "De rodillas, siéntate sobre los talones",
+        "Estira los brazos al frente",
+        "Relaja la espalda",
+        "Respira profundo"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Postura%20del%20ni%C3%B1o%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "cobra",
+      "name": "Cobra (extensión lumbar)",
+      "emoji": "🐍",
+      "type": "hold",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Abdomen · lumbar",
+      "view": "Cámara opcional",
+      "group": "stretch",
+      "category": "estiramiento",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": 30,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [],
+      "cues": [
+        "Boca abajo, manos bajo los hombros",
+        "Eleva el pecho estirando los brazos",
+        "Hombros abajo",
+        "Sin forzar la lumbar"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Cobra%20(extensi%C3%B3n%20lumbar)%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "neck",
+      "name": "Estiramiento de cuello",
+      "emoji": "🙂",
+      "type": "hold",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Cuello · trapecio",
+      "view": "Cámara opcional",
+      "group": "stretch",
+      "category": "estiramiento",
+      "bilateral": true,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": 25,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [],
+      "cues": [
+        "Sentado o de pie",
+        "Inclina la cabeza a un lado",
+        "Baja el hombro contrario",
+        "Alterna con suavidad"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Estiramiento%20de%20cuello%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "thoracic_rot",
+      "name": "Rotación torácica",
+      "emoji": "🔄",
+      "type": "hold",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Columna dorsal · movilidad",
+      "view": "Cámara opcional",
+      "group": "stretch",
+      "category": "estiramiento",
+      "bilateral": true,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": 30,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [],
+      "cues": [
+        "Cuadrupedia, una mano en la nuca",
+        "Abre el codo hacia el techo rotando",
+        "Sigue el codo con la mirada",
+        "Alterna lados"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Rotaci%C3%B3n%20tor%C3%A1cica%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "forward_fold",
+      "name": "Flexión de pie",
+      "emoji": "🙇",
+      "type": "hold",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Cadena posterior",
+      "view": "Cámara opcional",
+      "group": "stretch",
+      "category": "estiramiento",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": 30,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [],
+      "cues": [
+        "De pie, piernas casi rectas",
+        "Baja el tronco hacia los pies",
+        "Relaja cuello y brazos",
+        "Rodillas ligeramente flexionadas"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Flexi%C3%B3n%20de%20pie%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "shoulder_circles",
+      "name": "Círculos de hombros",
+      "emoji": "🔃",
+      "type": "hold",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Calentamiento · hombro",
+      "view": "Cámara opcional",
+      "group": "stretch",
+      "category": "estiramiento",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": 30,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [],
+      "cues": [
+        "De pie, brazos extendidos",
+        "Círculos amplios adelante y atrás",
+        "Movimiento continuo",
+        "Calienta el hombro"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20C%C3%ADrculos%20de%20hombros%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "chair_squat",
+      "name": "Sentadilla a la silla",
+      "emoji": "🪑",
+      "type": "reps",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Cuádriceps · glúteo (bajo impacto)",
+      "view": "De lado, cuerpo entero",
+      "group": "lower",
+      "category": "fuerza",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": true,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 120,
+        "resetThresh": 160
+      },
+      "gauges": [
+        {
+          "label": "Rodilla",
+          "min": 80,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "Siéntate y levántate de una silla",
+        "Controla la bajada",
+        "Pecho arriba",
+        "Empuja con los talones"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Sentadilla%20a%20la%20silla%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "wall_pushup",
+      "name": "Flexión en pared",
+      "emoji": "🧱",
+      "type": "reps",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Pecho · tríceps (bajo impacto)",
+      "view": "De lado, medio cuerpo",
+      "group": "upper",
+      "category": "fuerza",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": true,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 110,
+        "resetThresh": 155
+      },
+      "gauges": [
+        {
+          "label": "Codo",
+          "min": 70,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "Manos en la pared a la altura del pecho",
+        "Acerca el pecho a la pared",
+        "Cuerpo recto",
+        "Empuja para volver"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Flexi%C3%B3n%20en%20pared%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "marching",
+      "name": "Marcha en el sitio",
+      "emoji": "🚶",
+      "type": "reps",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Core · cardio suave",
+      "view": "De frente, cuerpo entero",
+      "group": "core",
+      "category": "fuerza",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": true,
+      "explosive": false,
+      "cardio": true,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 120,
+        "resetThresh": 150
+      },
+      "gauges": [
+        {
+          "label": "Cadera",
+          "min": 90,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "Marcha levantando las rodillas",
+        "Ritmo cómodo",
+        "Los brazos acompañan",
+        "Respira"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Marcha%20en%20el%20sitio%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "seated_knee",
+      "name": "Elevación de rodilla (sentado)",
+      "emoji": "💺",
+      "type": "reps",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Abdomen · flexor de cadera (sentado)",
+      "view": "De lado, sentado",
+      "group": "core",
+      "category": "fuerza",
+      "bilateral": true,
+      "weighted": false,
+      "lowImpact": true,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 85,
+        "resetThresh": 115
+      },
+      "gauges": [
+        {
+          "label": "Cadera",
+          "min": 60,
+          "max": 135
+        }
+      ],
+      "cues": [
+        "Sentado, espalda recta",
+        "Sube una rodilla hacia el pecho",
+        "Alterna",
+        "Aprieta el abdomen"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Elevaci%C3%B3n%20de%20rodilla%20(sentado)%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "jump_squat",
+      "name": "Sentadilla con salto",
+      "emoji": "🆙",
+      "type": "reps",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Cuádriceps · glúteo (potencia)",
+      "view": "De frente, cuerpo entero",
+      "group": "lower",
+      "category": "fuerza",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": true,
+      "cardio": true,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 120,
+        "resetThresh": 165
+      },
+      "gauges": [
+        {
+          "label": "Rodilla",
+          "min": 70,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "Baja en sentadilla",
+        "Salta con fuerza extendiendo la cadera",
+        "Aterriza suave, rodillas alineadas",
+        "Encadena con control"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Sentadilla%20con%20salto%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "push_press",
+      "name": "Press con impulso",
+      "emoji": "⏫",
+      "type": "reps",
+      "equipment": [
+        "dumbbell",
+        "bar"
+      ],
+      "muscles": "Hombro · tríceps · piernas (potencia)",
+      "view": "De frente, cuerpo entero",
+      "group": "upper",
+      "category": "fuerza",
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": true,
+      "cardio": false,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "high",
+        "effortThresh": 155,
+        "resetThresh": 95
+      },
+      "gauges": [
+        {
+          "label": "Codo",
+          "min": 70,
+          "max": 180
+        }
+      ],
+      "cues": [
+        "Flexiona apenas las piernas",
+        "Impulsa y empuja el peso arriba",
+        "Bloquea los codos",
+        "Baja controlando al hombro"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Press%20con%20impulso%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "thruster",
+      "name": "Thruster",
+      "emoji": "🚀",
+      "type": "reps",
+      "equipment": [
+        "dumbbell"
+      ],
+      "muscles": "Full body (potencia)",
+      "view": "De frente, cuerpo entero",
+      "group": "full",
+      "category": "fuerza",
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": true,
+      "cardio": true,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 120,
+        "resetThresh": 165
+      },
+      "gauges": [
+        {
+          "label": "Rodilla",
+          "min": 70,
+          "max": 175
+        },
+        {
+          "label": "Codo",
+          "min": 70,
+          "max": 180
+        }
+      ],
+      "cues": [
+        "Sentadilla profunda",
+        "Sube explosivo y empuja el peso arriba",
+        "Un solo movimiento fluido",
+        "Controla la bajada"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Thruster%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "jumping_jacks",
+      "name": "Saltos de tijera",
+      "emoji": "🤸",
+      "type": "reps",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Cardio · full body",
+      "view": "De frente, cuerpo entero",
+      "group": "core",
+      "category": "fuerza",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": true,
+      "cardio": true,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "high",
+        "effortThresh": 120,
+        "resetThresh": 60
+      },
+      "gauges": [
+        {
+          "label": "Brazos",
+          "min": 20,
+          "max": 170
+        }
+      ],
+      "cues": [
+        "Abre brazos y piernas a la vez",
+        "Sube las manos sobre la cabeza",
+        "Ritmo constante",
+        "Aterriza suave"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Saltos%20de%20tijera%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "band_pull_apart",
+      "name": "Aperturas con banda (pull-apart)",
+      "emoji": "🎗️",
+      "type": "reps",
+      "equipment": [
+        "band"
+      ],
+      "muscles": "Manguito · deltoides posterior · escápulas",
+      "view": "De frente, medio cuerpo",
+      "group": "prevencion",
+      "category": "prevencion",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": true,
+      "prehabFocus": "Salud de hombro",
+      "holdDefault": null,
+      "rep": {
+        "effort": "high",
+        "effortThresh": 95,
+        "resetThresh": 55
+      },
+      "gauges": [
+        {
+          "label": "Hombros",
+          "min": 20,
+          "max": 120
+        }
+      ],
+      "cues": [
+        "Brazos al frente a la altura del pecho",
+        "Abre la banda llevando las manos a los lados",
+        "Aprieta las escápulas atrás y abajo",
+        "Vuelve controlando, sin encoger el cuello"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Aperturas%20con%20banda%20(pull-apart)%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "ext_rotation",
+      "name": "Rotación externa de hombro",
+      "emoji": "🔄",
+      "type": "reps",
+      "equipment": [
+        "band",
+        "dumbbell"
+      ],
+      "muscles": "Manguito rotador (infraespinoso)",
+      "view": "De frente, medio cuerpo",
+      "group": "prevencion",
+      "category": "prevencion",
+      "bilateral": true,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": true,
+      "prehabFocus": "Salud de hombro",
+      "holdDefault": null,
+      "rep": {
+        "effort": "high",
+        "effortThresh": 150,
+        "resetThresh": 110
+      },
+      "gauges": [
+        {
+          "label": "Codo",
+          "min": 70,
+          "max": 180
+        }
+      ],
+      "cues": [
+        "Codo pegado al costado, flexionado a 90°",
+        "Gira el antebrazo hacia fuera",
+        "Movimiento lento y controlado",
+        "No separes el codo del cuerpo"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Rotaci%C3%B3n%20externa%20de%20hombro%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "wall_slide",
+      "name": "Deslizamiento en pared",
+      "emoji": "🧱",
+      "type": "reps",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Escápulas · movilidad de hombro",
+      "view": "De frente, medio cuerpo",
+      "group": "prevencion",
+      "category": "prevencion",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": true,
+      "prehabFocus": "Postura y hombro",
+      "holdDefault": null,
+      "rep": {
+        "effort": "high",
+        "effortThresh": 130,
+        "resetThresh": 80
+      },
+      "gauges": [
+        {
+          "label": "Hombros",
+          "min": 40,
+          "max": 170
+        }
+      ],
+      "cues": [
+        "Espalda y brazos apoyados en la pared",
+        "Desliza los brazos hacia arriba",
+        "Mantén codos y muñecas pegados",
+        "Baja apretando las escápulas"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Deslizamiento%20en%20pared%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "clamshell",
+      "name": "Almeja (clamshell)",
+      "emoji": "🐚",
+      "type": "hold",
+      "equipment": [
+        "bodyweight",
+        "band"
+      ],
+      "muscles": "Glúteo medio · cadera",
+      "view": "Lateral, tumbado",
+      "group": "prevencion",
+      "category": "prevencion",
+      "bilateral": true,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": true,
+      "prehabFocus": "Estabilidad de cadera/rodilla",
+      "holdDefault": 30,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [],
+      "cues": [
+        "Tumbado de lado, rodillas flexionadas",
+        "Abre la rodilla de arriba sin girar la cadera",
+        "Aprieta el glúteo en la apertura",
+        "Controla la bajada"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Almeja%20(clamshell)%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "glute_med_raise",
+      "name": "Elevación lateral de pierna",
+      "emoji": "🦵",
+      "type": "reps",
+      "equipment": [
+        "bodyweight",
+        "band"
+      ],
+      "muscles": "Glúteo medio",
+      "view": "Lateral, tumbado",
+      "group": "prevencion",
+      "category": "prevencion",
+      "bilateral": true,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": true,
+      "prehabFocus": "Estabilidad de cadera/rodilla",
+      "holdDefault": null,
+      "rep": {
+        "effort": "high",
+        "effortThresh": 172,
+        "resetThresh": 160
+      },
+      "gauges": [
+        {
+          "label": "Cadera",
+          "min": 150,
+          "max": 185
+        }
+      ],
+      "cues": [
+        "Tumbado de lado, pierna estirada",
+        "Sube la pierna sin rotar la cadera",
+        "Talón ligeramente atrás",
+        "Baja controlando"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Elevaci%C3%B3n%20lateral%20de%20pierna%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "dead_bug",
+      "name": "Dead bug (core)",
+      "emoji": "🐞",
+      "type": "hold",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Core anti-extensión · lumbar",
+      "view": "Lateral, tumbado",
+      "group": "prevencion",
+      "category": "prevencion",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": true,
+      "prehabFocus": "Salud lumbar y core",
+      "holdDefault": 30,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [],
+      "cues": [
+        "Boca arriba, brazos y rodillas arriba",
+        "Extiende brazo y pierna opuestos",
+        "Lumbar pegada al suelo",
+        "Alterna con control y respirando"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Dead%20bug%20(core)%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "ankle_mob",
+      "name": "Movilidad de tobillo",
+      "emoji": "🦶",
+      "type": "hold",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Tobillo · dorsiflexión",
+      "view": "Lateral, cuerpo entero",
+      "group": "prevencion",
+      "category": "prevencion",
+      "bilateral": true,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": true,
+      "prehabFocus": "Movilidad de tobillo",
+      "holdDefault": 30,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [
+        {
+          "label": "Rodilla",
+          "min": 90,
+          "max": 180
+        }
+      ],
+      "cues": [
+        "En zancada, rodilla hacia delante sobre la punta",
+        "El talón no se levanta",
+        "Empuja la rodilla más allá de los dedos",
+        "Sin dolor, rango cómodo"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Movilidad%20de%20tobillo%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "nordic_curl",
+      "name": "Curl nórdico (isquios excéntrico)",
+      "emoji": "🔻",
+      "type": "reps",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Isquiosurales (excéntrico)",
+      "view": "Lateral, cuerpo entero",
+      "group": "prevencion",
+      "category": "prevencion",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": true,
+      "prehabFocus": "Prevención de rotura de isquios",
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 130,
+        "resetThresh": 168
+      },
+      "gauges": [
+        {
+          "label": "Cadera",
+          "min": 90,
+          "max": 185
+        }
+      ],
+      "cues": [
+        "De rodillas, pies fijados",
+        "Baja el tronco recto muy despacio (frena)",
+        "Cadera y hombros en línea",
+        "Ayúdate con las manos al llegar abajo"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Curl%20n%C3%B3rdico%20(isquios%20exc%C3%A9ntrico)%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "scapular_pushup",
+      "name": "Flexión escapular",
+      "emoji": "🔩",
+      "type": "reps",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Serrato · escápulas",
+      "view": "Lateral, cuerpo entero",
+      "group": "prevencion",
+      "category": "prevencion",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": true,
+      "prehabFocus": "Estabilidad de hombro",
+      "holdDefault": null,
+      "rep": {
+        "effort": "high",
+        "effortThresh": 178,
+        "resetThresh": 170
+      },
+      "gauges": [
+        {
+          "label": "Cuerpo",
+          "min": 150,
+          "max": 185
+        }
+      ],
+      "cues": [
+        "Posición de plancha alta, brazos rectos",
+        "Junta las escápulas dejando caer el pecho",
+        "Empuja separando las escápulas",
+        "Codos siempre extendidos"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Flexi%C3%B3n%20escapular%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "calf_raise_prehab",
+      "name": "Elevación de talones",
+      "emoji": "🦶",
+      "type": "reps",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Gemelos · sóleo · tendón de Aquiles",
+      "view": "Lateral, cuerpo entero",
+      "group": "prevencion",
+      "category": "prevencion",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": true,
+      "prehabFocus": "Salud de tobillo/Aquiles",
+      "holdDefault": null,
+      "rep": {
+        "effort": "high",
+        "effortThresh": 176,
+        "resetThresh": 172
+      },
+      "gauges": [
+        {
+          "label": "Rodilla",
+          "min": 160,
+          "max": 185
+        }
+      ],
+      "cues": [
+        "De pie, sube sobre las puntas",
+        "Sube lo máximo, pausa arriba",
+        "Baja lento controlando",
+        "Rodillas extendidas"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Elevaci%C3%B3n%20de%20talones%20ejercicio%20en%20casa"
+    }
+  ]
+}

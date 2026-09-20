@@ -122,3 +122,54 @@ export function personalRecords(){
 export function trainedToday(){
   return loadHistory().some(e=>dateKey(new Date(e.ts))===dateKey(new Date()));
 }
+
+// ===== Sobrecarga progresiva: lectura del historial reciente =====
+// Devuelve el mejor resultado del ejercicio en su ÚLTIMA sesión registrada
+// (mismo día natural más reciente en que se hizo). Con esto el generador decide
+// si el usuario "superó" la prescripción anterior y toca progresar.
+export function lastResultFor(exerciseId){
+  const h=loadHistory().filter(e=>e.exerciseId===exerciseId);
+  if(!h.length) return null;
+  const lastDay = dateKey(new Date(Math.max(...h.map(e=>e.ts))));   // día más reciente con ese ejercicio
+  const sameDay = h.filter(e=>dateKey(new Date(e.ts))===lastDay);
+  return {
+    reps:   Math.max(...sameDay.map(e=>e.reps||0)),      // mejor serie de esa sesión
+    unit:   sameDay[0].unit || 'reps',
+    weight: Math.max(...sameDay.map(e=>e.weight||0)),
+    sets:   sameDay.length,
+    ts:     Math.max(...sameDay.map(e=>e.ts)),
+  };
+}
+
+// ===== Portabilidad de datos (backup local) =====
+const BACKUP_KEYS = { history:KEY, settings:SETTINGS, plans:PLANS, profile:PROFILE };
+
+// Empaqueta todo el estado relevante y descarga fitcoach_backup.json
+export function exportUserData(){
+  const data = { app:'FitCoach Casa', kind:'backup', version:1, exportedAt:new Date().toISOString() };
+  for(const [name,key] of Object.entries(BACKUP_KEYS)){
+    try{ data[name] = JSON.parse(localStorage.getItem(key)); }catch{ data[name]=null; }
+  }
+  const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'fitcoach_backup.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+  return data;
+}
+
+// Restaura el estado desde un JSON de backup (string). Devuelve {ok, error?}.
+export function importUserData(jsonString){
+  let data;
+  try{ data = JSON.parse(jsonString); }
+  catch{ return {ok:false, error:'El archivo no es un JSON válido.'}; }
+  if(!data || typeof data!=='object' || data.kind!=='backup')
+    return {ok:false, error:'No parece un backup de FitCoach Casa.'};
+  try{
+    for(const [name,key] of Object.entries(BACKUP_KEYS)){
+      if(data[name]!==undefined && data[name]!==null) localStorage.setItem(key, JSON.stringify(data[name]));
+    }
+    return {ok:true};
+  }catch(e){ return {ok:false, error:'No se pudo guardar en este navegador: '+e.message}; }
+}

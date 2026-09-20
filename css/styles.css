@@ -542,3 +542,13 @@ main{max-width:1200px;margin:0 auto;padding:16px}
 
 /* Sesión: apila en pantallas estrechas */
 @media(max-width:820px){ .session{grid-template-columns:1fr} }
+
+/* ===== Arquitectura v20: IA, backup, sobrecarga ===== */
+.setup .ai-card{grid-column:1 / -1;border-color:var(--accent2)}
+.ai-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.ai-row #ai-input{flex:1;min-width:220px;background:var(--panel2);border:1px solid var(--line);color:var(--txt);padding:11px 14px;border-radius:11px;font:inherit}
+.ai-row #ai-input:focus{outline:none;border-color:var(--accent2)}
+.ai-row #ai-go{white-space:nowrap}
+#ai-msg{margin-top:8px}
+.backup-actions{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0}
+.gp-phase.ov{color:#ffd9a8;border-color:var(--accent);background:rgba(255,90,31,.14)}

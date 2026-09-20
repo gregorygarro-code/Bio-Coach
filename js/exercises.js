@@ -1,5 +1,5 @@
 // ===== Biblioteca de ejercicios + motor biomecánico =====
-import { LM, angle, angleFromVertical, midpoint, vis, clamp } from './utils.js?v=19';
+import { LM, angle, angleFromVertical, midpoint, vis, clamp } from './utils.js?v=20';
 
 // --- helpers de ángulos sobre landmarks ---
 function tri(lm, a, b, c){
@@ -840,7 +840,9 @@ export function buildGuidedPlan(group, equip, minutes, opts={}){
   const restS = goal.rest;
   const trans = 20;
   const g = (group==='all') ? 'full' : group;
-  const stretchPool = exercisesForGroup('stretch', equip);
+  // Exclusión por lesiones (ids contraindicados que envía el generador experto)
+  const exclude = opts.exclude instanceof Set ? opts.exclude : new Set(opts.exclude||[]);
+  const stretchPool = exercisesForGroup('stretch', equip).filter(e=>!exclude.has(e.id));
   const byId = id => stretchPool.find(e=>e.id===id);
   const sidesOf = ex => ex.bilateral ? 2 : 1;   // unilaterales = dos lados
   const workOf = (mode,reps,secs,sides=1)=> (mode==='hold' ? secs : Math.round(reps*3.2))*sides + (sides>1?8:0);
@@ -859,7 +861,7 @@ export function buildGuidedPlan(group, equip, minutes, opts={}){
 
   // Sesión de prevención de lesiones / prehab (holds + reps controladas, sin objetivo de fuerza)
   if(g==='prevencion'){
-    const prehabPool = shuffle(exercisesForGroup('prevencion', equip).slice());
+    const prehabPool = shuffle(exercisesForGroup('prevencion', equip).filter(e=>!exclude.has(e.id)));
     const target = {30:6,45:9,60:12}[minutes] || 8;
     const setsP = ({30:1,45:2,60:2}[minutes] || 2) + (level==='avanzado'?1:0);
     const budgetP = minutes*60; const totP=()=>steps.reduce((s,x)=>s+x.est,0);
@@ -882,7 +884,7 @@ export function buildGuidedPlan(group, equip, minutes, opts={}){
   if(age>=60){ if(bias==='explosive'||bias==='cardio') bias='balanced'; adjSets = -1; }
   if(age && age<=15){ if(bias==='explosive') bias='balanced'; }
   const sets = Math.max(2, baseSets + goal.setsDelta + adjSets + (level==='avanzado'?1:0) - (level==='principiante'?1:0));
-  let pool = exercisesForGroup(g, equip).filter(e=>e.group!=='stretch' && e.group!=='prevencion');
+  let pool = exercisesForGroup(g, equip).filter(e=>e.group!=='stretch' && e.group!=='prevencion' && !exclude.has(e.id));
   if(age>=60) pool = pool.filter(e=>!e.explosive) .length ? pool.filter(e=>!e.explosive) : pool;  // mayores: evita explosivos si hay alternativa
   const warmIds=['shoulder_circles','cat_cow','thoracic_rot','hip_flexor'];
   const coolIds=['hamstring','quad','chest_open','forward_fold','child_pose','glute_fig4'];

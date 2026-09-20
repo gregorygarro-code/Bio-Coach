@@ -73,3 +73,79 @@ export async function saveProgress(history, plans, settings){
   const { error } = await sb.from('fc_progress').upsert({ user_id:user.id, data:{ history, plans, settings }, updated_at:new Date().toISOString() });
   return !error;
 }
+
+// ============================================================
+// IA conversacional (NLP → JSON) con Gemini gemini-1.5-flash
+// ------------------------------------------------------------
+// Zero-server: la clave la pone el usuario (BYO key) y se guarda SOLO en su
+// navegador. Si no hay clave, se usa un parser local por palabras clave (sin
+// llamadas externas), para mantener el modo 100% local/offline.
+// ============================================================
+const GEMINI_KEY = 'fitcoach.geminiKey';
+export function getGeminiKey(){ try{ return localStorage.getItem(GEMINI_KEY) || (window.APP_CONFIG&&window.APP_CONFIG.geminiKey) || ''; }catch{ return ''; } }
+export function setGeminiKey(k){ try{ k ? localStorage.setItem(GEMINI_KEY, k.trim()) : localStorage.removeItem(GEMINI_KEY); }catch{} }
+export function hasGeminiKey(){ return !!getGeminiKey(); }
+
+const AI_SCHEMA_HINT = `Devuelve SOLO un objeto JSON válido, sin texto extra, con EXACTAMENTE estas claves:
+{"nivel":"", "equipo":[], "tiempo_minutos":0, "lesiones":[], "objetivo":""}
+- nivel: uno de "principiante","intermedio","avanzado" (por defecto "intermedio").
+- equipo: subconjunto de ["peso corporal","mancuernas","kettlebell","bandas","barra","banca","dominadas"].
+- tiempo_minutos: entero (30, 45 o 60 aprox.).
+- lesiones: zonas mencionadas, p.ej. ["rodilla","hombro","espalda","lumbar","cadera","tobillo","muñeca","cuello"].
+- objetivo: uno de "general","fuerza","hipertrofia","potencia","resistencia","perdida_grasa".`;
+
+// Llama a Gemini y extrae el JSON estructurado del texto de la respuesta.
+async function callGemini(text, key){
+  const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key='+encodeURIComponent(key);
+  const body = {
+    contents: [{ parts: [{ text: `${AI_SCHEMA_HINT}\n\nMensaje del usuario: """${text}"""` }] }],
+    generationConfig: { responseMimeType: 'application/json', temperature: 0.1 },
+  };
+  const res = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+  if(!res.ok) throw new Error('Gemini HTTP '+res.status);
+  const data = await res.json();
+  // La respuesta llega como texto dentro de candidates[0].content.parts[0].text.
+  // Aunque pedimos responseMimeType JSON, saneamos por si viene con ```json ... ```.
+  const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  const clean = raw.replace(/```json/gi,'').replace(/```/g,'').trim();
+  const match = clean.match(/\{[\s\S]*\}/);          // primer objeto {...} del texto
+  return JSON.parse(match ? match[0] : clean);
+}
+
+// Parser local de respaldo (sin IA): heurística por palabras clave.
+function localParse(text){
+  const t = (text||'').toLowerCase();
+  const has = (...w)=>w.some(x=>t.includes(x));
+  const mins = (t.match(/(\d{2,3})\s*(min|minuto)/)||[])[1];
+  const equipo=[];
+  if(has('mancuerna','pesa','dumbbell')) equipo.push('mancuernas');
+  if(has('kettlebell','pesa rusa')) equipo.push('kettlebell');
+  if(has('banda','elástic','elastic')) equipo.push('bandas');
+  if(has('barra')) equipo.push('barra');
+  if(has('banca','banco')) equipo.push('banca');
+  if(has('dominad','pull-up','pullup')) equipo.push('dominadas');
+  if(!equipo.length || has('peso corporal','sin equipo','en casa sin','solo mi cuerpo')) equipo.unshift('peso corporal');
+  const lesiones=[];
+  for(const z of ['rodilla','hombro','espalda','lumbar','cadera','tobillo','muñeca','muneca','cuello','codo'])
+    if(t.includes(z)) lesiones.push(z==='muneca'?'muñeca':z);
+  let objetivo='general';
+  if(has('fuerza','fuerte')) objetivo='fuerza';
+  else if(has('hipertrofia','músculo','musculo','masa','volumen')) objetivo='hipertrofia';
+  else if(has('potencia','explosiv')) objetivo='potencia';
+  else if(has('resistencia','aguante')) objetivo='resistencia';
+  else if(has('grasa','adelgaz','perder peso','definir','quemar')) objetivo='perdida_grasa';
+  let nivel='intermedio';
+  if(has('principiante','empiezo','nuevo','novato')) nivel='principiante';
+  else if(has('avanzado','experto')) nivel='avanzado';
+  return { nivel, equipo, tiempo_minutos: mins?+mins:45, lesiones, objetivo, _source:'local' };
+}
+
+// API pública: texto libre → JSON estructurado (Gemini si hay clave, si no local).
+export async function parseUserRequest(text){
+  const key = getGeminiKey();
+  if(key){
+    try{ const j = await callGemini(text, key); return { ...localParse(text), ...j, _source:'gemini' }; }
+    catch(e){ console.warn('[ai] Gemini falló, uso parser local:', e.message); }
+  }
+  return localParse(text);
+}

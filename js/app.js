@@ -1,11 +1,12 @@
 // ===== FitCoach Casa · app principal =====
-import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS } from './exercises.js?v=19';
-import { createPoseLandmarker } from './pose.js?v=19';
-import { createDemoPlayer } from './demos.js?v=19';
-import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=19';
-import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=19';
-import * as api from './api.js?v=19';
-import * as store from './storage.js?v=19';
+import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS } from './exercises.js?v=20';
+import { createPoseLandmarker } from './pose.js?v=20';
+import { createDemoPlayer } from './demos.js?v=20';
+import * as generator from './generator.js?v=20';
+import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=20';
+import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=20';
+import * as api from './api.js?v=20';
+import * as store from './storage.js?v=20';
 
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -43,6 +44,7 @@ let sessionMinutes = 45;                 // tiempo elegido para la rutina guiada
 let currentGoal = 'general';             // objetivo de entrenamiento
 let guestSex = '';                        // ajuste rápido para invitados (sexo)
 let guestAge = null;                      // ajuste rápido para invitados (edad)
+let currentInjuries = [];                 // lesiones activas (de la IA o del perfil) para excluir ejercicios
 let paused = false;                       // pausa de la serie/temporizador en curso
 let currentGuidedPlan = null;            // plan generado (se reusa al empezar / regenerar variante)
 let guided = { active:false, plan:null, i:0, set:1, done:0, rest:60 };
@@ -197,11 +199,15 @@ function personalCtx(){
   return { age: (p.age ?? guestAge) || null, sex: p.sex || guestSex || '' };
 }
 
-// Genera (y guarda) un plan nuevo con variedad y refresca la vista previa
-function regenPlan(){
+// Genera (y guarda) un plan nuevo mediante el generador experto (carga JSON,
+// aplica lesiones y sobrecarga progresiva) y refresca la vista previa.
+async function regenPlan(){
   const pc = personalCtx();
-  currentGuidedPlan = buildGuidedPlan(currentGroup, selectedEquip, sessionMinutes,
-    {rest:settings.rest, level:settings.level, goal:currentGoal, age:pc.age, sex:pc.sex});
+  currentGuidedPlan = await generator.generateRoutine({
+    group: currentGroup, equip: selectedEquip, minutes: sessionMinutes,
+    goal: currentGoal, level: settings.level, age: pc.age, sex: pc.sex,
+    rest: settings.rest, injuries: currentInjuries,
+  });
   renderGuidedPreview();
 }
 
@@ -215,11 +221,12 @@ function renderGuidedPreview(){
     const perSide = s.bilateral ? (s.mode==='hold' ? ' ×2 lados' : ' por lado') : '';
     const dose = (s.mode==='hold' ? `${s.sets>1?s.sets+'× ':''}${s.secs}s` : `${s.sets} × ${s.repsLabel||s.reps}`) + perSide;
     const ph = s.phase!=='main' ? `<span class="gp-phase ${s.phase}">${PHASE_LABEL[s.phase]}</span>` : '';
+    const ov = s.overload ? `<span class="gp-phase ov" title="${s.overload.note}">⬆ ${s.overload.note}</span>` : '';
     const cues = s.ex.cues.map(c=>`<li>${c}</li>`).join('');
     return `<details class="gp-item">
       <summary class="gp-sum">
         <span class="gp-emoji">${s.emoji}</span>
-        <span class="gp-main"><span class="gp-name">${i+1}. ${s.name}</span> ${ph}</span>
+        <span class="gp-main"><span class="gp-name">${i+1}. ${s.name}</span> ${ph} ${ov}</span>
         <span class="gp-sets">${dose}</span>
         <span class="gp-chevron">▾</span>
       </summary>
@@ -1243,6 +1250,9 @@ function applyProfileDefaults(p){
   }
   if(p.equipWeights) equipWeights = {...p.equipWeights};
   if(p.equipOther!==undefined) equipOther = p.equipOther;
+  // Deriva lesiones desde las notas del perfil para excluir ejercicios de riesgo
+  if(p.notes){ const t=p.notes.toLowerCase();
+    currentInjuries=['rodilla','hombro','espalda','lumbar','cadera','tobillo','muñeca','cuello','codo'].filter(z=>t.includes(z)); }
   selectedEquip = capsFromDetail(equipDetail);
   if(p.goal && TRAIN_GOALS[p.goal]) currentGoal = p.goal;
   if(p.time && [30,45,60].includes(+p.time)) sessionMinutes = +p.time;
@@ -1376,6 +1386,70 @@ async function initAccount(){
     }
   });
 }
+
+// ======================================================
+// IA conversacional: texto libre → params → generador
+// ======================================================
+const EQ_WORD_TO_ID = { 'peso corporal':'bodyweight','mancuernas':'dumbbells','kettlebell':'kettlebell','bandas':'bands','barra':'barbell','banca':'bench','dominadas':'pullup_bar' };
+function applyParsed(p){
+  // Equipo: mapea las palabras del JSON a los ids de la app y refresca los chips
+  if(Array.isArray(p.equipo) && p.equipo.length){
+    const ids=new Set(['bodyweight']);
+    p.equipo.forEach(w=>{ const id=EQ_WORD_TO_ID[String(w).toLowerCase()]; if(id) ids.add(id); });
+    equipDetail=ids; selectedEquip=capsFromDetail(equipDetail); renderEquip(); renderProfileEquip();
+  }
+  if(p.objetivo && TRAIN_GOALS[p.objetivo]){ currentGoal=p.objetivo; renderGoals(); }
+  if(p.tiempo_minutos){ // ajusta al chip más cercano (30/45/60)
+    sessionMinutes=[30,45,60].reduce((a,b)=>Math.abs(b-p.tiempo_minutos)<Math.abs(a-p.tiempo_minutos)?b:a);
+    renderTimeChips();
+  }
+  if(p.nivel){ settings.level=p.nivel; persistSettings(); const sl=$('#sel-level'); if(sl) sl.value=p.nivel; }
+  currentInjuries = Array.isArray(p.lesiones) ? p.lesiones : [];
+  regenPlan();
+}
+async function runAI(){
+  const inp=$('#ai-input'); if(!inp) return;
+  const text=inp.value.trim(); if(!text){ inp.focus(); return; }
+  $('#ai-msg').textContent='Interpretando…';
+  let p; try{ p = await api.parseUserRequest(text); }
+  catch{ $('#ai-msg').textContent='No se pudo interpretar la petición.'; return; }
+  applyParsed(p);
+  const src = p._source==='gemini' ? '🤖 Gemini' : '📝 Intérprete local';
+  $('#ai-msg').textContent = `${src}: ${TRAIN_GOALS[p.objetivo]?.label||p.objetivo} · ${sessionMinutes} min${(p.lesiones&&p.lesiones.length)?' · cuidando '+p.lesiones.join(', '):''}. Rutina actualizada ↓`;
+}
+$('#ai-go')?.addEventListener('click', runAI);
+$('#ai-input')?.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); runAI(); } });
+
+// ======================================================
+// Copia de seguridad (export / import) — item 5
+// ======================================================
+$('#btn-export')?.addEventListener('click', ()=>{ store.exportUserData(); $('#backup-msg').textContent='✓ Descargado fitcoach_backup.json'; });
+$('#btn-import')?.addEventListener('click', ()=> $('#import-file')?.click());
+$('#import-file')?.addEventListener('change', e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{
+    const res=store.importUserData(r.result);
+    if(res.ok){
+      settings=store.loadSettings(); applySettingsToUI();
+      profileData=store.loadProfile()||profileData; if(profileData) applyProfileDefaults(profileData);
+      renderHistory();
+      $('#backup-msg').textContent='✓ Datos restaurados en este navegador.';
+    }else{ $('#backup-msg').textContent='✗ '+res.error; }
+  };
+  r.readAsText(f); e.target.value='';
+});
+
+// ======================================================
+// Clave de Gemini (opcional)
+// ======================================================
+if($('#in-gemini')) $('#in-gemini').value = api.getGeminiKey();
+$('#btn-gemini-save')?.addEventListener('click', ()=>{
+  api.setGeminiKey($('#in-gemini').value);
+  $('#gemini-msg').textContent = api.hasGeminiKey()
+    ? '✓ Clave guardada (solo en este navegador).'
+    : 'Sin clave: se usará el intérprete local.';
+});
 
 // ======================================================
 // Init

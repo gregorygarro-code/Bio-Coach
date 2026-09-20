@@ -26,8 +26,12 @@
   <meta name="twitter:description" content="Corrige tu técnica en tiempo real con análisis biomecánico. Rutinas guiadas, conteo de reps y seguimiento del progreso." />
   <meta name="twitter:image" content="https://bio-coach.vercel.app/og-image.svg" />
 
-  <!-- ===== Favicon ===== -->
+  <!-- ===== Favicon / PWA ===== -->
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='88'%3E%F0%9F%8F%8B%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="FitCoach" />
 
   <!-- ===== Tipografías ===== -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -61,7 +65,7 @@
   }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=19" />
+  <link rel="stylesheet" href="css/styles.css?v=20" />
 </head>
 <body>
   <header class="topbar">
@@ -164,6 +168,16 @@
 
       <!-- Paso 1: equipamiento + selección de ejercicio -->
       <div id="panel-setup" class="setup">
+        <div class="card ai-card">
+          <h2>🤖 Describe tu sesión</h2>
+          <p class="muted small">Escríbelo con tus palabras y la IA ajusta objetivo, equipo, tiempo y lesiones. Ej.: <i>"Tengo 20 minutos, unas mancuernas y me duele la rodilla"</i>.</p>
+          <div class="ai-row">
+            <input id="ai-input" type="text" placeholder="Tengo 30 min, bandas, quiero hipertrofia…" />
+            <button id="ai-go" class="btn accent">Generar</button>
+          </div>
+          <p id="ai-msg" class="muted small"></p>
+        </div>
+
         <div class="card">
           <h2>1 · ¿Con qué entrenas hoy?</h2>
           <p class="muted">Marca tu equipamiento. La biblioteca se adapta a lo que tengas.</p>
@@ -513,6 +527,28 @@
         </div>
         <p class="muted small">Todo el procesamiento ocurre en tu navegador. El vídeo no sale de tu equipo.</p>
       </div>
+
+      <div class="card">
+        <h2>Copia de seguridad</h2>
+        <p class="muted small">Exporta tu perfil, progreso e historial a un archivo, o restáuralo en otro dispositivo/navegador. Todo local.</p>
+        <div class="backup-actions">
+          <button id="btn-export" class="btn ghost">⬇ Exportar datos</button>
+          <button id="btn-import" class="btn ghost">⬆ Importar datos</button>
+          <input id="import-file" type="file" accept="application/json,.json" hidden />
+        </div>
+        <p id="backup-msg" class="muted small"></p>
+      </div>
+
+      <div class="card">
+        <h2>Asistente IA (opcional)</h2>
+        <p class="muted small">Para interpretar tu petición en lenguaje natural con Gemini (<code>gemini-1.5-flash</code>). Es <b>opcional</b>: sin clave, la app usa un intérprete local. Tu clave se guarda solo en este navegador y las llamadas van directas a Google.</p>
+        <div class="setting">
+          <label for="in-gemini">Clave API de Gemini</label>
+          <input id="in-gemini" type="password" placeholder="AIza… (opcional)" autocomplete="off" />
+        </div>
+        <button id="btn-gemini-save" class="btn ghost" style="max-width:200px">Guardar clave</button>
+        <p id="gemini-msg" class="muted small"></p>
+      </div>
     </section>
   </main>
 
@@ -620,7 +656,16 @@
   <div id="loader" class="loader hidden"><div class="spinner"></div><p id="loader-msg">Cargando modelo de pose…</p></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-  <script src="js/config.js?v=19"></script>
-  <script type="module" src="js/app.js?v=19"></script>
+  <script src="js/config.js?v=20"></script>
+  <script type="module" src="js/app.js?v=20"></script>
+
+  <!-- Registro del Service Worker (PWA / offline) -->
+  <script>
+    if('serviceWorker' in navigator){
+      window.addEventListener('load', ()=>{
+        navigator.serviceWorker.register('sw.js').catch(err=>console.warn('SW no registrado:', err));
+      });
+    }
+  </script>
 </body>
 </html>

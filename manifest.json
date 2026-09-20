@@ -1,0 +1,16 @@
+{
+  "name": "FitCoach Casa · Entrenador biomecánico",
+  "short_name": "FitCoach",
+  "description": "Entrenador en casa con webcam y análisis biomecánico por IA. Rutinas guiadas, conteo de repeticiones y progreso, todo en tu navegador.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "lang": "es",
+  "background_color": "#0a0d13",
+  "theme_color": "#0a0d13",
+  "categories": ["health", "fitness", "sports"],
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
