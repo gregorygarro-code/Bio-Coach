@@ -3,15 +3,15 @@
 // ejecuta el filtrado/selección según los parámetros del usuario. La parte
 // biomecánica (funciones de medición/checks) sigue viviendo en exercises.js;
 // aquí trabajamos solo con la parte declarativa + el historial (sobrecarga).
-import { buildGuidedPlan, getExercise } from './exercises.js?v=23';
-import { lastResultFor } from './storage.js?v=23';
+import { buildGuidedPlan, getExercise } from './exercises.js?v=24';
+import { lastResultFor } from './storage.js?v=24';
 
 // ---- Carga del catálogo JSON (con caché en memoria) ----
 let _catalog = null, _loading = null;
 export async function loadCatalog(){
   if(_catalog) return _catalog;
   if(_loading) return _loading;
-  _loading = fetch('data/exercises.json?v=23')
+  _loading = fetch('data/exercises.json?v=24')
     .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
     .then(j=>{ _catalog = j.exercises || []; return _catalog; })
     .catch(err=>{ console.warn('[generator] no se pudo cargar el catálogo JSON:', err.message); _catalog = []; return _catalog; });
@@ -132,15 +132,70 @@ function applyProgressiveOverload(plan, feel){
   return plan;
 }
 
+// ---- Filtro de poblaciones especiales (bajo impacto) ----
+// Excluye ejercicios balísticos/pliométricos/de potencia (saltos, swings, thrusters…).
+const BALLISTIC_IDS = ['jump_squat','jumping_jacks','thruster','push_press','swing'];
+function lowImpactExclusions(){
+  const ex = new Set(BALLISTIC_IDS);
+  getCatalog().forEach(e=>{ if(e.explosive) ex.add(e.id); });   // usa la etiqueta del catálogo
+  return ex;
+}
+
+// ---- Programación en Super-series antagonistas ----
+// Empareja pasos principales adyacentes (la selección ya alterna empuje/tracción/
+// inferior/core), formando bloques de 2 → "Superserie Antagonista". Calentamiento y
+// vuelta a la calma quedan como bloques individuales. NO reordena la ejecución real
+// (plan.steps se conserva intacto para el motor); esto es la estructura/vista.
+function stepDTO(s){
+  return {
+    id: s.id, nombre: s.name, emoji: s.emoji, modo: s.mode,
+    series: s.sets,
+    reps: s.mode==='hold' ? null : (s.repsLabel || String(s.reps)),
+    segundos: s.mode==='hold' ? s.secs : null,
+    bilateral: !!s.bilateral,
+    est_seg: s.est,
+  };
+}
+function buildBlocks(plan, restPost){
+  const blocks = []; let n = 0;
+  const warm = plan.steps.filter(s=>s.phase==='warmup');
+  const main = plan.steps.filter(s=>s.phase==='main');
+  const cool = plan.steps.filter(s=>s.phase==='cooldown');
+  const PHASE_REST = 10;
+
+  for(const s of warm)
+    blocks.push({ bloque:++n, tipo:'Calentamiento', ejercicios:[stepDTO(s)], descanso_entre_ejercicios:0, descanso_post_bloque:PHASE_REST });
+
+  // Empareja principales de dos en dos (antagonista por la alternancia de la selección)
+  for(let i=0; i<main.length; i+=2){
+    const par = main.slice(i, i+2).map(stepDTO);
+    blocks.push({
+      bloque: ++n,
+      tipo: par.length===2 ? 'Superserie' : 'Serie',
+      ejercicios: par,
+      descanso_entre_ejercicios: par.length===2 ? 15 : 0,   // mínimo entre ejercicios del par
+      descanso_post_bloque: restPost,                        // descanso completo tras el bloque
+    });
+  }
+
+  for(const s of cool)
+    blocks.push({ bloque:++n, tipo:'Vuelta a la calma', ejercicios:[stepDTO(s)], descanso_entre_ejercicios:0, descanso_post_bloque:PHASE_REST });
+
+  return blocks;
+}
+
 // ===== API pública del generador =====
-// params: { group, equip:Set, minutes, goal, level, age, sex, injuries:[] }
+// params: { group, equip:Set, minutes, goal, level, age, sex, injuries:[], isBajoImpacto }
 export async function generateRoutine(params){
   await loadCatalog();                              // garantiza catálogo (y caché offline)
   const exclude = injuriesToExclude(params.injuries || []);
 
+  // Poblaciones especiales: si el perfil es de bajo impacto, fuera balísticos/pliométricos.
+  if(params.isBajoImpacto) for(const id of lowImpactExclusions()) exclude.add(id);
+
   // (El filtrado sobre el JSON queda disponible/depurable; la selección final,
   //  con calentamiento, vuelta a la calma y ajuste al tiempo, la resuelve el
-  //  motor probado de exercises.js, al que pasamos la exclusión por lesiones.)
+  //  motor probado de exercises.js, al que pasamos la exclusión.)
   const candidates = filterCandidates({ equip:params.equip, group:params.group, exclude });
 
   const plan = buildGuidedPlan(params.group, params.equip, params.minutes, {
@@ -150,6 +205,11 @@ export async function generateRoutine(params){
 
   plan.candidateCount = candidates.length;
   plan.injuriesApplied = [...exclude];
+  plan.bajoImpacto = !!params.isBajoImpacto;
   // feel = RPE (1-5) de la última sesión de este foco → modula la progresión
-  return applyProgressiveOverload(plan, params.feel);
+  applyProgressiveOverload(plan, params.feel);
+
+  // Estructura estricta de bloques/super-series (para preview y programación avanzada)
+  plan.blocks = buildBlocks(plan, (plan.goal && plan.goal.rest) || params.rest || 60);
+  return plan;
 }

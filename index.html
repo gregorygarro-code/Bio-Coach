@@ -65,7 +65,7 @@
   }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=23" />
+  <link rel="stylesheet" href="css/styles.css?v=24" />
 </head>
 <body>
   <header class="topbar">
@@ -475,6 +475,10 @@
           <label for="pf-notes">Lesiones / notas (opcional)</label>
           <textarea id="pf-notes" rows="2" maxlength="300" placeholder="Ej. molestia en hombro derecho, prefiero bajo impacto…"></textarea>
         </div>
+        <div class="setting pf-lowimpact">
+          <label for="pf-bajo-impacto">Entrenamiento de Bajo Impacto (Rehabilitación / Poblaciones Especiales)</label>
+          <input type="checkbox" id="pf-bajo-impacto" />
+        </div>
         <div class="auth-actions">
           <button id="pf-save" class="btn accent">Guardar perfil</button>
           <button id="pf-logout" class="btn ghost" hidden>Cerrar sesión</button>
@@ -702,11 +706,27 @@
     </div>
   </div>
 
+  <!-- Previsualización de rutina de un día del calendario (dialog nativo) -->
+  <dialog id="modal-rutina-preview" class="rutina-dialog">
+    <form method="dialog" class="rd-head">
+      <div>
+        <h2 id="mrp-title">Rutina del día</h2>
+        <p id="mrp-obj" class="muted small"></p>
+      </div>
+      <button id="mrp-close" class="modal-close" aria-label="Cerrar" value="cancel">✕</button>
+    </form>
+    <p id="mrp-est" class="muted small"></p>
+    <div id="mrp-body" class="mrp-body"></div>
+    <div class="rd-actions">
+      <button id="mrp-modify" class="btn accent" type="button">🤖 Modificar rutina (IA)</button>
+    </div>
+  </dialog>
+
   <div id="loader" class="loader hidden"><div class="spinner"></div><p id="loader-msg">Cargando modelo de pose…</p></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-  <script src="js/config.js?v=23"></script>
-  <script type="module" src="js/app.js?v=23"></script>
+  <script src="js/config.js?v=24"></script>
+  <script type="module" src="js/app.js?v=24"></script>
 
   <!-- Registro del Service Worker (PWA / offline) -->
   <script>

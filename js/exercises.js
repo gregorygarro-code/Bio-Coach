@@ -1,5 +1,5 @@
 // ===== Biblioteca de ejercicios + motor biomecánico =====
-import { LM, angle, angleFromVertical, midpoint, vis, clamp } from './utils.js?v=23';
+import { LM, angle, angleFromVertical, midpoint, vis, clamp } from './utils.js?v=24';
 
 // --- helpers de ángulos sobre landmarks ---
 function tri(lm, a, b, c){
@@ -701,6 +701,47 @@ const PREHAB = [
 PREHAB.forEach(e=>{ e.equipment = e.equipment || ['bodyweight']; e.gauges = e.gauges || []; if(!e.rep) e.rep = { measure:()=>null, effort:'low', effortThresh:0, resetThresh:999 }; });
 EXERCISES.push(...PREHAB);
 
+// ================= MOVILIDAD (FRC) — obligatorios en el calentamiento =================
+// Ejercicios por tiempo (type:'hold', cámara opcional). category:'movilidad'.
+const MOBILITY = [
+  { id:'worlds_greatest', name:"World's Greatest Stretch", emoji:'🌍', group:'stretch', category:'movilidad', type:'hold', bilateral:true, camOptional:true, holdDefault:40,
+    equipment:['bodyweight'], muscles:'Cadera · isquios · torácica (movilidad)', view:'Cámara opcional',
+    cues:['Zancada larga, mano al suelo por dentro','Lleva el codo hacia el tobillo','Rota el tronco y abre el brazo al techo','Alterna lados con control, sin rebotes'] },
+  { id:'hip_9090', name:'90/90 Hip Switches', emoji:'🔄', group:'stretch', category:'movilidad', type:'hold', bilateral:false, camOptional:true, holdDefault:40,
+    equipment:['bodyweight'], muscles:'Rotación de cadera (movilidad)', view:'Cámara opcional',
+    cues:['Sentado, piernas en 90/90','Gira ambas rodillas de un lado al otro','Tronco erguido, pecho alto','Movimiento lento y controlado'] },
+  { id:'cossack', name:'Cossack Squats', emoji:'🦿', group:'stretch', category:'movilidad', type:'hold', bilateral:true, camOptional:true, holdDefault:40,
+    equipment:['bodyweight'], muscles:'Aductores · cadera · tobillo (movilidad)', view:'Cámara opcional',
+    cues:['Pies anchos, baja hacia un lado','La otra pierna estirada, punta del pie arriba','Talón apoyado y pecho alto','Alterna de lado a lado'] },
+];
+// ================= CONTROL POSTURAL (Pilates / funcional) =================
+const CONTROL = [
+  { id:'bird_dog_adv', name:'Bird-dog avanzado', emoji:'🐦', group:'core', category:'control', type:'hold', bilateral:true, holdDefault:30,
+    equipment:['bodyweight'], muscles:'Core · estabilidad lumbar', view:'De lado, cuerpo entero',
+    gauges:[{label:'Cadera', get:hip, min:120, max:185}],
+    cues:['Cuadrupedia con columna neutra','Extiende brazo y pierna opuestos','Pausa 2 s manteniendo la cadera nivelada','No arquees la lumbar'],
+    checks(){ return [ok('Mantén el equilibrio y la cadera nivelada')]; } },
+  { id:'side_plank_rotation', name:'Plancha lateral con rotación', emoji:'🔃', group:'core', category:'control', type:'hold', bilateral:true, holdDefault:30,
+    equipment:['bodyweight'], muscles:'Oblicuos · core · hombro', view:'Lateral, cuerpo entero',
+    gauges:[{label:'Cuerpo', get:bodyLineAngle, min:130, max:185}],
+    cues:['Plancha lateral estable, cadera alta','Pasa el brazo libre por debajo del tronco (rotación)','Vuelve a abrir el brazo al techo','Control en todo el recorrido'],
+    checks(lm){ const bl=bodyLineAngle(lm); return [bl!=null && bl>=160 ? ok('Buena alineación') : warn('Sube la cadera, cuerpo recto')]; } },
+  { id:'single_leg_bridge', name:'Glute bridge a una pierna', emoji:'🌉', group:'lower', category:'control', bilateral:true,
+    equipment:['bodyweight'], muscles:'Glúteo · isquios · core', view:'De lado, tumbado',
+    rep:{ measure:hip, effort:'high', effortThresh:158, resetThresh:120 },
+    gauges:[{label:'Cadera', get:hip, min:90, max:185}],
+    cues:['Tumbado, una pierna estirada','Empuja la cadera con el talón apoyado','Aprieta el glúteo arriba','Cadera nivelada, sin caer a un lado'],
+    checks(lm,c){ const out=[]; const top=c.lastRepMax; if(top!=null) out.push(top>=155?ok('Buena extensión de cadera'):warn('Sube más la cadera')); return out; } },
+];
+[...MOBILITY, ...CONTROL].forEach(s=>{
+  s.equipment = s.equipment || ['bodyweight'];
+  s.gauges = s.gauges || [];
+  if(!s.rep) s.rep = { measure:()=>null, effort:'low', effortThresh:0, resetThresh:999 };
+  if(!s.checks) s.checks = ()=>[{level:'good', msg:'Muévete lento y controlado, sin dolor'}];
+});
+EXERCISES.push(...MOBILITY, ...CONTROL);
+{ const _cc = EXERCISES.find(e=>e.id==='cat_cow'); if(_cc) _cc.category='movilidad'; }   // Cat-Cow → movilidad
+
 // --- Grupo muscular, categoría, atributos y enlace de vídeo por ejercicio ---
 const GROUP_MAP = {
   squat:'lower', pushup:'upper', lunge:'lower', plank:'core', curl:'upper',
@@ -886,7 +927,7 @@ export function buildGuidedPlan(group, equip, minutes, opts={}){
   const sets = Math.max(2, baseSets + goal.setsDelta + adjSets + (level==='avanzado'?1:0) - (level==='principiante'?1:0));
   let pool = exercisesForGroup(g, equip).filter(e=>e.group!=='stretch' && e.group!=='prevencion' && !exclude.has(e.id));
   if(age>=60) pool = pool.filter(e=>!e.explosive) .length ? pool.filter(e=>!e.explosive) : pool;  // mayores: evita explosivos si hay alternativa
-  const warmIds=['shoulder_circles','cat_cow','thoracic_rot','hip_flexor'];
+  const warmIds=['worlds_greatest','hip_9090','cat_cow','thoracic_rot','shoulder_circles','hip_flexor'];  // movilidad (FRC) primero
   const coolIds=['hamstring','quad','chest_open','forward_fold','child_pose','glute_fig4'];
 
   const budget=minutes*60;

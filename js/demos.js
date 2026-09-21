@@ -108,6 +108,14 @@ export const DEMOS = {
   nordic_curl:{ a:{hipX:100,hipY:120,torso:-90,thigh:90,shin:90,uarm:80,farm:80}, b:{hipX:100,hipY:120,torso:-52,thigh:90,shin:90,uarm:40,farm:40}, speed:0.4 },
   scapular_pushup:{ a:{hipX:96,hipY:122,torso:-12,uarm:92,farm:92,thigh:192,shin:192}, b:{hipX:96,hipY:118,torso:-12,uarm:92,farm:92,thigh:192,shin:192}, speed:0.6 },
   calf_raise_prehab:{ a:{hipX:100,hipY:122,uarm:70,farm:70}, b:{hipX:100,hipY:112,uarm:70,farm:70}, speed:0.7 },
+
+  // ===== MOVILIDAD (FRC) + CONTROL POSTURAL =====
+  worlds_greatest:{ a:{hipX:100,hipY:140,torso:-70,uarm:70,farm:70,thigh:55,shin:120}, b:{hipX:100,hipY:140,torso:-50,uarm:-70,farm:-70,thigh:55,shin:120}, speed:0.45 },
+  hip_9090:{ a:{hipX:100,hipY:150,torso:-90,uarm:40,farm:40,thigh:20,shin:70}, b:{hipX:100,hipY:150,torso:-90,uarm:40,farm:40,thigh:-30,shin:20}, speed:0.5 },
+  cossack:{ a:{uarm:35,farm:35,thigh:90,shin:90}, b:{hipX:112,hipY:150,torso:-64,uarm:20,farm:20,thigh:40,shin:120}, speed:0.5 },
+  bird_dog_adv:{ a:{hipX:100,hipY:118,torso:-15,uarm:22,farm:22,thigh:158,shin:200}, b:{hipX:100,hipY:120,torso:-15,uarm:20,farm:20,thigh:162,shin:205}, speed:0.45 },
+  side_plank_rotation:{ a:{hipX:100,hipY:130,torso:-26,uarm:-70,farm:-70,thigh:200,shin:200}, b:{hipX:100,hipY:132,torso:-26,uarm:40,farm:120,thigh:200,shin:200}, speed:0.6 },
+  single_leg_bridge:{ a:{hipX:100,hipY:150,torso:168,uarm:120,farm:120,thigh:60,shin:120}, b:{hipX:100,hipY:132,torso:162,uarm:120,farm:120,thigh:6,shin:6}, speed:0.7 },
 };
 
 const BONES=[['head','sh'],['sh','hip'],['sh','el'],['el','ha'],['hip','kn'],['kn','an']];

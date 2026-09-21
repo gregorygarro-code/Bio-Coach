@@ -1,13 +1,13 @@
 // ===== FitCoach Casa · app principal =====
-import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS } from './exercises.js?v=23';
-import { createPoseLandmarker } from './pose.js?v=23';
-import { createDemoPlayer } from './demos.js?v=23';
-import * as generator from './generator.js?v=23';
-import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=23';
-import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=23';
-import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=23';
-import * as api from './api.js?v=23';
-import * as store from './storage.js?v=23';
+import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS } from './exercises.js?v=24';
+import { createPoseLandmarker } from './pose.js?v=24';
+import { createDemoPlayer } from './demos.js?v=24';
+import * as generator from './generator.js?v=24';
+import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=24';
+import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=24';
+import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=24';
+import * as api from './api.js?v=24';
+import * as store from './storage.js?v=24';
 
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -211,6 +211,7 @@ async function regenPlan(){
     goal: currentGoal, level: settings.level, age: pc.age, sex: pc.sex,
     rest: settings.rest, injuries: currentInjuries,
     feel: store.lastSessionRPE(currentGroup),   // RPE de la última sesión de este foco
+    isBajoImpacto: !!(profileData && profileData.isBajoImpacto),   // filtro poblaciones especiales
   });
   renderGuidedPreview();
 }
@@ -1057,7 +1058,11 @@ function renderCalendar(){
       html+=`<span class="cal-vol">✓ ${done.length} ${done.length===1?'serie':'series'}</span>`;
     }
     cell.innerHTML=html;
-    cell.onclick=()=>openDay(key, date);
+    // Día futuro con plan → abre la previsualización de la rutina; si no, el editor del día.
+    const planned = plan && plan.focus && plan.focus!=='rest';
+    cell.onclick = (key>todayKey && planned)
+      ? ()=>openRoutinePreview(key, plan, date)
+      : ()=>openDay(key, date);
     grid.appendChild(cell);
   }
 }
@@ -1083,6 +1088,53 @@ function openDay(key, date){
   $('#day-modal').classList.remove('hidden');
 }
 function closeDay(){ $('#day-modal').classList.add('hidden'); dayKeyOpen=null; }
+
+// ===== Previsualización de la rutina de un día futuro (dialog nativo) =====
+let previewPlanFocus = null;
+async function openRoutinePreview(key, plan, date){
+  const dlg=$('#modal-rutina-preview'); if(!dlg) return;
+  const prof = profileData || {};
+  const goalId  = plan.goal || prof.goal || currentGoal;
+  const minutes = plan.minutes || prof.time || sessionMinutes;
+  previewPlanFocus = plan.focus;
+  $('#mrp-title').textContent = date.toLocaleDateString('es-ES',{weekday:'long', day:'numeric', month:'long'});
+  $('#mrp-obj').textContent   = `Objetivo: ${TRAIN_GOALS[goalId]?.label||'General'} · ${GROUPS[plan.focus]?.label||plan.focus} · ${minutes} min`;
+  $('#mrp-est').textContent   = '';
+  $('#mrp-body').innerHTML    = '<p class="muted">Generando vista previa…</p>';
+  if(typeof dlg.showModal==='function') dlg.showModal(); else dlg.setAttribute('open','');
+  // Resolución Just-In-Time de la estructura por bloques (super-series)
+  const routine = await generator.generateRoutine({
+    group:plan.focus, equip:selectedEquip, minutes, goal:goalId,
+    level:settings.level, age:prof.age, sex:prof.sex, rest:settings.rest,
+    injuries:currentInjuries, isBajoImpacto:!!prof.isBajoImpacto,
+  });
+  renderPreviewBlocks(routine);
+}
+function renderPreviewBlocks(routine){
+  const blocks = routine.blocks || [];
+  $('#mrp-est').textContent = `~${routine.estMin} min estimados · ${blocks.length} bloques`;
+  $('#mrp-body').innerHTML = blocks.map(b=>{
+    const exs = b.ejercicios.map(e=>{
+      const dose = e.modo==='hold' ? `${e.series>1?e.series+'× ':''}${e.segundos}s` : `${e.series} × ${e.reps}`;
+      const side = e.bilateral ? (e.modo==='hold'?' ×2 lados':' por lado') : '';
+      return `<li><span>${e.emoji} ${e.nombre}</span><b>${dose}${side}</b></li>`;
+    }).join('');
+    const rest = b.ejercicios.length>1 ? `${b.descanso_entre_ejercicios}s entre ejercicios · ` : '';
+    return `<div class="mrp-block">
+      <div class="mrp-bhead"><span>Bloque ${b.bloque} · ${b.tipo}</span></div>
+      <ul>${exs}</ul>
+      <p class="mrp-rest muted small">${rest}descanso ${b.descanso_post_bloque}s tras el bloque</p>
+    </div>`;
+  }).join('') || '<p class="muted">No hay ejercicios para esta combinación.</p>';
+}
+$('#mrp-close')?.addEventListener('click', ()=>$('#modal-rutina-preview')?.close?.());
+// "Modificar rutina (IA)": lleva a Entrenar con ese foco y despliega el input de IA
+$('#mrp-modify')?.addEventListener('click', ()=>{
+  $('#modal-rutina-preview')?.close?.();
+  if(previewPlanFocus && GROUPS[previewPlanFocus]){ currentGroup=previewPlanFocus; renderGroups(); regenPlan(); }
+  goTo('entrenar');
+  revealAI(true);
+});
 $('#day-close').addEventListener('click', closeDay);
 $('#day-modal').addEventListener('click', e=>{ if(e.target.id==='day-modal') closeDay(); });
 $('#day-save').addEventListener('click', ()=>{
@@ -1304,6 +1356,7 @@ function fillProfileForm(p){
   $('#pf-goal').value = p.goal ?? currentGoal;
   $('#pf-level').value = p.level ?? settings.level;
   $('#pf-notes').value = p.notes ?? '';
+  if($('#pf-bajo-impacto')) $('#pf-bajo-impacto').checked = !!p.isBajoImpacto;   // toggle bajo impacto
   renderProfileEquip();     // refleja equipDetail + equipWeights globales
 }
 
@@ -1313,6 +1366,7 @@ function gatherProfile(){
     days:+$('#pf-days').value||null, time:+$('#pf-time').value, goal:$('#pf-goal').value,
     level:$('#pf-level').value, equip:[...equipDetail], equipWeights:{...equipWeights}, equipOther,
     notes:$('#pf-notes').value.trim(),
+    isBajoImpacto: $('#pf-bajo-impacto')?.checked || false,   // se persiste dentro del perfil (localStorage/nube)
   };
 }
 

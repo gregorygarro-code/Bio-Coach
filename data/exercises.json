@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "generated": "2026-09-20",
-  "count": 57,
+  "generated": "2026-09-21",
+  "count": 63,
   "exercises": [
     {
       "id": "squat",
@@ -1349,7 +1349,7 @@
       "muscles": "Columna · movilidad",
       "view": "Cámara opcional",
       "group": "stretch",
-      "category": "estiramiento",
+      "category": "movilidad",
       "bilateral": false,
       "weighted": false,
       "lowImpact": false,
@@ -2342,6 +2342,240 @@
         "Rodillas extendidas"
       ],
       "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Elevaci%C3%B3n%20de%20talones%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "worlds_greatest",
+      "name": "World's Greatest Stretch",
+      "emoji": "🌍",
+      "type": "hold",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Cadera · isquios · torácica (movilidad)",
+      "view": "Cámara opcional",
+      "group": "stretch",
+      "category": "movilidad",
+      "bilateral": true,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": 40,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [],
+      "cues": [
+        "Zancada larga, mano al suelo por dentro",
+        "Lleva el codo hacia el tobillo",
+        "Rota el tronco y abre el brazo al techo",
+        "Alterna lados con control, sin rebotes"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20World's%20Greatest%20Stretch%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "hip_9090",
+      "name": "90/90 Hip Switches",
+      "emoji": "🔄",
+      "type": "hold",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Rotación de cadera (movilidad)",
+      "view": "Cámara opcional",
+      "group": "stretch",
+      "category": "movilidad",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": 40,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [],
+      "cues": [
+        "Sentado, piernas en 90/90",
+        "Gira ambas rodillas de un lado al otro",
+        "Tronco erguido, pecho alto",
+        "Movimiento lento y controlado"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%2090%2F90%20Hip%20Switches%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "cossack",
+      "name": "Cossack Squats",
+      "emoji": "🦿",
+      "type": "hold",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Aductores · cadera · tobillo (movilidad)",
+      "view": "Cámara opcional",
+      "group": "stretch",
+      "category": "movilidad",
+      "bilateral": true,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": 40,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [],
+      "cues": [
+        "Pies anchos, baja hacia un lado",
+        "La otra pierna estirada, punta del pie arriba",
+        "Talón apoyado y pecho alto",
+        "Alterna de lado a lado"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Cossack%20Squats%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "bird_dog_adv",
+      "name": "Bird-dog avanzado",
+      "emoji": "🐦",
+      "type": "hold",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Core · estabilidad lumbar",
+      "view": "De lado, cuerpo entero",
+      "group": "core",
+      "category": "control",
+      "bilateral": true,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": 30,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [
+        {
+          "label": "Cadera",
+          "min": 120,
+          "max": 185
+        }
+      ],
+      "cues": [
+        "Cuadrupedia con columna neutra",
+        "Extiende brazo y pierna opuestos",
+        "Pausa 2 s manteniendo la cadera nivelada",
+        "No arquees la lumbar"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Bird-dog%20avanzado%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "side_plank_rotation",
+      "name": "Plancha lateral con rotación",
+      "emoji": "🔃",
+      "type": "hold",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Oblicuos · core · hombro",
+      "view": "Lateral, cuerpo entero",
+      "group": "core",
+      "category": "control",
+      "bilateral": true,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": 30,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [
+        {
+          "label": "Cuerpo",
+          "min": 130,
+          "max": 185
+        }
+      ],
+      "cues": [
+        "Plancha lateral estable, cadera alta",
+        "Pasa el brazo libre por debajo del tronco (rotación)",
+        "Vuelve a abrir el brazo al techo",
+        "Control en todo el recorrido"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Plancha%20lateral%20con%20rotaci%C3%B3n%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "single_leg_bridge",
+      "name": "Glute bridge a una pierna",
+      "emoji": "🌉",
+      "type": "reps",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Glúteo · isquios · core",
+      "view": "De lado, tumbado",
+      "group": "lower",
+      "category": "control",
+      "bilateral": true,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "high",
+        "effortThresh": 158,
+        "resetThresh": 120
+      },
+      "gauges": [
+        {
+          "label": "Cadera",
+          "min": 90,
+          "max": 185
+        }
+      ],
+      "cues": [
+        "Tumbado, una pierna estirada",
+        "Empuja la cadera con el talón apoyado",
+        "Aprieta el glúteo arriba",
+        "Cadera nivelada, sin caer a un lado"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Glute%20bridge%20a%20una%20pierna%20ejercicio%20en%20casa"
     }
   ]
 }
