@@ -1,7 +1,7 @@
 {
   "version": 1,
   "generated": "2026-09-21",
-  "count": 63,
+  "count": 76,
   "exercises": [
     {
       "id": "squat",
@@ -17,6 +17,7 @@
       "view": "De frente o 45°, cuerpo entero",
       "group": "lower",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": false,
       "weighted": true,
       "lowImpact": false,
@@ -64,6 +65,7 @@
       "view": "De lado o 45°, cuerpo entero",
       "group": "upper",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": false,
       "weighted": false,
       "lowImpact": false,
@@ -112,6 +114,7 @@
       "view": "De lado, cuerpo entero",
       "group": "lower",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": true,
       "weighted": true,
       "lowImpact": false,
@@ -159,6 +162,7 @@
       "view": "De lado, cuerpo entero",
       "group": "core",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": false,
       "weighted": false,
       "lowImpact": false,
@@ -202,6 +206,7 @@
       "view": "De frente o de lado",
       "group": "upper",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": false,
       "weighted": true,
       "lowImpact": false,
@@ -245,6 +250,7 @@
       "view": "De frente, medio cuerpo",
       "group": "upper",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": false,
       "weighted": true,
       "lowImpact": false,
@@ -288,6 +294,7 @@
       "view": "De lado, medio cuerpo",
       "group": "upper",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": false,
       "weighted": true,
       "lowImpact": false,
@@ -336,6 +343,7 @@
       "view": "De lado, cuerpo entero",
       "group": "lower",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": false,
       "weighted": true,
       "lowImpact": false,
@@ -383,6 +391,7 @@
       "view": "De lado, cuerpo entero",
       "group": "full",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": false,
       "weighted": true,
       "lowImpact": false,
@@ -425,6 +434,7 @@
       "view": "De frente, medio cuerpo",
       "group": "upper",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": false,
       "weighted": false,
       "lowImpact": false,
@@ -468,6 +478,7 @@
       "view": "De frente, medio cuerpo",
       "group": "upper",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": false,
       "weighted": true,
       "lowImpact": false,
@@ -510,6 +521,7 @@
       "view": "De frente, cuerpo entero",
       "group": "upper",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": false,
       "weighted": true,
       "lowImpact": false,
@@ -553,6 +565,7 @@
       "view": "De lado, medio cuerpo",
       "group": "upper",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": false,
       "weighted": true,
       "lowImpact": false,
@@ -596,6 +609,7 @@
       "view": "De lado, medio cuerpo",
       "group": "upper",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": false,
       "weighted": true,
       "lowImpact": false,
@@ -638,6 +652,7 @@
       "view": "De lado, tumbado",
       "group": "core",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": false,
       "weighted": false,
       "lowImpact": false,
@@ -680,6 +695,7 @@
       "view": "De lado, tumbado",
       "group": "core",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": false,
       "weighted": false,
       "lowImpact": false,
@@ -722,6 +738,7 @@
       "view": "De lado, cuerpo entero",
       "group": "core",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": false,
       "weighted": false,
       "lowImpact": false,
@@ -764,6 +781,7 @@
       "view": "De lado, tumbado",
       "group": "core",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": false,
       "weighted": false,
       "lowImpact": false,
@@ -806,6 +824,7 @@
       "view": "Lateral, cuerpo entero",
       "group": "core",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": true,
       "weighted": false,
       "lowImpact": false,
@@ -848,6 +867,7 @@
       "view": "De lado, cuerpo entero",
       "group": "core",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": false,
       "weighted": false,
       "lowImpact": false,
@@ -890,6 +910,7 @@
       "view": "De lado, boca abajo",
       "group": "core",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": false,
       "weighted": false,
       "lowImpact": false,
@@ -927,6 +948,7 @@
       "view": "De lado, tumbado",
       "group": "lower",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": false,
       "weighted": true,
       "lowImpact": false,
@@ -970,6 +992,7 @@
       "view": "De lado, cuerpo entero",
       "group": "lower",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": true,
       "weighted": true,
       "lowImpact": false,
@@ -1013,6 +1036,7 @@
       "view": "De lado, medio cuerpo",
       "group": "upper",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": false,
       "weighted": true,
       "lowImpact": false,
@@ -1056,6 +1080,7 @@
       "view": "De frente, medio cuerpo",
       "group": "upper",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": false,
       "weighted": true,
       "lowImpact": false,
@@ -1098,6 +1123,7 @@
       "view": "Cámara opcional",
       "group": "stretch",
       "category": "estiramiento",
+      "objetivo": null,
       "bilateral": true,
       "weighted": false,
       "lowImpact": false,
@@ -1134,6 +1160,7 @@
       "view": "Cámara opcional",
       "group": "stretch",
       "category": "estiramiento",
+      "objetivo": null,
       "bilateral": true,
       "weighted": false,
       "lowImpact": false,
@@ -1170,6 +1197,7 @@
       "view": "Cámara opcional",
       "group": "stretch",
       "category": "estiramiento",
+      "objetivo": null,
       "bilateral": true,
       "weighted": false,
       "lowImpact": false,
@@ -1206,6 +1234,7 @@
       "view": "Cámara opcional",
       "group": "stretch",
       "category": "estiramiento",
+      "objetivo": null,
       "bilateral": true,
       "weighted": false,
       "lowImpact": false,
@@ -1242,6 +1271,7 @@
       "view": "Cámara opcional",
       "group": "stretch",
       "category": "estiramiento",
+      "objetivo": null,
       "bilateral": false,
       "weighted": false,
       "lowImpact": false,
@@ -1278,6 +1308,7 @@
       "view": "Cámara opcional",
       "group": "stretch",
       "category": "estiramiento",
+      "objetivo": null,
       "bilateral": true,
       "weighted": false,
       "lowImpact": false,
@@ -1314,6 +1345,7 @@
       "view": "Cámara opcional",
       "group": "stretch",
       "category": "estiramiento",
+      "objetivo": null,
       "bilateral": true,
       "weighted": false,
       "lowImpact": false,
@@ -1350,6 +1382,7 @@
       "view": "Cámara opcional",
       "group": "stretch",
       "category": "movilidad",
+      "objetivo": null,
       "bilateral": false,
       "weighted": false,
       "lowImpact": false,
@@ -1386,6 +1419,7 @@
       "view": "Cámara opcional",
       "group": "stretch",
       "category": "estiramiento",
+      "objetivo": null,
       "bilateral": false,
       "weighted": false,
       "lowImpact": false,
@@ -1422,6 +1456,7 @@
       "view": "Cámara opcional",
       "group": "stretch",
       "category": "estiramiento",
+      "objetivo": null,
       "bilateral": false,
       "weighted": false,
       "lowImpact": false,
@@ -1458,6 +1493,7 @@
       "view": "Cámara opcional",
       "group": "stretch",
       "category": "estiramiento",
+      "objetivo": null,
       "bilateral": true,
       "weighted": false,
       "lowImpact": false,
@@ -1494,6 +1530,7 @@
       "view": "Cámara opcional",
       "group": "stretch",
       "category": "estiramiento",
+      "objetivo": null,
       "bilateral": true,
       "weighted": false,
       "lowImpact": false,
@@ -1530,6 +1567,7 @@
       "view": "Cámara opcional",
       "group": "stretch",
       "category": "estiramiento",
+      "objetivo": null,
       "bilateral": false,
       "weighted": false,
       "lowImpact": false,
@@ -1566,6 +1604,7 @@
       "view": "Cámara opcional",
       "group": "stretch",
       "category": "estiramiento",
+      "objetivo": null,
       "bilateral": false,
       "weighted": false,
       "lowImpact": false,
@@ -1602,6 +1641,7 @@
       "view": "De lado, cuerpo entero",
       "group": "lower",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": false,
       "weighted": false,
       "lowImpact": true,
@@ -1644,6 +1684,7 @@
       "view": "De lado, medio cuerpo",
       "group": "upper",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": false,
       "weighted": false,
       "lowImpact": true,
@@ -1686,6 +1727,7 @@
       "view": "De frente, cuerpo entero",
       "group": "core",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": false,
       "weighted": false,
       "lowImpact": true,
@@ -1728,6 +1770,7 @@
       "view": "De lado, sentado",
       "group": "core",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": true,
       "weighted": false,
       "lowImpact": true,
@@ -1770,6 +1813,7 @@
       "view": "De frente, cuerpo entero",
       "group": "lower",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": false,
       "weighted": false,
       "lowImpact": false,
@@ -1813,6 +1857,7 @@
       "view": "De frente, cuerpo entero",
       "group": "upper",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": false,
       "weighted": true,
       "lowImpact": false,
@@ -1855,6 +1900,7 @@
       "view": "De frente, cuerpo entero",
       "group": "full",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": false,
       "weighted": true,
       "lowImpact": false,
@@ -1902,6 +1948,7 @@
       "view": "De frente, cuerpo entero",
       "group": "core",
       "category": "fuerza",
+      "objetivo": null,
       "bilateral": false,
       "weighted": false,
       "lowImpact": false,
@@ -1944,6 +1991,7 @@
       "view": "De frente, medio cuerpo",
       "group": "prevencion",
       "category": "prevencion",
+      "objetivo": null,
       "bilateral": false,
       "weighted": false,
       "lowImpact": false,
@@ -1987,6 +2035,7 @@
       "view": "De frente, medio cuerpo",
       "group": "prevencion",
       "category": "prevencion",
+      "objetivo": null,
       "bilateral": true,
       "weighted": true,
       "lowImpact": false,
@@ -2029,6 +2078,7 @@
       "view": "De frente, medio cuerpo",
       "group": "prevencion",
       "category": "prevencion",
+      "objetivo": null,
       "bilateral": false,
       "weighted": false,
       "lowImpact": false,
@@ -2072,6 +2122,7 @@
       "view": "Lateral, tumbado",
       "group": "prevencion",
       "category": "prevencion",
+      "objetivo": null,
       "bilateral": true,
       "weighted": false,
       "lowImpact": false,
@@ -2109,6 +2160,7 @@
       "view": "Lateral, tumbado",
       "group": "prevencion",
       "category": "prevencion",
+      "objetivo": null,
       "bilateral": true,
       "weighted": false,
       "lowImpact": false,
@@ -2151,6 +2203,7 @@
       "view": "Lateral, tumbado",
       "group": "prevencion",
       "category": "prevencion",
+      "objetivo": null,
       "bilateral": false,
       "weighted": false,
       "lowImpact": false,
@@ -2187,6 +2240,7 @@
       "view": "Lateral, cuerpo entero",
       "group": "prevencion",
       "category": "prevencion",
+      "objetivo": null,
       "bilateral": true,
       "weighted": false,
       "lowImpact": false,
@@ -2229,6 +2283,7 @@
       "view": "Lateral, cuerpo entero",
       "group": "prevencion",
       "category": "prevencion",
+      "objetivo": null,
       "bilateral": false,
       "weighted": false,
       "lowImpact": false,
@@ -2271,6 +2326,7 @@
       "view": "Lateral, cuerpo entero",
       "group": "prevencion",
       "category": "prevencion",
+      "objetivo": null,
       "bilateral": false,
       "weighted": false,
       "lowImpact": false,
@@ -2313,6 +2369,7 @@
       "view": "Lateral, cuerpo entero",
       "group": "prevencion",
       "category": "prevencion",
+      "objetivo": null,
       "bilateral": false,
       "weighted": false,
       "lowImpact": false,
@@ -2355,6 +2412,7 @@
       "view": "Cámara opcional",
       "group": "stretch",
       "category": "movilidad",
+      "objetivo": null,
       "bilateral": true,
       "weighted": false,
       "lowImpact": false,
@@ -2391,6 +2449,7 @@
       "view": "Cámara opcional",
       "group": "stretch",
       "category": "movilidad",
+      "objetivo": null,
       "bilateral": false,
       "weighted": false,
       "lowImpact": false,
@@ -2427,6 +2486,7 @@
       "view": "Cámara opcional",
       "group": "stretch",
       "category": "movilidad",
+      "objetivo": null,
       "bilateral": true,
       "weighted": false,
       "lowImpact": false,
@@ -2463,6 +2523,7 @@
       "view": "De lado, cuerpo entero",
       "group": "core",
       "category": "control",
+      "objetivo": null,
       "bilateral": true,
       "weighted": false,
       "lowImpact": false,
@@ -2505,6 +2566,7 @@
       "view": "Lateral, cuerpo entero",
       "group": "core",
       "category": "control",
+      "objetivo": null,
       "bilateral": true,
       "weighted": false,
       "lowImpact": false,
@@ -2547,6 +2609,7 @@
       "view": "De lado, tumbado",
       "group": "lower",
       "category": "control",
+      "objetivo": null,
       "bilateral": true,
       "weighted": false,
       "lowImpact": false,
@@ -2576,6 +2639,574 @@
         "Cadera nivelada, sin caer a un lado"
       ],
       "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Glute%20bridge%20a%20una%20pierna%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "deep_squat",
+      "name": "Sentadilla profunda",
+      "emoji": "🦵",
+      "type": "reps",
+      "equipment": [
+        "bodyweight",
+        "dumbbell",
+        "bar"
+      ],
+      "muscles": "Cuádriceps · glúteo · aductores",
+      "view": "De frente, cuerpo entero",
+      "group": "lower",
+      "category": "fuerza",
+      "objetivo": "endurance",
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 95,
+        "resetThresh": 160
+      },
+      "gauges": [
+        {
+          "label": "Rodilla",
+          "min": 60,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "Pies anchos, baja profundo",
+        "Talones apoyados, pecho alto",
+        "Rodillas hacia fuera",
+        "Sube controlando"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Sentadilla%20profunda%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "bulgarian_end",
+      "name": "Sentadilla búlgara",
+      "emoji": "🦿",
+      "type": "reps",
+      "equipment": [
+        "bodyweight",
+        "dumbbell"
+      ],
+      "muscles": "Cuádriceps · glúteo",
+      "view": "De lado, cuerpo entero",
+      "group": "lower",
+      "category": "fuerza",
+      "objetivo": "endurance",
+      "bilateral": true,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 105,
+        "resetThresh": 155
+      },
+      "gauges": [
+        {
+          "label": "Rodilla",
+          "min": 70,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "Pie trasero elevado",
+        "Baja recto, rodilla a 90°",
+        "Tronco erguido",
+        "Empuja con el talón delantero"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Sentadilla%20b%C3%BAlgara%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "hip_thrust",
+      "name": "Hip Thrust",
+      "emoji": "🍑",
+      "type": "reps",
+      "equipment": [
+        "bodyweight",
+        "dumbbell",
+        "bar"
+      ],
+      "muscles": "Glúteo · isquios",
+      "view": "De lado, apoyado en banco",
+      "group": "lower",
+      "category": "fuerza",
+      "objetivo": "endurance",
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "high",
+        "effortThresh": 168,
+        "resetThresh": 120
+      },
+      "gauges": [
+        {
+          "label": "Cadera",
+          "min": 90,
+          "max": 185
+        }
+      ],
+      "cues": [
+        "Espalda alta en el banco",
+        "Empuja la cadera al techo",
+        "Aprieta el glúteo arriba",
+        "Barbilla metida, costillas abajo"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Hip%20Thrust%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "single_leg_press",
+      "name": "Prensa a 1 pierna",
+      "emoji": "🦵",
+      "type": "reps",
+      "equipment": [
+        "bodyweight",
+        "bar"
+      ],
+      "muscles": "Cuádriceps · glúteo",
+      "view": "Lateral, en máquina",
+      "group": "lower",
+      "category": "fuerza",
+      "objetivo": "endurance",
+      "bilateral": true,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 95,
+        "resetThresh": 160
+      },
+      "gauges": [
+        {
+          "label": "Rodilla",
+          "min": 60,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "Una pierna en la plataforma",
+        "Baja controlando",
+        "No bloquees de golpe",
+        "Empuja con todo el pie"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Prensa%20a%201%20pierna%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "front_squat",
+      "name": "Front squat",
+      "emoji": "🏋️",
+      "type": "reps",
+      "equipment": [
+        "bar",
+        "dumbbell"
+      ],
+      "muscles": "Cuádriceps · core",
+      "view": "De frente, cuerpo entero",
+      "group": "lower",
+      "category": "fuerza",
+      "objetivo": "endurance",
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 100,
+        "resetThresh": 160
+      },
+      "gauges": [
+        {
+          "label": "Rodilla",
+          "min": 60,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "Barra en la clavícula, codos altos",
+        "Tronco vertical",
+        "Baja profundo",
+        "Empuja desde el talón"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Front%20squat%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "trx_row",
+      "name": "Remo en TRX",
+      "emoji": "🎗️",
+      "type": "reps",
+      "equipment": [
+        "band"
+      ],
+      "muscles": "Espalda · bíceps · core",
+      "view": "De lado, cuerpo entero",
+      "group": "upper",
+      "category": "fuerza",
+      "objetivo": "endurance",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 75,
+        "resetThresh": 155
+      },
+      "gauges": [
+        {
+          "label": "Codo",
+          "min": 40,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "Cuerpo recto en tensión",
+        "Lleva el pecho a las manos",
+        "Aprieta la escápula",
+        "Baja controlando"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Remo%20en%20TRX%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "kb_swing_end",
+      "name": "Kettlebell Swing",
+      "emoji": "🔔",
+      "type": "reps",
+      "equipment": [
+        "dumbbell"
+      ],
+      "muscles": "Glúteo · isquios · core (potencia)",
+      "view": "De lado, cuerpo entero",
+      "group": "full",
+      "category": "fuerza",
+      "objetivo": "endurance",
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "high",
+        "effortThresh": 165,
+        "resetThresh": 120
+      },
+      "gauges": [
+        {
+          "label": "Cadera",
+          "min": 60,
+          "max": 180
+        }
+      ],
+      "cues": [
+        "Potencia desde la cadera",
+        "Espalda neutra en la bisagra",
+        "Aprieta glúteo arriba",
+        "Ritmo explosivo"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Kettlebell%20Swing%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "bulgarian_jump",
+      "name": "Búlgara con salto",
+      "emoji": "🆙",
+      "type": "reps",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Cuádriceps · glúteo (potencia)",
+      "view": "De lado, cuerpo entero",
+      "group": "lower",
+      "category": "fuerza",
+      "objetivo": "endurance",
+      "bilateral": true,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 110,
+        "resetThresh": 160
+      },
+      "gauges": [
+        {
+          "label": "Rodilla",
+          "min": 70,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "Pie trasero elevado",
+        "Baja y salta con fuerza",
+        "Aterriza suave y controlado",
+        "Alterna por lado"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20B%C3%BAlgara%20con%20salto%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "scap_dips",
+      "name": "Fondos de escápulas",
+      "emoji": "🔩",
+      "type": "reps",
+      "equipment": [
+        "bar",
+        "bodyweight"
+      ],
+      "muscles": "Serrato · escápulas",
+      "view": "De lado, medio cuerpo",
+      "group": "upper",
+      "category": "fuerza",
+      "objetivo": "endurance",
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "high",
+        "effortThresh": 176,
+        "resetThresh": 168
+      },
+      "gauges": [
+        {
+          "label": "Cuerpo",
+          "min": 150,
+          "max": 185
+        }
+      ],
+      "cues": [
+        "Apoyo firme, brazos extendidos",
+        "Deja caer los hombros (depresión)",
+        "Empuja hacia arriba con las escápulas",
+        "Codos siempre rectos"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Fondos%20de%20esc%C3%A1pulas%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "trx_squat",
+      "name": "Sentadilla en TRX",
+      "emoji": "🎗️",
+      "type": "reps",
+      "equipment": [
+        "band"
+      ],
+      "muscles": "Cuádriceps · glúteo (asistida)",
+      "view": "De frente, cuerpo entero",
+      "group": "lower",
+      "category": "fuerza",
+      "objetivo": "endurance",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 100,
+        "resetThresh": 160
+      },
+      "gauges": [
+        {
+          "label": "Rodilla",
+          "min": 60,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "Sujeta las cintas en tensión",
+        "Baja profundo con el pecho alto",
+        "Talones apoyados",
+        "Sube apretando el glúteo"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Sentadilla%20en%20TRX%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "single_leg_dl",
+      "name": "Peso Muerto a 1 Pierna",
+      "emoji": "🦩",
+      "type": "reps",
+      "equipment": [
+        "bodyweight",
+        "dumbbell"
+      ],
+      "muscles": "Isquios · glúteo · core",
+      "view": "De lado, cuerpo entero",
+      "group": "lower",
+      "category": "fuerza",
+      "objetivo": "endurance",
+      "bilateral": true,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 120,
+        "resetThresh": 165
+      },
+      "gauges": [
+        {
+          "label": "Cadera",
+          "min": 60,
+          "max": 185
+        }
+      ],
+      "cues": [
+        "Bisagra sobre una pierna",
+        "Espalda recta, cadera atrás",
+        "La pierna libre alarga hacia atrás",
+        "Sube apretando el glúteo"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Peso%20Muerto%20a%201%20Pierna%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "plank_static",
+      "name": "Plancha estática",
+      "emoji": "🧘",
+      "type": "hold",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Core · hombro",
+      "view": "De lado, cuerpo entero",
+      "group": "core",
+      "category": "fuerza",
+      "objetivo": "endurance",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": 40,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [
+        {
+          "label": "Cuerpo",
+          "min": 130,
+          "max": 185
+        }
+      ],
+      "cues": [
+        "Cuerpo en línea recta",
+        "Aprieta abdomen y glúteo",
+        "No hundas la cadera",
+        "Respira"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Plancha%20est%C3%A1tica%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "plank_dynamic",
+      "name": "Plancha dinámica",
+      "emoji": "🔃",
+      "type": "reps",
+      "equipment": [
+        "bodyweight"
+      ],
+      "muscles": "Core · hombro",
+      "view": "De lado, cuerpo entero",
+      "group": "core",
+      "category": "fuerza",
+      "objetivo": "endurance",
+      "bilateral": false,
+      "weighted": false,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 100,
+        "resetThresh": 160
+      },
+      "gauges": [
+        {
+          "label": "Codo",
+          "min": 60,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "De plancha alta a antebrazos y vuelta",
+        "Cadera estable, sin balanceo",
+        "Ritmo controlado",
+        "Aprieta el core"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Plancha%20din%C3%A1mica%20ejercicio%20en%20casa"
     }
   ]
 }

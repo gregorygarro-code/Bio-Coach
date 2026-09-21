@@ -3,15 +3,33 @@
 // ejecuta el filtrado/selección según los parámetros del usuario. La parte
 // biomecánica (funciones de medición/checks) sigue viviendo en exercises.js;
 // aquí trabajamos solo con la parte declarativa + el historial (sobrecarga).
-import { buildGuidedPlan, getExercise } from './exercises.js?v=25';
-import { lastResultFor } from './storage.js?v=25';
+import { buildGuidedPlan, getExercise } from './exercises.js?v=26';
+import { lastResultFor, loadPlans } from './storage.js?v=26';
+
+// Semana del mesociclo (1..4+) a partir del primer día auto-planificado en el calendario
+function mesoWeek(){
+  try{
+    const plans=loadPlans();
+    const auto=Object.keys(plans).filter(k=>plans[k]&&plans[k].auto).sort();
+    if(!auto.length) return 1;
+    const start=new Date(auto[0]); const now=new Date(); now.setHours(0,0,0,0);
+    return Math.max(1, Math.floor((now-start)/86400000/7)+1);
+  }catch{ return 1; }
+}
+// Prescripción de "Fuerza Útil" (endurance) según la semana del mesociclo
+function enduranceReps(week){
+  if(week<=1) return "6 reps (peso para 18) - 85% vel.";
+  if(week===2) return "6 reps (peso para 16) - 85% vel.";
+  if(week===3) return "5 reps (peso para 14) - 85% vel.";
+  return "3 reps (peso para 12) - 85% vel.";
+}
 
 // ---- Carga del catálogo JSON (con caché en memoria) ----
 let _catalog = null, _loading = null;
 export async function loadCatalog(){
   if(_catalog) return _catalog;
   if(_loading) return _loading;
-  _loading = fetch('data/exercises.json?v=25')
+  _loading = fetch('data/exercises.json?v=26')
     .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
     .then(j=>{ _catalog = j.exercises || []; return _catalog; })
     .catch(err=>{ console.warn('[generator] no se pudo cargar el catálogo JSON:', err.message); _catalog = []; return _catalog; });
@@ -146,35 +164,40 @@ function lowImpactExclusions(){
 // inferior/core), formando bloques de 2 → "Superserie Antagonista". Calentamiento y
 // vuelta a la calma quedan como bloques individuales. NO reordena la ejecución real
 // (plan.steps se conserva intacto para el motor); esto es la estructura/vista.
-function stepDTO(s){
+function stepDTO(s, repsOverride){
   return {
     id: s.id, nombre: s.name, emoji: s.emoji, modo: s.mode,
     series: s.sets,
-    reps: s.mode==='hold' ? null : (s.repsLabel || String(s.reps)),
+    reps: s.mode==='hold' ? null : (repsOverride || s.repsLabel || String(s.reps)),
     segundos: s.mode==='hold' ? s.secs : null,
     bilateral: !!s.bilateral,
     est_seg: s.est,
   };
 }
-function buildBlocks(plan, restPost){
+function buildBlocks(plan, restPost, opts={}){
   const blocks = []; let n = 0;
   const warm = plan.steps.filter(s=>s.phase==='warmup');
   const main = plan.steps.filter(s=>s.phase==='main');
   const cool = plan.steps.filter(s=>s.phase==='cooldown');
   const PHASE_REST = 10;
+  const endurance = !!opts.endurance;
+  const reps = endurance ? enduranceReps(opts.week||1) : null;
+  const mainIntra = endurance ? 180 : 15;   // descanso_entre_ejercicios
+  const mainPost  = endurance ? 180 : restPost;   // descanso_entre_series / post-bloque
 
   for(const s of warm)
     blocks.push({ bloque:++n, tipo:'Calentamiento', ejercicios:[stepDTO(s)], descanso_entre_ejercicios:0, descanso_post_bloque:PHASE_REST });
 
   // Empareja principales de dos en dos (antagonista por la alternancia de la selección)
   for(let i=0; i<main.length; i+=2){
-    const par = main.slice(i, i+2).map(stepDTO);
+    const par = main.slice(i, i+2).map(s=>stepDTO(s, reps));
     blocks.push({
       bloque: ++n,
       tipo: par.length===2 ? 'Superserie' : 'Serie',
       ejercicios: par,
-      descanso_entre_ejercicios: par.length===2 ? 15 : 0,   // mínimo entre ejercicios del par
-      descanso_post_bloque: restPost,                        // descanso completo tras el bloque
+      descanso_entre_ejercicios: par.length===2 ? mainIntra : 0,
+      descanso_entre_series: mainPost,
+      descanso_post_bloque: mainPost,
     });
   }
 
@@ -210,6 +233,8 @@ export async function generateRoutine(params){
   applyProgressiveOverload(plan, params.feel);
 
   // Estructura estricta de bloques/super-series (para preview y programación avanzada)
-  plan.blocks = buildBlocks(plan, (plan.goal && plan.goal.rest) || params.rest || 60);
+  const endurance = params.goal==='endurance' || params.objetivo==='endurance';
+  plan.blocks = buildBlocks(plan, (plan.goal && plan.goal.rest) || params.rest || 60,
+    { endurance, week: mesoWeek() });
   return plan;
 }

@@ -1,5 +1,5 @@
 // ===== Biblioteca de ejercicios + motor biomecánico =====
-import { LM, angle, angleFromVertical, midpoint, vis, clamp } from './utils.js?v=25';
+import { LM, angle, angleFromVertical, midpoint, vis, clamp } from './utils.js?v=26';
 
 // --- helpers de ángulos sobre landmarks ---
 function tri(lm, a, b, c){
@@ -742,6 +742,66 @@ const CONTROL = [
 EXERCISES.push(...MOBILITY, ...CONTROL);
 { const _cc = EXERCISES.find(e=>e.id==='cat_cow'); if(_cc) _cc.category='movilidad'; }   // Cat-Cow → movilidad
 
+// ================= FUERZA ÚTIL (ENDURANCE) =================
+const kneeMinE = lm => { const a=[tri(lm,...KNEE_L),tri(lm,...KNEE_R)].filter(v=>v!=null); return a.length?Math.min(...a):null; };
+const ENDURANCE = [
+  { id:'deep_squat', name:'Sentadilla profunda', emoji:'🦵', group:'lower', category:'fuerza', objetivo:'endurance', bilateral:false,
+    equipment:['bodyweight','dumbbell','bar'], muscles:'Cuádriceps · glúteo · aductores', view:'De frente, cuerpo entero',
+    rep:{ measure:knee, effort:'low', effortThresh:95, resetThresh:160 }, gauges:[{label:'Rodilla', get:knee, min:60, max:175}],
+    cues:['Pies anchos, baja profundo','Talones apoyados, pecho alto','Rodillas hacia fuera','Sube controlando'] },
+  { id:'bulgarian_end', name:'Sentadilla búlgara', emoji:'🦿', group:'lower', category:'fuerza', objetivo:'endurance', bilateral:true,
+    equipment:['bodyweight','dumbbell'], muscles:'Cuádriceps · glúteo', view:'De lado, cuerpo entero',
+    rep:{ measure:kneeMinE, effort:'low', effortThresh:105, resetThresh:155 }, gauges:[{label:'Rodilla', get:kneeMinE, min:70, max:175}],
+    cues:['Pie trasero elevado','Baja recto, rodilla a 90°','Tronco erguido','Empuja con el talón delantero'] },
+  { id:'hip_thrust', name:'Hip Thrust', emoji:'🍑', group:'lower', category:'fuerza', objetivo:'endurance', bilateral:false,
+    equipment:['bodyweight','dumbbell','bar'], muscles:'Glúteo · isquios', view:'De lado, apoyado en banco',
+    rep:{ measure:hip, effort:'high', effortThresh:168, resetThresh:120 }, gauges:[{label:'Cadera', get:hip, min:90, max:185}],
+    cues:['Espalda alta en el banco','Empuja la cadera al techo','Aprieta el glúteo arriba','Barbilla metida, costillas abajo'] },
+  { id:'single_leg_press', name:'Prensa a 1 pierna', emoji:'🦵', group:'lower', category:'fuerza', objetivo:'endurance', bilateral:true,
+    equipment:['bodyweight','bar'], muscles:'Cuádriceps · glúteo', view:'Lateral, en máquina',
+    rep:{ measure:kneeMinE, effort:'low', effortThresh:95, resetThresh:160 }, gauges:[{label:'Rodilla', get:kneeMinE, min:60, max:175}],
+    cues:['Una pierna en la plataforma','Baja controlando','No bloquees de golpe','Empuja con todo el pie'] },
+  { id:'front_squat', name:'Front squat', emoji:'🏋️', group:'lower', category:'fuerza', objetivo:'endurance', bilateral:false,
+    equipment:['bar','dumbbell'], muscles:'Cuádriceps · core', view:'De frente, cuerpo entero',
+    rep:{ measure:knee, effort:'low', effortThresh:100, resetThresh:160 }, gauges:[{label:'Rodilla', get:knee, min:60, max:175}],
+    cues:['Barra en la clavícula, codos altos','Tronco vertical','Baja profundo','Empuja desde el talón'] },
+  { id:'trx_row', name:'Remo en TRX', emoji:'🎗️', group:'upper', category:'fuerza', objetivo:'endurance', bilateral:false,
+    equipment:['band'], muscles:'Espalda · bíceps · core', view:'De lado, cuerpo entero',
+    rep:{ measure:elbow, effort:'low', effortThresh:75, resetThresh:155 }, gauges:[{label:'Codo', get:elbow, min:40, max:175}],
+    cues:['Cuerpo recto en tensión','Lleva el pecho a las manos','Aprieta la escápula','Baja controlando'] },
+  { id:'kb_swing_end', name:'Kettlebell Swing', emoji:'🔔', group:'full', category:'fuerza', objetivo:'endurance', bilateral:false,
+    equipment:['dumbbell'], muscles:'Glúteo · isquios · core (potencia)', view:'De lado, cuerpo entero',
+    rep:{ measure:hip, effort:'high', effortThresh:165, resetThresh:120 }, gauges:[{label:'Cadera', get:hip, min:60, max:180}],
+    cues:['Potencia desde la cadera','Espalda neutra en la bisagra','Aprieta glúteo arriba','Ritmo explosivo'] },
+  { id:'bulgarian_jump', name:'Búlgara con salto', emoji:'🆙', group:'lower', category:'fuerza', objetivo:'endurance', bilateral:true,
+    equipment:['bodyweight'], muscles:'Cuádriceps · glúteo (potencia)', view:'De lado, cuerpo entero',
+    rep:{ measure:kneeMinE, effort:'low', effortThresh:110, resetThresh:160 }, gauges:[{label:'Rodilla', get:kneeMinE, min:70, max:175}],
+    cues:['Pie trasero elevado','Baja y salta con fuerza','Aterriza suave y controlado','Alterna por lado'] },
+  { id:'scap_dips', name:'Fondos de escápulas', emoji:'🔩', group:'upper', category:'fuerza', objetivo:'endurance', bilateral:false,
+    equipment:['bar','bodyweight'], muscles:'Serrato · escápulas', view:'De lado, medio cuerpo',
+    rep:{ measure:bodyLineAngle, effort:'high', effortThresh:176, resetThresh:168 }, gauges:[{label:'Cuerpo', get:bodyLineAngle, min:150, max:185}],
+    cues:['Apoyo firme, brazos extendidos','Deja caer los hombros (depresión)','Empuja hacia arriba con las escápulas','Codos siempre rectos'] },
+  { id:'trx_squat', name:'Sentadilla en TRX', emoji:'🎗️', group:'lower', category:'fuerza', objetivo:'endurance', bilateral:false,
+    equipment:['band'], muscles:'Cuádriceps · glúteo (asistida)', view:'De frente, cuerpo entero',
+    rep:{ measure:knee, effort:'low', effortThresh:100, resetThresh:160 }, gauges:[{label:'Rodilla', get:knee, min:60, max:175}],
+    cues:['Sujeta las cintas en tensión','Baja profundo con el pecho alto','Talones apoyados','Sube apretando el glúteo'] },
+  { id:'single_leg_dl', name:'Peso Muerto a 1 Pierna', emoji:'🦩', group:'lower', category:'fuerza', objetivo:'endurance', bilateral:true,
+    equipment:['bodyweight','dumbbell'], muscles:'Isquios · glúteo · core', view:'De lado, cuerpo entero',
+    rep:{ measure:hip, effort:'low', effortThresh:120, resetThresh:165 }, gauges:[{label:'Cadera', get:hip, min:60, max:185}],
+    cues:['Bisagra sobre una pierna','Espalda recta, cadera atrás','La pierna libre alarga hacia atrás','Sube apretando el glúteo'] },
+  { id:'plank_static', name:'Plancha estática', emoji:'🧘', group:'core', category:'fuerza', objetivo:'endurance', type:'hold', bilateral:false, holdDefault:40,
+    equipment:['bodyweight'], muscles:'Core · hombro', view:'De lado, cuerpo entero',
+    gauges:[{label:'Cuerpo', get:bodyLineAngle, min:130, max:185}],
+    cues:['Cuerpo en línea recta','Aprieta abdomen y glúteo','No hundas la cadera','Respira'],
+    checks(lm){ const bl=bodyLineAngle(lm); return [bl!=null&&bl>=165?ok('Alineación perfecta, aguanta'):warn('Cuerpo recto, corrige la cadera')]; } },
+  { id:'plank_dynamic', name:'Plancha dinámica', emoji:'🔃', group:'core', category:'fuerza', objetivo:'endurance', bilateral:false,
+    equipment:['bodyweight'], muscles:'Core · hombro', view:'De lado, cuerpo entero',
+    rep:{ measure:elbow, effort:'low', effortThresh:100, resetThresh:160 }, gauges:[{label:'Codo', get:elbow, min:60, max:175}],
+    cues:['De plancha alta a antebrazos y vuelta','Cadera estable, sin balanceo','Ritmo controlado','Aprieta el core'] },
+];
+ENDURANCE.forEach(e=>{ e.equipment=e.equipment||['bodyweight']; e.gauges=e.gauges||[]; if(!e.rep) e.rep={measure:()=>null,effort:'low',effortThresh:0,resetThresh:999}; if(!e.checks) e.checks=()=>[{level:'good',msg:'Ritmo controlado, calidad de movimiento'}]; });
+EXERCISES.push(...ENDURANCE);
+
 // --- Grupo muscular, categoría, atributos y enlace de vídeo por ejercicio ---
 const GROUP_MAP = {
   squat:'lower', pushup:'upper', lunge:'lower', plank:'core', curl:'upper',
@@ -933,7 +993,7 @@ export function buildGuidedPlan(group, equip, minutes, opts={}){
   const budget=minutes*60;
   const total=()=>steps.reduce((s,x)=>s+x.est,0);
   const coolReserve = cfgBase.cool*(30+15);          // reserva realista de la vuelta a la calma
-  const MIN_MAIN=3, MAX_MAIN=9;
+  const MIN_MAIN=6, MAX_MAIN=9;
 
   for(let k=0;k<cfgBase.warm;k++){ const ex=byId(warmIds[k]); if(ex) steps.push(mk(ex,'hold',1,0,Math.min(ex.holdDefault||30,30),'warmup')); }
 
