@@ -1,13 +1,13 @@
 // ===== FitCoach Casa · app principal =====
-import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS } from './exercises.js?v=24';
-import { createPoseLandmarker } from './pose.js?v=24';
-import { createDemoPlayer } from './demos.js?v=24';
-import * as generator from './generator.js?v=24';
-import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=24';
-import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=24';
-import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=24';
-import * as api from './api.js?v=24';
-import * as store from './storage.js?v=24';
+import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS } from './exercises.js?v=25';
+import { createPoseLandmarker } from './pose.js?v=25';
+import { createDemoPlayer } from './demos.js?v=25';
+import * as generator from './generator.js?v=25';
+import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=25';
+import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=25';
+import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=25';
+import * as api from './api.js?v=25';
+import * as store from './storage.js?v=25';
 
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -252,63 +252,102 @@ function renderGuidedPreview(){
   }));
 }
 
+// Construye la COLA de ejecución por super-series. Cada celda = una serie a
+// realizar, con el descanso que va DESPUÉS (corto dentro del par, completo tras él).
+// En una superserie [A,B] el orden es A(r1)→B(r1)→A(r2)→B(r2)… alternando.
+const INTRA_REST = 15;   // descanso entre ejercicios del par (superserie)
+const PHASE_REST = 10;   // descanso tras calentamiento/movilidad
+function buildSupersetQueue(steps, fullRest){
+  const warm = steps.filter(s=>s.phase==='warmup');
+  const main = steps.filter(s=>s.phase==='main');
+  const cool = steps.filter(s=>s.phase==='cooldown');
+  const q=[]; let blockNo=0;
+  const single=(s,tipo,rest)=>{ blockNo++; const t=s.sets||1;
+    for(let set=1;set<=t;set++) q.push({ step:s, ex:s.ex, setNum:set, totalSets:t, blockNo, tipo,
+      posInBlock:0, blockSize:1, restAfter:rest, newExercise:(set===1) }); };
+
+  warm.forEach(s=>single(s,'Calentamiento',PHASE_REST));
+
+  for(let i=0;i<main.length;i+=2){
+    const pair=main.slice(i,i+2); blockNo++;
+    if(pair.length===2){
+      const [A,B]=pair; const rounds=Math.max(A.sets||1,B.sets||1);
+      for(let r=1;r<=rounds;r++){
+        q.push({ step:A, ex:A.ex, setNum:r, totalSets:rounds, blockNo, tipo:'Superserie',
+                 posInBlock:0, blockSize:2, restAfter:INTRA_REST, newExercise:true });   // A → (15s) → B
+        q.push({ step:B, ex:B.ex, setNum:r, totalSets:rounds, blockNo, tipo:'Superserie',
+                 posInBlock:1, blockSize:2, restAfter:fullRest, newExercise:true });      // B → descanso completo
+      }
+    }else single(pair[0],'Serie',fullRest);
+  }
+
+  cool.forEach(s=>single(s,'Vuelta a la calma',PHASE_REST));
+  if(q.length) q[q.length-1].restAfter=0;   // sin descanso tras la última serie
+  return q;
+}
+
 function startGuided(){
   if(!currentGuidedPlan || !currentGuidedPlan.steps.length){ alert('No hay ejercicios para esta combinación de equipamiento y objetivo.'); return; }
   unlockAudio();
-  guided={ active:true, plan:currentGuidedPlan.steps, i:0, set:1, done:0, rest:currentGuidedPlan.goal.rest };
+  const fullRest = (currentGuidedPlan.goal && currentGuidedPlan.goal.rest) || settings.rest;
+  const queue = buildSupersetQueue(currentGuidedPlan.steps, fullRest);
+  guided={ active:true, queue, qi:0, done:0, rest:fullRest, plan:currentGuidedPlan.steps };
   guidedPreview=true;
   formTally={};   // reinicia el informe de técnica de la rutina
-  // Enciende la cámara ya, mientras el usuario ve la demo del primer ejercicio,
-  // para no perder tiempo al empezar la primera serie.
+  // Enciende la cámara ya, mientras el usuario ve la demo del primer ejercicio.
   if(!running) startCamera().catch(()=>{});
-  openPreview(guided.plan[0].ex);   // muestra la demo del primer ejercicio; "Empezar" lo carga
+  openPreview(queue[0].ex);   // demo del primer ejercicio; "Empezar" carga la primera celda
 }
 
-function loadGuidedStep(i){
-  const step=guided.plan[i];
-  openSession(step.ex);            // prepara la sesión (resetea contadores, demo, etc.)
-  guided.set=1;
-  // fija el objetivo según el plan (reps/tiempo del esquema)
-  if(step.mode==='hold'){ $('#in-secs').value=step.secs; }
-  else { $('#in-timed').checked=false; $('#obj-time').classList.add('hidden'); $('#in-target').value=step.reps; }
+// Carga la celda de la cola (un ejercicio + su objetivo) y arranca la serie
+function loadGuidedCell(qi){
+  const c=guided.queue[qi]; if(!c) return;
+  openSession(c.ex);               // prepara la sesión (resetea contadores, demo, etc.)
+  if(c.step.mode==='hold'){ $('#in-secs').value=c.step.secs; }
+  else { $('#in-timed').checked=false; $('#obj-time').classList.add('hidden'); $('#in-target').value=c.step.reps; }
   $('#guided-bar').classList.remove('hidden');
   updateGuidedBar();
-  // arranca automáticamente si la cámara ya está activa (o no hace falta)
-  if(running || step.ex.camOptional){ startSet(); }
+  if(running || c.ex.camOptional){ startSet(); }
   else { $('#cam-status').innerHTML='Activa la cámara para empezar la rutina guiada'; }
 }
+const loadGuidedStep = loadGuidedCell;   // alias (compatibilidad)
 
 function updateGuidedBar(){
-  const n=guided.plan.length, step=guided.plan[guided.i];
-  $('#gb-title').textContent=`Rutina guiada · Ejercicio ${guided.i+1}/${n} · Serie ${guided.set}/${step.sets}`;
-  $('#gb-fill').style.width=`${(guided.i/n)*100}%`;
-  const next=guided.plan[guided.i+1];
-  const perSide = step.bilateral ? (step.mode==='hold'?' ×2 lados':' por lado') : '';
-  const dose = (step.mode==='hold' ? `${step.secs}s` : `${step.repsLabel||step.reps} reps`) + perSide;
+  const q=guided.queue, c=q&&q[guided.qi]; if(!c) return;
+  const totalBlocks=q[q.length-1].blockNo;
+  const perSide = c.step.bilateral ? (c.step.mode==='hold'?' ×2 lados':' por lado') : '';
+  const dose = (c.step.mode==='hold' ? `${c.step.secs}s` : `${c.step.repsLabel||c.step.reps} reps`) + perSide;
+  const tag = c.blockSize===2 ? `Superserie ${c.posInBlock===0?'A':'B'}` : c.tipo;
+  $('#gb-title').textContent=`Bloque ${c.blockNo}/${totalBlocks} · ${tag} · Ronda ${c.setNum}/${c.totalSets}`;
+  $('#gb-fill').style.width=`${(guided.qi/q.length)*100}%`;
+  const next=q[guided.qi+1];
   $('#gb-next').innerHTML = next
-    ? `Ahora: <b>${step.name}</b> (${dose}) · Siguiente: ${next.emoji} ${next.name}`
-    : `Ahora: <b>${step.name}</b> (${dose}) · Último ejercicio`;
+    ? `Ahora: <b>${c.step.name}</b> (${dose}) · Luego: ${next.ex.emoji} ${next.step.name}`
+    : `Ahora: <b>${c.step.name}</b> (${dose}) · Última serie`;
 }
 
-// Llamado desde endSet cuando el modo guiado está activo y se guardó una serie
-function guidedAfterSet(){
-  const step=guided.plan[guided.i];
+// Llamado desde endSet cuando el modo guiado está activo y se guardó una serie/celda
+function guidedAfterCell(){
+  const prev=guided.queue[guided.qi];
   guided.done++;
-  if(guided.set < step.sets){
-    guided.set++;
-    updateGuidedBar();
-    startRest(()=>{ if(guided.active) startSet(); });        // siguiente serie automática tras el descanso
+  guided.qi++;
+  if(guided.qi>=guided.queue.length){ guidedFinish(); return; }
+  const rest=prev.restAfter||0;
+  const next=guided.queue[guided.qi];
+  updateGuidedBar();
+  if(next.newExercise){
+    // cambia de estación (otro ejercicio del par o del siguiente bloque): muestra su demo
+    guidedPreview=true;
+    openPreview(next.ex);
+    const go=()=>{ if(guided.active && guidedPreview){ guidedPreview=false; closePreview(); loadGuidedCell(guided.qi); } };
+    if(rest>0) startRest(go, rest); else go();
   }else{
-    if(guided.i < guided.plan.length-1){
-      guided.i++; guided.set=1;
-      guidedPreview=true;
-      openPreview(guided.plan[guided.i].ex);   // muestra la demo del siguiente durante el descanso
-      startRest(()=>{ if(guided.active && guidedPreview){ guidedPreview=false; closePreview(); loadGuidedStep(guided.i); } });
-    }else{
-      guidedFinish();
-    }
+    // misma estación, siguiente serie (bloque de un solo ejercicio)
+    if(rest>0) startRest(()=>{ if(guided.active) startSet(); }, rest);
+    else if(guided.active) startSet();
   }
 }
+const guidedAfterSet = guidedAfterCell;   // alias (compatibilidad con endSet)
 
 function guidedFinish(){
   const total=guided.done;
@@ -331,7 +370,8 @@ $('#gb-skip').addEventListener('click', ()=>{
   if(!guided.active) return;
   if(setActive) endSet(false);
   clearInterval(restInterval); $('#rest-timer').classList.add('hidden');
-  if(guided.i < guided.plan.length-1){ guided.i++; guided.set=1; guidedPreview=true; openPreview(guided.plan[guided.i].ex); }
+  guided.qi++;   // salta a la siguiente celda de la cola (siguiente serie/estación)
+  if(guided.qi < guided.queue.length){ guidedPreview=true; updateGuidedBar(); openPreview(guided.queue[guided.qi].ex); }
   else guidedFinish();
 });
 $('#gb-quit').addEventListener('click', ()=>{ if(setActive) endSet(false); guidedFinish(); });
@@ -362,7 +402,7 @@ $('#preview-start').addEventListener('click', ()=>{
   if(guided.active && guidedPreview){
     guidedPreview=false;
     clearInterval(restInterval); restOnDone=null; $('#rest-timer').classList.add('hidden'); // continuar ya, sin esperar el descanso
-    loadGuidedStep(guided.i);
+    loadGuidedCell(guided.qi);
   }
   else { guided.active=false; openSession(ex); }   // abrir un ejercicio suelto sale del modo guiado
 });
@@ -491,7 +531,8 @@ async function startCamera(){
   updateSetButtons();
   requestAnimationFrame(loop);
   // en rutina guiada, arranca automáticamente la serie pendiente al activar la cámara
-  if(guided.active && !setActive) startSet();
+  // (solo si ya hay un ejercicio cargado y no estamos en la demo previa)
+  if(guided.active && !setActive && !guidedPreview && currentEx) startSet();
 }
 $('#btn-cam').addEventListener('click', startCamera);
 
@@ -940,11 +981,13 @@ $('#report-modal')?.addEventListener('click', e=>{ if(e.target.id==='report-moda
 // ======================================================
 let restInterval=null;
 let restOnDone=null;
-function startRest(onDone){
+function startRest(onDone, secs){
   clearInterval(restInterval);
   restOnDone = onDone || null;
-  let left = (guided.active && guided.rest) ? guided.rest : settings.rest;   // descanso del esquema en modo guiado
+  // secs explícito (p.ej. descanso corto de superserie); si no, el del esquema/ajustes
+  let left = (secs!=null) ? secs : ((guided.active && guided.rest) ? guided.rest : settings.rest);
   const el=$('#rest-timer'), val=$('#rest-val');
+  const lbl=el.querySelector('span'); if(lbl) lbl.textContent = (secs!=null && secs<=INTRA_REST) ? 'Descanso corto' : 'Descanso';
   el.classList.remove('hidden'); val.textContent=fmtTime(left);
   restInterval=setInterval(()=>{
     if(paused) return;   // descanso congelado durante la pausa
