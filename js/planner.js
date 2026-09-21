@@ -3,7 +3,7 @@
 // calendario (localStorage) el "Qué" (grupo) y el "Cuándo" (día). El "Cuánto"
 // (ejercicios/reps) NO se define aquí: se resuelve Just-In-Time al iniciar la
 // sesión (js/generator.js), usando historial + RPE.
-import { savePlan, loadPlans, dateKey } from './storage.js?v=27';
+import { savePlan, loadPlans, dateKey } from './storage.js?v=28';
 
 // Días de entrenamiento por semana → índices de día (0=Lunes … 6=Domingo)
 const SLOTS = {

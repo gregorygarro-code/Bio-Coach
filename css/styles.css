@@ -730,3 +730,8 @@ main{max-width:1200px;margin:0 auto;padding:16px}
 
 /* Inputs de foco */
 .ai-row #ai-input:focus,.equip-other:focus,.search:focus{ outline:none; border-color:var(--accent); }
+
+/* Fix v28 · Previsualización de ejercicios: el <details> debe apilar summary +
+   explicación (no en fila) y no recortarse al desplegarse. */
+.gp-item{ display:block; align-items:initial; overflow:visible; }
+.gp-list{ max-height:none; overflow:visible; }
