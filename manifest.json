@@ -7,8 +7,8 @@
   "display": "standalone",
   "orientation": "portrait-primary",
   "lang": "es",
-  "background_color": "#0a0d13",
-  "theme_color": "#0a0d13",
+  "background_color": "#FAF8F5",
+  "theme_color": "#F4501E",
   "categories": ["health", "fitness", "sports"],
   "icons": [
     { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }

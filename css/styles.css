@@ -1,23 +1,23 @@
 :root{
-  /* Identidad "performance" (inspirada en marcas de fitness/endurance):
-     base casi negra, energía cálida (naranja→magenta) y contraste azul eléctrico. */
-  --bg:#0a0d13; --panel:#111722; --panel2:#1a2230; --line:#2a3444;
-  --txt:#f2f6fb; --muted:#9aa8ba; --accent:#ff5a1f; --accent2:#2f9bff;
-  --warn:#ffc043; --bad:#f43f5e; --good:#22c55e;
-  --grad:linear-gradient(120deg,#ff7a18 0%,#ff2e63 100%);
-  --grad-soft:linear-gradient(120deg,rgba(255,90,31,.18),rgba(255,46,99,.14));
-  --glow:0 6px 18px rgba(255,90,31,.30);
+  /* Rediseño claro tipo Strava: fondo cálido, tarjetas blancas, acento naranja. */
+  --bg:#FAF8F5; --panel:#ffffff; --panel2:#FAF8F5; --line:#EAE4DB;
+  --txt:#12151A; --muted:#6B6258; --accent:#F4501E; --accent2:#2C4A73;
+  --ink:#12151A;                 /* casi negro para estados activos/paneles oscuros */
+  --warn:#B8791F; --bad:#B3261E; --good:#1F7A44;
+  --grad:linear-gradient(120deg,#F4501E 0%,#DC4317 100%);
+  --grad-soft:linear-gradient(120deg,rgba(244,80,30,.10),rgba(244,80,30,.04));
+  --glow:0 8px 22px rgba(244,80,30,.22);
   --font-body:"Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-head:"Sora", var(--font-body);
-  --radius:16px; --shadow:0 12px 36px rgba(0,0,0,.5);
-  color-scheme: dark;
+  --radius:22px; --shadow:0 1px 3px rgba(18,21,26,.05);
+  color-scheme: light;
 }
 /* ===== Accesibilidad (Fase 1) ===== */
 html[data-scale="grande"] body{ zoom:1.15; }
 html[data-scale="xl"] body{ zoom:1.32; }
 html[data-contrast="1"]{
-  --bg:#000; --panel:#0b0b0b; --panel2:#171717; --line:#6a6a6a;
-  --txt:#ffffff; --muted:#d6d6d6; --accent:#39e05a; --accent2:#5ab0ff;
+  --bg:#ffffff; --panel:#ffffff; --panel2:#f2efea; --line:#333333;
+  --txt:#000000; --muted:#333333; --accent:#C63B12; --accent2:#123055; --ink:#000000;
 }
 html[data-contrast="1"] .card,html[data-contrast="1"] .btn{border-width:2px}
 html[data-motion="off"] *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
@@ -26,8 +26,7 @@ html[data-motion="off"] *{animation:none!important;transition:none!important;scr
 html,body{margin:0;height:100%}
 body{
   background:
-    radial-gradient(900px 520px at 88% -8%, rgba(255,90,31,.16), transparent 60%),
-    radial-gradient(820px 520px at 3% 0%, rgba(47,155,255,.13), transparent 55%),
+    radial-gradient(900px 520px at 88% -10%, rgba(244,80,30,.05), transparent 60%),
     var(--bg);
   color:var(--txt);
   font:15px/1.55 var(--font-body);
@@ -602,3 +601,132 @@ main{max-width:1200px;margin:0 auto;padding:16px}
 .mrp-rest{ margin:8px 0 0; }
 .rd-actions{ display:flex; justify-content:flex-end; }
 .pf-lowimpact label{ min-width:auto; }
+
+/* ==================================================================== */
+/* ============  REDISEÑO CLARO (Strava) · v27 overrides  ============= */
+/* Ajustes sobre reglas con colores oscuros "quemados" para el tema claro */
+/* ==================================================================== */
+
+/* Marca / topbar */
+.topbar{ background:rgba(250,248,245,.88); border-bottom:1px solid var(--line); }
+.topbar h1{ text-transform:none; letter-spacing:-.01em; font-weight:700; }
+.logo{ background:var(--accent); border:none; border-radius:50% 50% 50% 14px; color:#fff; }
+
+/* Tabs: activa = casi negro sólido (no degradado) */
+.tab{ color:var(--muted); }
+.tab:hover{ color:var(--txt); background:rgba(18,21,26,.05); }
+.tab.active{ background:var(--ink); color:#fff; box-shadow:none; }
+
+/* Links en naranja (acento) */
+.link{ color:var(--accent); }
+.link.danger{ color:var(--bad); }
+
+/* Tarjetas planas (borde, sin sombra fuerte) */
+.card{ box-shadow:none; border-radius:24px; }
+
+/* Botones tipo píldora */
+.btn{ border-radius:999px; }
+.btn.lg{ border-radius:999px; }
+.btn.primary{ background:#fff; border:1px solid #D9D2C7; color:var(--txt); }
+.btn.primary:hover:not(:disabled){ border-color:var(--ink); }
+.btn.accent{ background:var(--accent); color:#fff; box-shadow:none; }
+.btn.accent:hover:not(:disabled){ background:#DC4317; box-shadow:none; }
+.btn.ghost{ background:#fff; border:1px solid #D9D2C7; color:var(--txt); }
+.btn.ghost:hover:not(:disabled){ border-color:var(--ink); }
+
+/* Chips: seleccionado = casi negro sólido */
+.chip{ color:#3C3831; }
+.chip.on,.chip.group.on,.chip.goal.on,.chip.time.on,.chip-check.on{
+  background:var(--ink); border-color:var(--ink); color:#fff;
+}
+.chip.preset{ background:transparent; border-style:dashed; color:var(--muted); }
+
+/* Rutina guiada: fases con tinte claro */
+.gp-item{ background:#fff; }
+.gp-sum:hover{ background:rgba(18,21,26,.03); }
+.gp-phase{ color:var(--muted); border-color:var(--line); }
+.gp-phase.warmup{ color:#2C4A73; border-color:#C7D6EA; background:#E6EDF6; }
+.gp-phase.cooldown{ color:#2C5E5A; border-color:#BFE0DC; background:#E3F0EF; }
+.gp-phase.ov{ color:#A8492A; border-color:#F8DCCB; background:#FFF3EC; }
+.guided-card{ border-color:var(--line); }
+
+/* Barras de progreso / gauges: relleno sólido */
+.gb-progress i,.bar i{ background:var(--accent); }
+.prog-bar i{ background:var(--ink); }
+
+/* Etiqueta genérica */
+.tag{ background:#F0EAE1; color:var(--muted); border-color:var(--line); }
+.tag-low{ background:#E3F0EF; color:#2C5E5A; border:1px solid #BFE0DC; }
+
+/* Feedback de técnica (cues) en claro */
+.cue{ background:#fff; }
+.cue.good{ background:#E4EFE6; border-color:#BBD9C2; color:#2C5E3C; }
+.cue.warn{ background:#FFF3EC; border-color:#F8DCCB; color:#A8492A; }
+.cue.bad{ background:#FBE6E4; border-color:#F3C6C2; color:#8F1E18; }
+
+/* Descanso */
+.rest{ background:#FFF7F2; border-color:#F8DCCB; }
+
+/* Calendario: etiquetas de plan con tintes claros */
+.cal-cell.today{ outline-color:var(--accent); background:#FFF3EC; }
+.plan-rest{ background:#F0EAE1; color:#6B6258; border-color:var(--line); }
+.plan-full{ background:#FFE8DA; color:#A8492A; border-color:#F8DCCB; }
+.plan-upper{ background:#E6EDF6; color:#2C4A73; border-color:#C7D6EA; }
+.plan-lower{ background:#E4EFE6; color:#2C5E3C; border-color:#BBD9C2; }
+.plan-core{ background:#F0E7F5; color:#5E3A73; border-color:#DEC9EA; }
+.plan-stretch{ background:#E3F0EF; color:#2C5E5A; border-color:#BFE0DC; }
+.int-ligero{background:#1F7A44}.int-medio{background:#B8791F}.int-intenso{background:#B3261E}
+
+/* Récords */
+.pr-item b{ color:var(--accent); }
+
+/* Loader / modales: fondo translúcido claro-neutro (mantiene profundidad) */
+.loader{ background:rgba(250,248,245,.9); }
+.modal{ background:rgba(18,21,26,.45); }
+.modal-box{ box-shadow:0 20px 60px rgba(18,21,26,.18); border-radius:28px; }
+.rutina-dialog{ box-shadow:0 20px 60px rgba(18,21,26,.18); border-radius:28px; }
+.rutina-dialog::backdrop{ background:rgba(18,21,26,.45); }
+
+/* Demo (canvas) sobre panel claro */
+.preview-demo{ background:#FFF3EC; border-color:#F3E6DA; }
+
+/* ===== Landing / Inicio ===== */
+.pill{ color:var(--muted); background:#fff; border:1px solid var(--line); }
+.grad{ background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.hero-title{ font-weight:700; }
+.hero-card{
+  background:linear-gradient(180deg,#FFF3EC 0%,#ffffff 70%);
+  border:1px solid #EFE7DD; border-radius:180px 180px 36px 36px; box-shadow:none;
+}
+.hero-card::after{ display:none; }
+.hb{ background:#fff; border:1px solid #EFE7DD; color:var(--txt); backdrop-filter:none; }
+.hb b{ color:var(--accent); }
+.hb.ok{ background:var(--ink); color:#fff; border-color:var(--ink); }
+.landing-sec{ border-top:1px solid var(--line); }
+.feat{ border-radius:22px; }
+.feat:hover{ box-shadow:0 10px 30px rgba(18,21,26,.06); }
+.feat-ic{ background:var(--grad-soft); border:1px solid #F3E6DA; }
+.step-n{ background:var(--accent); color:#fff; }
+.final-cta{ background:var(--ink); border:none; color:#fff; border-radius:36px; }
+.final-cta p{ color:#B4ADA3; }
+
+/* ===== Dashboard "Hoy": panel oscuro con texto claro ===== */
+.setup .today-card{ background:var(--ink); border:none; color:#fff; }
+.today-card .today-label{ color:#B4ADA3; }
+.today-card #today-date{ color:#B4ADA3; }
+.today-card .streak{ color:#B4ADA3; }
+.today-card .streak b{ color:#fff; }
+.today-card #today-summary{ color:#fff; }
+.today-card .today-done-tag{ color:#7BD39B; }
+.today-card #btn-start-today{ background:var(--accent); color:#fff; }
+.today-card #btn-modify-today,.today-card #btn-freestyle{ color:#fff; opacity:.85; }
+
+/* Overlay de pausa / badges sobre vídeo (se mantienen sobre fondo negro) */
+.badge{ background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.18); color:#fff; }
+.badge.side{ background:var(--accent); border:none; color:#fff; }
+
+/* Onboarding dots */
+.onb-dots i.on{ background:var(--accent); }
+
+/* Inputs de foco */
+.ai-row #ai-input:focus,.equip-other:focus,.search:focus{ outline:none; border-color:var(--accent); }
