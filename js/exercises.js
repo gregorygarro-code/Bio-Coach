@@ -1,5 +1,5 @@
 // ===== Biblioteca de ejercicios + motor biomecánico =====
-import { LM, angle, angleFromVertical, midpoint, vis, clamp } from './utils.js?v=33';
+import { LM, angle, angleFromVertical, midpoint, vis, clamp } from './utils.js?v=34';
 
 // --- helpers de ángulos sobre landmarks ---
 function tri(lm, a, b, c){
@@ -987,6 +987,7 @@ EXERCISES.forEach(e=>{
   e.compound  = A_COMPOUND.has(e.id);
   e.prehab    = e.category==='prevencion';
   if(e.bilateral===undefined) e.bilateral = A_BILATERAL.has(e.id);   // los prehab ya traen su flag
+  e.youtube_id = e.youtube_id || null;   // id de vídeo real (si existe → embed); si no, se usa la búsqueda
   e.yt = 'https://www.youtube.com/results?search_query='+encodeURIComponent('técnica '+e.name+' ejercicio en casa');
 });
 
@@ -1092,6 +1093,40 @@ function selectMain(pool, n, bias){
   return seq.slice(0,n);
 }
 
+// ===== Selección por AISLAMIENTO ROTATIVO (P4) =====
+// tren_superior → 1 pecho, 1 espalda, 1 hombro, 1 bíceps, 1 tríceps (repite ciclo).
+// fullbody      → 1 rodilla, 1 bisagra, 1 empuje, 1 tracción, 1 core (repite ciclo).
+const M = {
+  chest:   new Set(['pushup','wall_pushup','bench','press_mancuernas','aperturas_mancuernas','pullover_mancuerna','press_banca_inclinado','press_banca_declinado','press_banca_cerrado']),
+  back:    new Set(['row','pullup','facepull','trx_row','upright_row','remo_pendlay','remo_barra_hexagonal','remo_una_mano','remo_soporte_pecho','encogimientos_hexagonal','scap_dips']),
+  shoulder:new Set(['ohp','lateral','push_press','thruster','press_hombros_sentado','elevaciones_frontales','pajaros','band_pull_apart']),
+  biceps:  new Set(['curl','curl_alterno_mancuernas','curl_martillo','curl_arana','curl_concentrado']),
+  triceps: new Set(['triceps_ext','extension_tras_nuca','patada_triceps','press_banca_cerrado','dip']),
+  knee:    new Set(['squat','lunge','bulgarian','bulgarian_end','bulgarian_jump','deep_squat','front_squat','sentadilla_trasera','sentadilla_copa','trx_squat','single_leg_press','step_ups_peso','chair_squat','jump_squat','cossack']),
+  hinge:   new Set(['rdl','hip_thrust','glute_bridge','single_leg_bridge','single_leg_dl','swing','kb_swing_end','peso_muerto_convencional','peso_muerto_hexagonal','buenos_dias']),
+  push:    new Set(['pushup','wall_pushup','bench','ohp','dip','press_mancuernas','press_banca_inclinado','press_banca_declinado','press_banca_cerrado','press_hombros_sentado','thruster','push_press','scap_dips']),
+  pull:    new Set(['row','pullup','facepull','trx_row','upright_row','remo_pendlay','remo_barra_hexagonal','remo_una_mano','remo_soporte_pecho','encogimientos_hexagonal']),
+  core:    new Set(['plank','crunch','leg_raise','mountain_climber','bicycle','side_plank','bird_dog','superman','dead_bug','bird_dog_adv','side_plank_rotation','plank_static','plank_dynamic','russian_twists_disco','crunch_peso','side_bends']),
+};
+function selectRotating(pool, g, n, bias){
+  const seq = g==='upper' ? ['chest','back','shoulder','biceps','triceps']
+            : g==='full'  ? ['knee','hinge','push','pull','core'] : null;
+  if(!seq) return selectMain(pool, n, bias);
+  const buckets={}; for(const k of seq) buckets[k]=shuffle(pool.filter(e=>M[k].has(e.id)));
+  const out=[]; let guard=0;
+  while(out.length<n && guard++<400){
+    let progressed=false;
+    for(const k of seq){
+      if(out.length>=n) break;
+      const x=buckets[k].find(e=>!out.includes(e));
+      if(x){ out.push(x); progressed=true; }
+    }
+    if(!progressed) break;
+  }
+  for(const e of shuffle(pool)){ if(out.length>=n) break; if(!out.includes(e)) out.push(e); }  // relleno si falta stock
+  return out.slice(0,n);
+}
+
 // Devuelve {steps:[{id,ex,name,emoji,type,mode,sets,reps,repsLabel,secs,phase,est}], estMin, minutes, goal}
 export function buildGuidedPlan(group, equip, minutes, opts={}){
   const level = opts.level || 'intermedio';
@@ -1155,12 +1190,14 @@ export function buildGuidedPlan(group, equip, minutes, opts={}){
   const budget=minutes*60;
   const total=()=>steps.reduce((s,x)=>s+x.est,0);
   const coolReserve = cfgBase.cool*(30+15);          // reserva realista de la vuelta a la calma
-  const MIN_MAIN=6, MAX_MAIN=9;
+  // Volumen dinámico por tiempo (P4): ~30 min → 6-7, ~45 → 10-11, ~60 → 13-14 ejercicios.
+  const MAX_MAIN = Math.max(5, Math.min(16, Math.round(minutes*0.23)));
+  const MIN_MAIN = Math.max(5, MAX_MAIN-1);
 
   for(let k=0;k<cfgBase.warm;k++){ const ex=byId(warmIds[k]); if(ex) steps.push(mk(ex,'hold',1,0,Math.min(ex.holdDefault||30,30),'warmup')); }
 
-  // Añade principales ajustándose al TIEMPO disponible (mín 3). Con descansos largos → menos ejercicios.
-  const mainList = selectMain(pool, MAX_MAIN, bias);
+  // Selección por aislamiento rotativo (upper/full) o balanceada; ajuste fino por tiempo.
+  const mainList = selectRotating(pool, g, MAX_MAIN, bias);
   // Nudge suave por sexo (no restrictivo): asegura una zona a menudo infra-entrenada.
   // Solo aplica en full body, donde hay margen para equilibrar.
   if(g==='full' && sex){
@@ -1179,13 +1216,14 @@ export function buildGuidedPlan(group, equip, minutes, opts={}){
     }
     const mainCount = steps.filter(s=>s.phase==='main').length;
     if(mainCount>=MAX_MAIN) break;
-    if(mainCount < MIN_MAIN || total()+st.est+coolReserve <= budget) steps.push(st);
+    // Escala hasta MAX_MAIN; tolerancia amplia para alcanzar el volumen objetivo por tiempo.
+    if(mainCount < MIN_MAIN || total()+st.est+coolReserve <= budget*1.25) steps.push(st);
     else break;
   }
 
   for(let k=0;k<cfgBase.cool;k++){ const ex=byId(coolIds[k]); if(ex) steps.push(mk(ex,'hold',1,0,ex.holdDefault||30,'cooldown')); }
 
-  while(total() > budget*1.08){
+  while(total() > budget*1.6){
     const idxMain = steps.map((s,i)=>s.phase==='main'?i:-1).filter(i=>i>=0);
     if(idxMain.length<=MIN_MAIN) break;
     steps.splice(idxMain[idxMain.length-1],1);

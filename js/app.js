@@ -1,13 +1,12 @@
 // ===== FitCoach Casa · app principal =====
-import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS, parseWeightList, barbellLadder } from './exercises.js?v=33';
-import { createPoseLandmarker } from './pose.js?v=33';
-import { createDemoPlayer } from './demos.js?v=33';
-import * as generator from './generator.js?v=33';
-import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=33';
-import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=33';
-import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=33';
-import * as api from './api.js?v=33';
-import * as store from './storage.js?v=33';
+import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS, parseWeightList, barbellLadder } from './exercises.js?v=34';
+import { createPoseLandmarker } from './pose.js?v=34';
+import * as generator from './generator.js?v=34';
+import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=34';
+import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=34';
+import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=34';
+import * as api from './api.js?v=34';
+import * as store from './storage.js?v=34';
 
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -99,8 +98,6 @@ document.querySelector('.brand')?.addEventListener('click', ()=>goTo('inicio'));
 
 // Animación biomecánica del hero
 (function heroDemo(){
-  const c=document.getElementById('hero-demo'); if(!c) return;
-  createDemoPlayer(c).play('squat', settings.reduceMotion);
   const reps=document.getElementById('hero-reps'); if(reps && !settings.reduceMotion){
     let n=0; setInterval(()=>{ n=(n%12)+1; reps.textContent=n; }, 2200);
   }
@@ -305,6 +302,8 @@ function loadGuidedCell(qi){
   openSession(c.ex);               // prepara la sesión (resetea contadores, demo, etc.)
   if(c.step.mode==='hold'){ $('#in-secs').value=c.step.secs; }
   else { $('#in-timed').checked=false; $('#obj-time').classList.add('hidden'); $('#in-target').value=c.step.reps; }
+  const sp=$('#session-plan');
+  if(sp){ const g=c.step.mode==='hold'?`${c.step.secs}s`:`${c.step.repsLabel||c.step.reps} reps`; const w=c.ex.weighted?` · 🏋️ ${c.ex.suggestedWeight||0} ${c.ex.suggestedUnit||'kg'}`:''; sp.textContent=`🎯 ${g}${w}`; }
   $('#guided-bar').classList.remove('hidden');
   updateGuidedBar();
   if(running || c.ex.camOptional){ startSet(); }
@@ -379,7 +378,17 @@ $('#gb-quit').addEventListener('click', ()=>{ if(setActive) endSet(false); guide
 // ======================================================
 // Modal de demostración (antes de empezar)
 // ======================================================
-let demoPlayer=null, previewEx=null;
+let previewEx=null;
+// Renderiza la técnica real: si el ejercicio tiene youtube_id → iframe embebido;
+// si no, muestra un CTA a la búsqueda de YouTube (no se inventan ids).
+function renderPreviewVideo(ex){
+  const box=$('#preview-video'); if(!box) return;
+  if(ex.youtube_id){
+    box.innerHTML=`<iframe src="https://www.youtube.com/embed/${ex.youtube_id}?autoplay=1&mute=1&loop=1&playlist=${ex.youtube_id}&rel=0&modestbranding=1" title="${ex.name}" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
+  }else{
+    box.innerHTML=`<a class="yt-search" href="${ex.yt}" target="_blank" rel="noopener"><span class="yt-play">▶</span><span>Ver técnica en YouTube</span></a>`;
+  }
+}
 function openPreview(ex, review=false){
   previewEx=ex;
   $('#preview-name').textContent=`${ex.emoji} ${ex.name}`;
@@ -388,12 +397,11 @@ function openPreview(ex, review=false){
   $('#preview-cues').innerHTML=ex.cues.map(c=>`<li>${c}</li>`).join('');
   $('#preview-start').hidden = review;   // en modo repaso no se inicia, solo se revisa
   $('#preview').classList.remove('hidden');
-  if(!demoPlayer) demoPlayer=createDemoPlayer($('#demo-canvas'));
-  demoPlayer.play(ex.id, settings.reduceMotion);
+  renderPreviewVideo(ex);
 }
 function closePreview(){
   $('#preview').classList.add('hidden');
-  demoPlayer?.stop();
+  const box=$('#preview-video'); if(box) box.innerHTML='';   // detiene el vídeo
 }
 $('#preview-close').addEventListener('click', closePreview);
 $('#preview').addEventListener('click', e=>{ if(e.target.id==='preview') closePreview(); });
@@ -459,12 +467,20 @@ function configureObjective(ex){
   const hint = $('#weight-hint');
   if(ex.weighted){
     const s = suggestWeight(ex);
+    ex.suggestedWeight = s.weight || 0; ex.suggestedUnit = s.unit;   // inyectado en el objeto (P3)
     $('#in-weight').value = s.weight || 0;
     const wu = $('#in-wunit'); if(wu) wu.value = s.unit;
     if(hint) hint.textContent = s.hint || '';
   }else{
     $('#in-weight').value = 0;
     if(hint) hint.textContent = '';
+  }
+  // Plan de la serie en modo solo-lectura (sin inputs manuales) — P1/P3
+  const sp=$('#session-plan');
+  if(sp){
+    const goalTxt = ex.type==='hold' ? `${$('#in-secs').value}s` : `${$('#in-target').value} reps`;
+    const wTxt = ex.weighted ? ` · 🏋️ ${ex.suggestedWeight||0} ${ex.suggestedUnit||'kg'}` : '';
+    sp.textContent = `🎯 ${goalTxt}${wTxt}`;
   }
 }
 // Unidad de peso sugerida: barra → kg; mancuernas/discos → lb
@@ -655,6 +671,46 @@ function drawSkeleton(lm){
     ctx.beginPath(); ctx.arc(x,y,5,0,Math.PI*2);
     ctx.fillStyle=OVERLAY_DOT; ctx.fill();
   }
+  // Alertas de prevención en tiempo real (P2): valgo de rodilla / curvatura lumbar
+  if(setActive){
+    const alerts=evaluarAngulosPrevencion(lm);
+    for(const a of alerts){
+      const [ax,ay]=pt({x:a.at[0], y:a.at[1]});
+      const col = a.level==='bad' ? '#E5484D' : '#F5A623';
+      ctx.beginPath(); ctx.arc(ax,ay,18,0,Math.PI*2);
+      ctx.lineWidth=4; ctx.strokeStyle=col; ctx.stroke();
+      ctx.font='600 14px Inter, system-ui, sans-serif'; ctx.textAlign='center';
+      ctx.lineWidth=4; ctx.strokeStyle='rgba(0,0,0,.55)'; ctx.strokeText(a.msg, ax, ay-26);
+      ctx.fillStyle=col; ctx.fillText(a.msg, ax, ay-26);
+    }
+    if(alerts.some(a=>a.level==='bad')){ const c=$('#cue-main'); if(c){ c.textContent=alerts.find(a=>a.level==='bad').msg; c.className='cue bad'; } }
+  }
+}
+
+// ===== Prevención: evalúa vectores críticos en tiempo real =====
+// Devuelve alertas [{zone, level, msg, at:[x,y] normalizado}] para pintar en el canvas.
+function evaluarAngulosPrevencion(lm){
+  const out=[];
+  const V=i=>lm[i]&&(lm[i].visibility===undefined||lm[i].visibility>=0.5);
+  const mid=(a,b)=>({x:(a.x+b.x)/2,y:(a.y+b.y)/2});
+  const ang3=(a,b,c)=>{ const abx=a.x-b.x,aby=a.y-b.y,cbx=c.x-b.x,cby=c.y-b.y;
+    const d=abx*cbx+aby*cby, m1=Math.hypot(abx,aby),m2=Math.hypot(cbx,cby);
+    if(!m1||!m2) return null; return Math.acos(Math.max(-1,Math.min(1,d/(m1*m2))))*180/Math.PI; };
+  // (a) Valgo de rodilla (vista frontal): rodillas más juntas que los tobillos
+  if(V(25)&&V(26)&&V(27)&&V(28)){
+    const kneeGap=Math.abs(lm[25].x-lm[26].x), ankGap=Math.abs(lm[27].x-lm[28].x);
+    if(ankGap>0.03 && kneeGap/ankGap<0.7)
+      out.push({zone:'rodilla', level:'bad', msg:'⚠ Rodillas hacia dentro', at:[(lm[25].x+lm[26].x)/2,(lm[25].y+lm[26].y)/2]});
+  }
+  // (b) Curvatura/inclinación lumbar (vista lateral): tronco muy inclinado en bisagra profunda
+  if(V(11)&&V(12)&&V(23)&&V(24)&&V(25)&&V(26)){
+    const sh=mid(lm[11],lm[12]), hp=mid(lm[23],lm[24]), kn=mid(lm[25],lm[26]);
+    const lean=Math.abs(Math.atan2(sh.x-hp.x, -(sh.y-hp.y))*180/Math.PI);   // 0 = vertical
+    const hipAng=ang3(sh,hp,kn);
+    if(lean>60 && hipAng!=null && hipAng>110)
+      out.push({zone:'lumbar', level:'warn', msg:'⚠ Espalda neutra, no redondees', at:[hp.x,hp.y]});
+  }
+  return out;
 }
 
 // ======================================================
