@@ -115,6 +115,35 @@ export const DEMOS = {
   bird_dog_adv:{ a:{hipX:100,hipY:118,torso:-15,uarm:22,farm:22,thigh:158,shin:200}, b:{hipX:100,hipY:120,torso:-15,uarm:20,farm:20,thigh:162,shin:205}, speed:0.45 },
   side_plank_rotation:{ a:{hipX:100,hipY:130,torso:-26,uarm:-70,farm:-70,thigh:200,shin:200}, b:{hipX:100,hipY:132,torso:-26,uarm:40,farm:120,thigh:200,shin:200}, speed:0.6 },
   single_leg_bridge:{ a:{hipX:100,hipY:150,torso:168,uarm:120,farm:120,thigh:60,shin:120}, b:{hipX:100,hipY:132,torso:162,uarm:120,farm:120,thigh:6,shin:6}, speed:0.7 },
+
+  // ===== Catálogo Elite / Fuerza útil: animaciones propias =====
+  // Sentadillas (varían brazos y profundidad)
+  sentadilla_trasera:{ a:{uarm:-120,farm:-158}, b:{hipX:96,hipY:150,torso:-62,uarm:-120,farm:-158,thigh:40,shin:128} },
+  front_squat:{ a:{uarm:-55,farm:-150}, b:{hipX:96,hipY:150,torso:-70,uarm:-55,farm:-150,thigh:42,shin:126} },
+  sentadilla_copa:{ a:{uarm:55,farm:-40}, b:{hipX:96,hipY:150,torso:-64,uarm:55,farm:-40,thigh:42,shin:126} },
+  deep_squat:{ a:{uarm:40,farm:40}, b:{hipX:96,hipY:162,torso:-56,uarm:16,farm:16,thigh:28,shin:134} },
+  // Bisagra de cadera / peso muerto
+  peso_muerto_convencional:{ a:{torso:-90,uarm:90,farm:90}, b:{hipX:100,hipY:140,torso:-30,uarm:74,farm:74,thigh:66,shin:104} },
+  peso_muerto_hexagonal:{ a:{torso:-90,uarm:90,farm:90}, b:{hipX:100,hipY:140,torso:-40,uarm:88,farm:88,thigh:66,shin:104} },
+  buenos_dias:{ a:{uarm:-120,farm:-158,torso:-90}, b:{hipX:100,hipY:122,torso:-32,uarm:-120,farm:-158,thigh:86,shin:92} },
+  single_leg_dl:{ a:{torso:-90,uarm:90,farm:90}, b:{hipX:100,hipY:116,torso:-26,uarm:78,farm:78,thigh:42,shin:16} },
+  step_ups_peso:{ a:{uarm:88,farm:88,thigh:90,shin:90}, b:{hipX:100,hipY:120,uarm:88,farm:88,thigh:40,shin:96} },
+  hip_thrust:{ a:{hipX:100,hipY:150,torso:150,uarm:120,farm:120,thigh:52,shin:126}, b:{hipX:100,hipY:134,torso:160,uarm:120,farm:120,thigh:40,shin:132} },
+  paseo_granjero:{ a:{uarm:90,farm:90,thigh:88,shin:88}, b:{uarm:90,farm:90,thigh:70,shin:96}, speed:1.1 },
+  // Empuje (pecho / hombro)
+  press_banca_inclinado:{ a:{hipX:82,hipY:150,torso:-28,thigh:200,shin:150,uarm:-90,farm:-90}, b:{hipX:82,hipY:150,torso:-28,thigh:200,shin:150,uarm:-90,farm:-135} },
+  press_banca_declinado:{ a:{hipX:74,hipY:150,torso:24,thigh:210,shin:150,uarm:-90,farm:-90}, b:{hipX:74,hipY:150,torso:24,thigh:210,shin:150,uarm:-90,farm:-135} },
+  aperturas_mancuernas:{ a:{hipX:80,hipY:150,torso:2,thigh:205,shin:150,uarm:-20,farm:-20}, b:{hipX:80,hipY:150,torso:2,thigh:205,shin:150,uarm:-90,farm:-90} },
+  pullover_mancuerna:{ a:{hipX:80,hipY:150,torso:2,thigh:205,shin:150,uarm:-90,farm:-90}, b:{hipX:80,hipY:150,torso:2,thigh:205,shin:150,uarm:-150,farm:-150}, speed:0.7 },
+  press_hombros_sentado:{ a:{hipX:100,hipY:132,torso:-90,uarm:-135,farm:-92,thigh:20,shin:110}, b:{hipX:100,hipY:132,torso:-90,uarm:-90,farm:-90,thigh:20,shin:110} },
+  // Tracción (espalda / deltoide posterior)
+  remo_una_mano:{ a:{hipX:100,hipY:120,torso:-30,thigh:70,shin:90,uarm:84,farm:84}, b:{hipX:100,hipY:120,torso:-30,thigh:70,shin:90,uarm:70,farm:0} },
+  pajaros:{ a:{hipX:100,hipY:118,torso:-32,thigh:90,shin:90,uarm:70,farm:70}, b:{hipX:100,hipY:118,torso:-32,thigh:90,shin:90,uarm:6,farm:6} },
+  // Tríceps
+  patada_triceps:{ a:{hipX:100,hipY:118,torso:-32,thigh:90,shin:90,uarm:40,farm:120}, b:{hipX:100,hipY:118,torso:-32,thigh:90,shin:90,uarm:40,farm:20} },
+  // Core con peso
+  side_bends:{ a:{torso:-90,uarm:90,farm:90}, b:{torso:-66,uarm:96,farm:96}, speed:0.7 },
+  russian_twists_disco:{ a:{hipX:96,hipY:150,torso:-52,uarm:20,farm:-30,thigh:-30,shin:40}, b:{hipX:96,hipY:150,torso:-52,uarm:60,farm:10,thigh:-30,shin:40}, speed:1.2 },
 };
 
 const BONES=[['head','sh'],['sh','hip'],['sh','el'],['el','ha'],['hip','kn'],['kn','an']];
