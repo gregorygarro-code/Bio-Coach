@@ -788,6 +788,7 @@ main{max-width:1200px;margin:0 auto;padding:16px}
 .preview-video{ display:grid; place-items:center; width:100%; aspect-ratio:1/1; max-height:280px; background:var(--panel2); border:1px solid var(--line); border-radius:16px; overflow:hidden; }
 .preview-video .demo-canvas{ width:100%; height:100%; }
 .demo-fallback{ font-size:110px; line-height:1; }
+.preview-disclaimer{ margin:8px 0 0; font-size:12px; line-height:1.4; color:var(--muted); }
 
 /* Hero estático (sin animación 2D) */
 .hero-figure{ display:grid; place-items:center; width:100%; height:100%; font-size:110px; line-height:1; }
