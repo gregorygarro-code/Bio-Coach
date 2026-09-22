@@ -3,8 +3,8 @@
 // ejecuta el filtrado/selección según los parámetros del usuario. La parte
 // biomecánica (funciones de medición/checks) sigue viviendo en exercises.js;
 // aquí trabajamos solo con la parte declarativa + el historial (sobrecarga).
-import { buildGuidedPlan, getExercise } from './exercises.js?v=30';
-import { lastResultFor, loadPlans } from './storage.js?v=30';
+import { buildGuidedPlan, getExercise } from './exercises.js?v=31';
+import { lastResultFor, loadPlans } from './storage.js?v=31';
 
 // Semana del mesociclo (1..4+) a partir del primer día auto-planificado en el calendario
 function mesoWeek(){
@@ -29,7 +29,7 @@ let _catalog = null, _loading = null;
 export async function loadCatalog(){
   if(_catalog) return _catalog;
   if(_loading) return _loading;
-  _loading = fetch('data/exercises.json?v=30')
+  _loading = fetch('data/exercises.json?v=31')
     .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
     .then(j=>{ _catalog = j.exercises || []; return _catalog; })
     .catch(err=>{ console.warn('[generator] no se pudo cargar el catálogo JSON:', err.message); _catalog = []; return _catalog; });
@@ -130,7 +130,7 @@ function applyProgressiveOverload(plan, feel){
       if(last.unit==='reps' && last.reps >= step.reps){
         if(step.ex && step.ex.weighted && last.weight>0){
           // Con carga: mejor subir peso que acumular reps infinitas
-          step.overload = { note:`Progresión: sube el peso (última: ${last.weight}kg × ${last.reps})` };
+          step.overload = { note:`Progresión: sube el peso (última: ${last.weight}${last.wunit||'kg'} × ${last.reps})` };
         } else if(step.reps < 15){
           // Rango bajo/medio: +2 repeticiones
           step.reps += 2;

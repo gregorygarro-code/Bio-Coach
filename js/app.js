@@ -1,13 +1,13 @@
 // ===== FitCoach Casa · app principal =====
-import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS } from './exercises.js?v=30';
-import { createPoseLandmarker } from './pose.js?v=30';
-import { createDemoPlayer } from './demos.js?v=30';
-import * as generator from './generator.js?v=30';
-import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=30';
-import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=30';
-import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=30';
-import * as api from './api.js?v=30';
-import * as store from './storage.js?v=30';
+import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS } from './exercises.js?v=31';
+import { createPoseLandmarker } from './pose.js?v=31';
+import { createDemoPlayer } from './demos.js?v=31';
+import * as generator from './generator.js?v=31';
+import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=31';
+import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=31';
+import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=31';
+import * as api from './api.js?v=31';
+import * as store from './storage.js?v=31';
 
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -452,9 +452,20 @@ function configureObjective(ex){
     $('#obj-time-lbl').textContent='Tiempo (AMRAP)';
     $('#in-secs').value=60;
   }
-  // registro de peso (kg) solo en ejercicios con carga
+  // registro de peso solo en ejercicios con carga. La unidad varía según el
+  // equipo: barra en kg, mancuernas y discos en lb (el usuario puede alternar).
   $('#obj-weight').classList.toggle('hidden', !ex.weighted);
   $('#in-weight').value = 0;
+  const wu = $('#in-wunit'); if(wu) wu.value = defaultWeightUnit(ex);
+}
+// Unidad de peso sugerida: barra → kg; mancuernas/discos → lb
+function defaultWeightUnit(ex){
+  const eq = ex?.equipment || [];
+  const hasBarbell = equipDetail.has('barbell') || equipDetail.has('hex_bar');
+  if(eq.includes('bar') && hasBarbell) return 'kg';   // usando barra → kg
+  if(eq.includes('dumbbell')) return 'lb';            // mancuernas / discos → lb
+  if(eq.includes('bar')) return 'kg';
+  return 'kg';
 }
 // Alterna "por tiempo" (AMRAP) en ejercicios de repeticiones
 $('#in-timed').addEventListener('change', e=>{
@@ -876,9 +887,11 @@ function endSet(save){
 
     if(reps>0){
       const weight = currentEx.weighted ? Math.max(0, parseFloat($('#in-weight').value)||0) : 0;
+      const wunit = ($('#in-wunit')?.value) || 'kg';
       const entry={
         exerciseId:currentEx.id, name:currentEx.name, reps, unit,
         weight: weight>0 ? weight : null,
+        wunit: weight>0 ? wunit : null,
         avgRom: counter.lastRom!=null?Math.round(counter.lastRom):null,
         bilateral: bilateralEx || undefined,
         set:setNumber, ts:Date.now(),
@@ -1022,7 +1035,7 @@ function renderHistory(){
     const div=document.createElement('div'); div.className='hist-day';
     div.innerHTML=`<h4>${day}</h4>`+entries.map(e=>{
       const t=new Date(e.ts).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
-      const w=e.weight?` · ${e.weight} kg`:'';
+      const w=e.weight?` · ${e.weight} ${e.wunit||'kg'}`:'';
       const rpe=e.rpe?` · RPE ${e.rpe}${e.pain?' ⚠️':''}`:'';
       return `<div class="hist-ex"><span>${t} · ${e.name} (serie ${e.set})</span><b>${e.reps} ${e.unit}${w}${rpe}</b></div>`;
     }).join('');
@@ -1049,7 +1062,7 @@ function renderProgress(){
     .sort((a,b)=>(b.bestWeight-a.bestWeight)||(b.bestReps-a.bestReps));
   $('#pr-list').innerHTML = prs.length
     ? prs.map(p=>{
-        const best = p.bestWeight>0 ? `${p.bestWeight} kg × ${p.bestReps}` : `${p.bestReps} ${p.unit||'reps'}`;
+        const best = p.bestWeight>0 ? `${p.bestWeight} ${p.wunit||'kg'} × ${p.bestReps}` : `${p.bestReps} ${p.unit||'reps'}`;
         return `<div class="pr-item"><span>${p.name}</span><b>${best}</b></div>`;
       }).join('')
     : '<p class="muted">Aún no hay récords. ¡Entrena para verlos aquí!</p>';

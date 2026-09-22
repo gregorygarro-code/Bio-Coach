@@ -116,9 +116,9 @@ export function weeklyVolume(n=8){
 export function personalRecords(){
   const pr={};
   for(const e of loadHistory()){
-    const p=pr[e.name] || (pr[e.name]={name:e.name, unit:e.unit, bestReps:0, bestWeight:0});
+    const p=pr[e.name] || (pr[e.name]={name:e.name, unit:e.unit, bestReps:0, bestWeight:0, wunit:'kg'});
     if((e.reps||0)>p.bestReps) p.bestReps=e.reps||0;
-    if((e.weight||0)>p.bestWeight) p.bestWeight=e.weight||0;
+    if((e.weight||0)>p.bestWeight){ p.bestWeight=e.weight||0; p.wunit=e.wunit||'kg'; }
   }
   return Object.values(pr);
 }
@@ -139,6 +139,7 @@ export function lastResultFor(exerciseId){
     reps:   Math.max(...sameDay.map(e=>e.reps||0)),      // mejor serie de esa sesión
     unit:   sameDay[0].unit || 'reps',
     weight: Math.max(...sameDay.map(e=>e.weight||0)),
+    wunit:  (sameDay.find(e=>e.weight>0)?.wunit) || 'kg',
     sets:   sameDay.length,
     ts:     Math.max(...sameDay.map(e=>e.ts)),
   };
