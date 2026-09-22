@@ -742,6 +742,10 @@ main{max-width:1200px;margin:0 auto;padding:16px}
 @media(max-width:640px){ .modal-box{ max-height:calc(100vh - 24px); } }
 .report-body{ overflow-wrap:break-word; }
 
+/* Sugerencia de peso (progresión automática) */
+.weight-hint{ margin:6px 0 0; color:var(--accent); font-weight:600; }
+.weight-hint:empty{ display:none; }
+
 /* ===== Guía técnica (v29) ===== */
 .guia-intro h2{ margin-bottom:6px; }
 .guia-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; margin-top:12px; }

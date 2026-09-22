@@ -1,13 +1,13 @@
 // ===== FitCoach Casa · app principal =====
-import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS } from './exercises.js?v=31';
-import { createPoseLandmarker } from './pose.js?v=31';
-import { createDemoPlayer } from './demos.js?v=31';
-import * as generator from './generator.js?v=31';
-import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=31';
-import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=31';
-import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=31';
-import * as api from './api.js?v=31';
-import * as store from './storage.js?v=31';
+import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS, parseWeightList, barbellLadder } from './exercises.js?v=32';
+import { createPoseLandmarker } from './pose.js?v=32';
+import { createDemoPlayer } from './demos.js?v=32';
+import * as generator from './generator.js?v=32';
+import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=32';
+import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=32';
+import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=32';
+import * as api from './api.js?v=32';
+import * as store from './storage.js?v=32';
 
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -454,9 +454,18 @@ function configureObjective(ex){
   }
   // registro de peso solo en ejercicios con carga. La unidad varía según el
   // equipo: barra en kg, mancuernas y discos en lb (el usuario puede alternar).
+  // Progresión automática: sugiere el peso a partir del inventario + historial.
   $('#obj-weight').classList.toggle('hidden', !ex.weighted);
-  $('#in-weight').value = 0;
-  const wu = $('#in-wunit'); if(wu) wu.value = defaultWeightUnit(ex);
+  const hint = $('#weight-hint');
+  if(ex.weighted){
+    const s = suggestWeight(ex);
+    $('#in-weight').value = s.weight || 0;
+    const wu = $('#in-wunit'); if(wu) wu.value = s.unit;
+    if(hint) hint.textContent = s.hint || '';
+  }else{
+    $('#in-weight').value = 0;
+    if(hint) hint.textContent = '';
+  }
 }
 // Unidad de peso sugerida: barra → kg; mancuernas/discos → lb
 function defaultWeightUnit(ex){
@@ -466,6 +475,46 @@ function defaultWeightUnit(ex){
   if(eq.includes('dumbbell')) return 'lb';            // mancuernas / discos → lb
   if(eq.includes('bar')) return 'kg';
   return 'kg';
+}
+// Pesos disponibles (números) para una unidad, según el inventario del perfil
+function availableWeights(unit){
+  const out = [];
+  for(const it of EQUIPMENT_DETAIL){
+    if(!it.weight || it.unit!==unit || !equipDetail.has(it.id)) continue;
+    out.push(...parseWeightList(equipWeights[it.id]));
+  }
+  return [...new Set(out)].sort((a,b)=>a-b);
+}
+// Escalera de cargas para un ejercicio, según el implemento y el inventario.
+function loadLadder(ex){
+  const unit = defaultWeightUnit(ex);
+  if(unit==='kg'){   // barra: peso de la barra (kg) + pares de discos (lb→kg)
+    const barId = equipDetail.has('barbell') ? 'barbell' : (equipDetail.has('hex_bar') ? 'hex_bar' : null);
+    const barKg = barId ? (parseWeightList(equipWeights[barId])[0] || 20) : 20;
+    const platesLb = parseWeightList(equipWeights.plates);
+    return { unit, ladder: barbellLadder(barKg, platesLb) };
+  }
+  return { unit, ladder: availableWeights('lb') };   // mancuernas / kettlebell / balón
+}
+// Sugerencia de peso: empieza en el mínimo (dominar técnica) y sube al siguiente
+// disponible cuando la última vez se alcanzó el objetivo de repeticiones.
+function suggestWeight(ex){
+  const { unit, ladder } = loadLadder(ex);
+  const last = store.lastResultFor(ex.id);
+  if(!ladder.length){
+    return { weight: last?.weight || 0, unit: last?.wunit || unit, hint: last?.weight ? '' : 'Añade tus pesos en Perfil › Equipo para sugerencias automáticas.' };
+  }
+  if(!last || !last.weight){
+    return { weight: ladder[0], unit, hint:`Empieza ligero para dominar la técnica · ${ladder[0]} ${unit}` };
+  }
+  const w = last.weight;
+  const target = levelReps(settings.targetReps, settings.level);
+  if(last.unit==='reps' && last.reps >= target){
+    const next = ladder.find(x => x > w + 0.01);
+    if(next!=null) return { weight: next, unit, hint:`Superaste ${last.reps} reps → sube a ${next} ${unit}` };
+    return { weight: w, unit, hint:`Máximo disponible (${w} ${unit}): progresa con más reps o tempo` };
+  }
+  return { weight: w, unit, hint:`Repite ${w} ${unit} hasta dominar la técnica` };
 }
 // Alterna "por tiempo" (AMRAP) en ejercicios de repeticiones
 $('#in-timed').addEventListener('change', e=>{

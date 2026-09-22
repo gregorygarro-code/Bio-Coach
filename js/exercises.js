@@ -1,5 +1,5 @@
 // ===== Biblioteca de ejercicios + motor biomecánico =====
-import { LM, angle, angleFromVertical, midpoint, vis, clamp } from './utils.js?v=31';
+import { LM, angle, angleFromVertical, midpoint, vis, clamp } from './utils.js?v=32';
 
 // --- helpers de ángulos sobre landmarks ---
 function tri(lm, a, b, c){
@@ -95,17 +95,20 @@ export const EQUIPMENT = {
 // Equipamiento detallado (lo que ve el usuario). Cada item aporta "capacidades"
 // (caps) que son las que usan los ejercicios para el filtrado. weight:true habilita
 // un campo para indicar los pesos disponibles.
+// Unidad de peso por equipo: mancuernas, kettlebell, discos y balón en LB;
+// las barras (olímpica/hexagonal) en KG (su peso propio). Las bandas son texto.
 export const EQUIPMENT_DETAIL = [
   { id:'bodyweight', label:'Peso corporal',        ic:'🧍', caps:['bodyweight'] },
   { id:'yoga_mat',   label:'Mat de yoga',          ic:'🧘', caps:['bodyweight'] },
-  { id:'dumbbells',  label:'Mancuernas',           ic:'🏋️', caps:['dumbbell'], weight:true, wl:'Pesos disponibles (kg)', ph:'ej. 6, 8, 10, 12' },
-  { id:'kettlebell', label:'Kettlebell',           ic:'🔔', caps:['dumbbell'], weight:true, wl:'Pesos (kg)', ph:'ej. 12, 16, 20' },
+  { id:'dumbbells',  label:'Mancuernas',           ic:'🏋️', caps:['dumbbell'], weight:true, unit:'lb', wl:'Pesos disponibles (lb)', ph:'ej. 10, 15, 20, 25' },
+  { id:'kettlebell', label:'Kettlebell',           ic:'🔔', caps:['dumbbell'], weight:true, unit:'lb', wl:'Pesos (lb)', ph:'ej. 25, 35, 45' },
   { id:'bands',      label:'Bandas elásticas',     ic:'🎗️', caps:['band'], weight:true, wl:'Resistencias', ph:'ej. media, fuerte' },
-  { id:'med_ball',   label:'Balón medicinal',      ic:'⚽', caps:['dumbbell'], weight:true, wl:'Peso (kg)', ph:'ej. 5' },
+  { id:'med_ball',   label:'Balón medicinal',      ic:'⚽', caps:['dumbbell'], weight:true, unit:'lb', wl:'Peso (lb)', ph:'ej. 10' },
   { id:'bench',      label:'Banca',                ic:'🛋️', caps:['bar','dumbbell'] },
   { id:'squat_rack', label:'Rack de sentadillas',  ic:'🗜️', caps:['bar'] },
-  { id:'barbell',    label:'Barra olímpica',       ic:'🏋️', caps:['bar','dumbbell'], weight:true, wl:'Barra + discos (kg)', ph:'ej. barra 20 + 60' },
-  { id:'hex_bar',    label:'Barra hexagonal',      ic:'⬡',  caps:['bar','dumbbell'], weight:true, wl:'Peso (kg)', ph:'ej. 25 + discos' },
+  { id:'barbell',    label:'Barra olímpica',       ic:'🏋️', caps:['bar','dumbbell'], weight:true, unit:'kg', wl:'Peso de la barra (kg)', ph:'ej. 20' },
+  { id:'plates',     label:'Discos',               ic:'🟠', caps:[],               weight:true, unit:'lb', wl:'Discos por par (lb)', ph:'ej. 5, 10, 25, 45' },
+  { id:'hex_bar',    label:'Barra hexagonal',      ic:'⬡',  caps:['bar','dumbbell'], weight:true, unit:'kg', wl:'Peso de la barra (kg)', ph:'ej. 25' },
   { id:'pullup_bar', label:'Barra de dominadas',   ic:'🚪', caps:['bar'] },
 ];
 // Deriva las capacidades (bodyweight/dumbbell/band/bar) desde la selección detallada
@@ -113,6 +116,24 @@ export function capsFromDetail(detailSet){
   const caps=new Set(['bodyweight']);          // el peso corporal siempre está disponible
   for(const it of EQUIPMENT_DETAIL){ if(detailSet.has(it.id)) it.caps.forEach(c=>caps.add(c)); }
   return caps;
+}
+
+// ===== Utilidades de peso / progresión automática =====
+export const LB_TO_KG = 0.45359237;
+// Convierte "10, 15, 20" en [10,15,20] (números positivos, ordenados)
+export function parseWeightList(str){
+  return String(str||'').split(/[,;]/).map(s=>parseFloat(String(s).replace(',','.')))
+    .filter(n=>isFinite(n) && n>0).sort((a,b)=>a-b);
+}
+// Escalera de cargas de barra: peso de la barra (kg) + pares de discos (lb→kg)
+// acumulados de menor a mayor. Devuelve totales en kg (redondeados a 0.5).
+export function barbellLadder(barKg, platesLb){
+  const bar = (isFinite(barKg) && barKg>0) ? barKg : 20;
+  const plates = (platesLb||[]).slice().sort((a,b)=>a-b);
+  const ladder = [Math.round(bar*2)/2];
+  let total = bar;
+  for(const p of plates){ total += 2*p*LB_TO_KG; ladder.push(Math.round(total*2)/2); }  // un par a cada lado
+  return ladder;
 }
 
 // ===== Definición de ejercicios =====
