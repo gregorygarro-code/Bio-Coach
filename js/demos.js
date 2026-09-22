@@ -119,6 +119,30 @@ export const DEMOS = {
 
 const BONES=[['head','sh'],['sh','hip'],['sh','el'],['el','ha'],['hip','kn'],['kn','an']];
 
+// Alias: ejercicios nuevos (barra/mancuernas) reutilizan una animación equivalente.
+const DEMO_ALIAS = {
+  sentadilla_trasera:'squat', sentadilla_copa:'chair_squat', peso_muerto_convencional:'rdl',
+  peso_muerto_hexagonal:'rdl', buenos_dias:'rdl', step_ups_peso:'lunge', paseo_granjero:'marching',
+  press_banca_inclinado:'bench', press_banca_declinado:'bench', press_banca_cerrado:'bench',
+  press_mancuernas:'bench', aperturas_mancuernas:'bench', pullover_mancuerna:'bench',
+  remo_pendlay:'row', remo_barra_hexagonal:'row', remo_una_mano:'row', remo_soporte_pecho:'row',
+  encogimientos_hexagonal:'upright_row', press_hombros_sentado:'ohp', elevaciones_frontales:'lateral',
+  pajaros:'facepull', extension_tras_nuca:'triceps_ext', patada_triceps:'triceps_ext',
+  curl_alterno_mancuernas:'curl', curl_martillo:'curl', curl_arana:'curl', curl_concentrado:'curl',
+  russian_twists_disco:'bicycle', crunch_peso:'crunch', side_bends:'superman',
+  // Bloque "fuerza útil" (endurance)
+  deep_squat:'squat', front_squat:'squat', trx_squat:'chair_squat', single_leg_press:'squat',
+  bulgarian_end:'bulgarian', bulgarian_jump:'bulgarian', hip_thrust:'glute_bridge',
+  single_leg_dl:'rdl', trx_row:'row', kb_swing_end:'swing', scap_dips:'dip',
+  plank_static:'plank', plank_dynamic:'plank',
+};
+// Devuelve la clave de animación válida para un id (directa o por alias), o null.
+export function resolveDemo(id){
+  if(DEMOS[id]) return id;
+  const a=DEMO_ALIAS[id];
+  return (a && DEMOS[a]) ? a : null;
+}
+
 // Lee un color de las variables CSS del tema (con fallback), para que las
 // demostraciones combinen con la identidad visual actual.
 function themeColors(canvas){
@@ -199,7 +223,7 @@ export function createDemoPlayer(canvas){
 
   return {
     play(id, still=false){
-      ex=id; col=themeColors(canvas); cancelAnimationFrame(raf); raf=null;
+      ex=resolveDemo(id)||id; col=themeColors(canvas); cancelAnimationFrame(raf); raf=null;
       if(still){ render(0.5); return; }         // reducir movimiento: fotograma estático
       start=performance.now(); raf=requestAnimationFrame(frame);
     },

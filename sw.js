@@ -2,7 +2,7 @@
 // Cachea los estáticos locales (HTML, CSS, JS, JSON de ejercicios, iconos) para
 // funcionar sin conexión y sin servidor. Los recursos externos (MediaPipe, fuentes,
 // Supabase) se cachean bajo demanda tras el primer uso.
-const V = 'v34';
+const V = 'v35';
 const CACHE = 'fitcoach-' + V;
 
 // Estáticos locales a precachear. Las rutas con ?v= deben coincidir con index.html.
@@ -12,18 +12,18 @@ const ASSETS = [
   'manifest.json',
   'icon.svg',
   'og-image.svg',
-  'css/styles.css?v=34',
-  'js/app.js?v=34',
-  'js/exercises.js?v=34',
-  'js/generator.js?v=34',
-  'js/demos.js?v=34',
-  'js/pose.js?v=34',
-  'js/utils.js?v=34',
-  'js/audio.js?v=34',
-  'js/storage.js?v=34',
-  'js/api.js?v=34',
-  'js/config.js?v=34',
-  'data/exercises.json?v=34',
+  'css/styles.css?v=35',
+  'js/app.js?v=35',
+  'js/exercises.js?v=35',
+  'js/generator.js?v=35',
+  'js/demos.js?v=35',
+  'js/pose.js?v=35',
+  'js/utils.js?v=35',
+  'js/audio.js?v=35',
+  'js/storage.js?v=35',
+  'js/api.js?v=35',
+  'js/config.js?v=35',
+  'data/exercises.json?v=35',
 ];
 
 self.addEventListener('install', e=>{

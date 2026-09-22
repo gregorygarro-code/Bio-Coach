@@ -782,12 +782,12 @@ main{max-width:1200px;margin:0 auto;padding:16px}
   .session-side .gauges{ display:none; }
 }
 
-/* ===== P5 · Previsualización con vídeo real de YouTube ===== */
-.preview-grid{ display:block; }
-.preview-video{ position:relative; width:100%; aspect-ratio:16/9; background:#000; border-radius:16px; overflow:hidden; margin-bottom:16px; }
-.preview-video iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
-.yt-search{ position:absolute; inset:0; display:flex; flex-direction:column; gap:8px; align-items:center; justify-content:center; color:#fff; text-decoration:none; font-weight:700; background:linear-gradient(135deg,#F4501E,#DC4317); }
-.yt-play{ font-size:44px; }
+/* ===== P5 · Previsualización con animación 2D (+ botón YouTube) ===== */
+.preview-grid{ display:grid; grid-template-columns:260px 1fr; gap:22px; }
+@media(max-width:640px){ .preview-grid{ grid-template-columns:1fr; } }
+.preview-video{ display:grid; place-items:center; width:100%; aspect-ratio:1/1; max-height:280px; background:var(--panel2); border:1px solid var(--line); border-radius:16px; overflow:hidden; }
+.preview-video .demo-canvas{ width:100%; height:100%; }
+.demo-fallback{ font-size:110px; line-height:1; }
 
 /* Hero estático (sin animación 2D) */
 .hero-figure{ display:grid; place-items:center; width:100%; height:100%; font-size:110px; line-height:1; }

@@ -1,12 +1,13 @@
 // ===== FitCoach Casa · app principal =====
-import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS, parseWeightList, barbellLadder } from './exercises.js?v=34';
-import { createPoseLandmarker } from './pose.js?v=34';
-import * as generator from './generator.js?v=34';
-import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=34';
-import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=34';
-import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=34';
-import * as api from './api.js?v=34';
-import * as store from './storage.js?v=34';
+import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS, parseWeightList, barbellLadder } from './exercises.js?v=35';
+import { createDemoPlayer, resolveDemo } from './demos.js?v=35';
+import { createPoseLandmarker } from './pose.js?v=35';
+import * as generator from './generator.js?v=35';
+import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=35';
+import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=35';
+import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=35';
+import * as api from './api.js?v=35';
+import * as store from './storage.js?v=35';
 
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -378,15 +379,21 @@ $('#gb-quit').addEventListener('click', ()=>{ if(setActive) endSet(false); guide
 // ======================================================
 // Modal de demostración (antes de empezar)
 // ======================================================
-let previewEx=null;
-// Renderiza la técnica real: si el ejercicio tiene youtube_id → iframe embebido;
-// si no, muestra un CTA a la búsqueda de YouTube (no se inventan ids).
+let previewEx=null, previewDemo=null;
+// Previsualización: animación 2D (con alias para los ejercicios nuevos) y, si no
+// hay animación, un emoji grande. El botón "Ver en YouTube" (búsqueda) complementa.
 function renderPreviewVideo(ex){
   const box=$('#preview-video'); if(!box) return;
-  if(ex.youtube_id){
-    box.innerHTML=`<iframe src="https://www.youtube.com/embed/${ex.youtube_id}?autoplay=1&mute=1&loop=1&playlist=${ex.youtube_id}&rel=0&modestbranding=1" title="${ex.name}" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
+  previewDemo?.stop(); previewDemo=null;
+  box.innerHTML='';
+  const key=resolveDemo(ex.id);
+  if(key){
+    const c=document.createElement('canvas'); c.width=260; c.height=260; c.className='demo-canvas';
+    box.appendChild(c);
+    previewDemo=createDemoPlayer(c);
+    previewDemo.play(key, settings.reduceMotion);
   }else{
-    box.innerHTML=`<a class="yt-search" href="${ex.yt}" target="_blank" rel="noopener"><span class="yt-play">▶</span><span>Ver técnica en YouTube</span></a>`;
+    box.innerHTML=`<div class="demo-fallback">${ex.emoji||'🏋️'}</div>`;
   }
 }
 function openPreview(ex, review=false){
@@ -401,7 +408,7 @@ function openPreview(ex, review=false){
 }
 function closePreview(){
   $('#preview').classList.add('hidden');
-  const box=$('#preview-video'); if(box) box.innerHTML='';   // detiene el vídeo
+  previewDemo?.stop(); previewDemo=null;
 }
 $('#preview-close').addEventListener('click', closePreview);
 $('#preview').addEventListener('click', e=>{ if(e.target.id==='preview') closePreview(); });
