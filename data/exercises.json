@@ -1,7 +1,7 @@
 {
   "version": 1,
   "generated": "2026-09-21",
-  "count": 75,
+  "count": 105,
   "exercises": [
     {
       "id": "squat",
@@ -3164,6 +3164,1290 @@
         "Aprieta el core"
       ],
       "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Plancha%20din%C3%A1mica%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "sentadilla_trasera",
+      "name": "Sentadilla Trasera (Back Squat)",
+      "emoji": "🏋️",
+      "type": "reps",
+      "equipment": [
+        "bar"
+      ],
+      "muscles": "Cuádriceps · glúteo · core",
+      "view": "De frente o 45°, cuerpo entero",
+      "group": "lower",
+      "category": "fuerza",
+      "objetivo": null,
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 105,
+        "resetThresh": 158
+      },
+      "gauges": [
+        {
+          "label": "Rodilla",
+          "min": 60,
+          "max": 175
+        },
+        {
+          "label": "Cadera",
+          "min": 60,
+          "max": 180
+        }
+      ],
+      "cues": [
+        "Barra sobre los trapecios",
+        "Pecho alto, core firme",
+        "Baja a muslos paralelos",
+        "Empuja desde el talón"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Sentadilla%20Trasera%20(Back%20Squat)%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "buenos_dias",
+      "name": "Buenos Días (Good Mornings)",
+      "emoji": "🙇",
+      "type": "reps",
+      "equipment": [
+        "bar"
+      ],
+      "muscles": "Isquios · glúteo · lumbar",
+      "view": "De lado, cuerpo entero",
+      "group": "lower",
+      "category": "fuerza",
+      "objetivo": null,
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 120,
+        "resetThresh": 165
+      },
+      "gauges": [
+        {
+          "label": "Cadera",
+          "min": 55,
+          "max": 185
+        }
+      ],
+      "cues": [
+        "Barra en trapecios",
+        "Rodillas algo flexionadas",
+        "Bisagra de cadera, espalda neutra",
+        "No redondees la lumbar"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Buenos%20D%C3%ADas%20(Good%20Mornings)%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "peso_muerto_convencional",
+      "name": "Peso Muerto Convencional",
+      "emoji": "🏋️",
+      "type": "reps",
+      "equipment": [
+        "bar"
+      ],
+      "muscles": "Cadena posterior completa",
+      "view": "De lado, cuerpo entero",
+      "group": "lower",
+      "category": "fuerza",
+      "objetivo": null,
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 118,
+        "resetThresh": 168
+      },
+      "gauges": [
+        {
+          "label": "Cadera",
+          "min": 55,
+          "max": 185
+        },
+        {
+          "label": "Rodilla",
+          "min": 90,
+          "max": 180
+        }
+      ],
+      "cues": [
+        "Barra pegada a las espinillas",
+        "Espalda neutra, pecho alto",
+        "Empuja el suelo con los pies",
+        "Bloquea con el glúteo"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Peso%20Muerto%20Convencional%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "peso_muerto_hexagonal",
+      "name": "Peso Muerto Hexagonal",
+      "emoji": "⬡",
+      "type": "reps",
+      "equipment": [
+        "bar"
+      ],
+      "muscles": "Glúteo · cuádriceps · espalda",
+      "view": "De lado, cuerpo entero",
+      "group": "lower",
+      "category": "fuerza",
+      "objetivo": null,
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 120,
+        "resetThresh": 168
+      },
+      "gauges": [
+        {
+          "label": "Cadera",
+          "min": 55,
+          "max": 185
+        }
+      ],
+      "cues": [
+        "Dentro de la barra hexagonal",
+        "Pecho alto, core firme",
+        "Empuja con las piernas",
+        "Bloquea sin hiperextender"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Peso%20Muerto%20Hexagonal%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "paseo_granjero",
+      "name": "Paseo del Granjero",
+      "emoji": "🚶",
+      "type": "hold",
+      "equipment": [
+        "bar",
+        "dumbbell"
+      ],
+      "muscles": "Agarre · core · trapecio",
+      "view": "De frente, cuerpo entero",
+      "group": "lower",
+      "category": "fuerza",
+      "objetivo": null,
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": 40,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [
+        {
+          "label": "Cuerpo",
+          "min": 150,
+          "max": 185
+        }
+      ],
+      "cues": [
+        "Peso alto en ambas manos",
+        "Hombros atrás, pecho alto",
+        "Pasos cortos y firmes",
+        "Core apretado"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Paseo%20del%20Granjero%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "step_ups_peso",
+      "name": "Step-Ups con Peso",
+      "emoji": "🪜",
+      "type": "reps",
+      "equipment": [
+        "dumbbell"
+      ],
+      "muscles": "Cuádriceps · glúteo",
+      "view": "De lado, cuerpo entero",
+      "group": "lower",
+      "category": "fuerza",
+      "objetivo": null,
+      "bilateral": true,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 100,
+        "resetThresh": 160
+      },
+      "gauges": [
+        {
+          "label": "Rodilla",
+          "min": 70,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "Pie completo sobre el banco",
+        "Sube empujando con el talón",
+        "Controla la bajada",
+        "Alterna la pierna"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Step-Ups%20con%20Peso%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "sentadilla_copa",
+      "name": "Sentadilla Copa (Goblet Squat)",
+      "emoji": "🏆",
+      "type": "reps",
+      "equipment": [
+        "dumbbell"
+      ],
+      "muscles": "Cuádriceps · glúteo · core",
+      "view": "De frente, cuerpo entero",
+      "group": "lower",
+      "category": "fuerza",
+      "objetivo": null,
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 100,
+        "resetThresh": 158
+      },
+      "gauges": [
+        {
+          "label": "Rodilla",
+          "min": 60,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "Mancuerna al pecho, codos dentro",
+        "Tronco vertical",
+        "Baja profundo",
+        "Empuja desde el talón"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Sentadilla%20Copa%20(Goblet%20Squat)%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "press_banca_inclinado",
+      "name": "Press de Banca Inclinado",
+      "emoji": "🛋️",
+      "type": "reps",
+      "equipment": [
+        "bar"
+      ],
+      "muscles": "Pecho superior · hombro · tríceps",
+      "view": "De lado, medio cuerpo",
+      "group": "upper",
+      "category": "fuerza",
+      "objetivo": null,
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 95,
+        "resetThresh": 150
+      },
+      "gauges": [
+        {
+          "label": "Codo",
+          "min": 55,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "Banco a 30-45°",
+        "Baja a la clavícula",
+        "Codos ~45° del cuerpo",
+        "Empuja sin bloquear de golpe"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Press%20de%20Banca%20Inclinado%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "press_banca_declinado",
+      "name": "Press de Banca Declinado",
+      "emoji": "🛋️",
+      "type": "reps",
+      "equipment": [
+        "bar"
+      ],
+      "muscles": "Pecho inferior · tríceps",
+      "view": "De lado, medio cuerpo",
+      "group": "upper",
+      "category": "fuerza",
+      "objetivo": null,
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 95,
+        "resetThresh": 150
+      },
+      "gauges": [
+        {
+          "label": "Codo",
+          "min": 55,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "Banco declinado, pies fijos",
+        "Baja al pecho bajo",
+        "Codos controlados",
+        "Empuja firme"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Press%20de%20Banca%20Declinado%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "press_banca_cerrado",
+      "name": "Press de Banca Agarre Cerrado",
+      "emoji": "🤏",
+      "type": "reps",
+      "equipment": [
+        "bar"
+      ],
+      "muscles": "Tríceps · pecho",
+      "view": "De lado, medio cuerpo",
+      "group": "upper",
+      "category": "fuerza",
+      "objetivo": null,
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 90,
+        "resetThresh": 150
+      },
+      "gauges": [
+        {
+          "label": "Codo",
+          "min": 50,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "Manos al ancho de hombros",
+        "Codos pegados al cuerpo",
+        "Baja al esternón",
+        "Empuja con el tríceps"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Press%20de%20Banca%20Agarre%20Cerrado%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "press_mancuernas",
+      "name": "Press con Mancuernas",
+      "emoji": "💪",
+      "type": "reps",
+      "equipment": [
+        "dumbbell"
+      ],
+      "muscles": "Pecho · hombro · tríceps",
+      "view": "De lado, medio cuerpo",
+      "group": "upper",
+      "category": "fuerza",
+      "objetivo": null,
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 95,
+        "resetThresh": 150
+      },
+      "gauges": [
+        {
+          "label": "Codo",
+          "min": 55,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "Mancuernas a los lados del pecho",
+        "Baja controlando",
+        "Empuja y junta arriba",
+        "Muñecas firmes"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Press%20con%20Mancuernas%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "aperturas_mancuernas",
+      "name": "Aperturas con Mancuernas (Flyes)",
+      "emoji": "🦋",
+      "type": "reps",
+      "equipment": [
+        "dumbbell"
+      ],
+      "muscles": "Pecho",
+      "view": "De lado, medio cuerpo",
+      "group": "upper",
+      "category": "fuerza",
+      "objetivo": null,
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": true,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 50,
+        "resetThresh": 85
+      },
+      "gauges": [
+        {
+          "label": "Hombro",
+          "min": 20,
+          "max": 110
+        }
+      ],
+      "cues": [
+        "Codos ligeramente flexionados y fijos",
+        "Abre en arco amplio",
+        "Siente el estiramiento del pecho",
+        "Junta arriba sin chocar"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Aperturas%20con%20Mancuernas%20(Flyes)%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "pullover_mancuerna",
+      "name": "Pullover con Mancuerna",
+      "emoji": "🏋️",
+      "type": "reps",
+      "equipment": [
+        "dumbbell"
+      ],
+      "muscles": "Pecho · dorsal · serrato",
+      "view": "De lado, medio cuerpo",
+      "group": "upper",
+      "category": "fuerza",
+      "objetivo": null,
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": true,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "high",
+        "effortThresh": 150,
+        "resetThresh": 95
+      },
+      "gauges": [
+        {
+          "label": "Hombro",
+          "min": 60,
+          "max": 180
+        }
+      ],
+      "cues": [
+        "Mancuerna sobre el pecho",
+        "Baja tras la cabeza, codos casi fijos",
+        "Siente el estiramiento",
+        "Vuelve controlando"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Pullover%20con%20Mancuerna%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "remo_pendlay",
+      "name": "Remo Pendlay",
+      "emoji": "🏋️",
+      "type": "reps",
+      "equipment": [
+        "bar"
+      ],
+      "muscles": "Espalda · bíceps · lumbar",
+      "view": "De lado, cuerpo entero",
+      "group": "upper",
+      "category": "fuerza",
+      "objetivo": null,
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 80,
+        "resetThresh": 155
+      },
+      "gauges": [
+        {
+          "label": "Codo",
+          "min": 45,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "Tronco casi paralelo al suelo",
+        "Espalda neutra",
+        "Tira explosivo al abdomen",
+        "Baja al suelo cada rep"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Remo%20Pendlay%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "remo_barra_hexagonal",
+      "name": "Remo con Barra Hexagonal",
+      "emoji": "⬡",
+      "type": "reps",
+      "equipment": [
+        "bar"
+      ],
+      "muscles": "Espalda · trapecio · bíceps",
+      "view": "De lado, cuerpo entero",
+      "group": "upper",
+      "category": "fuerza",
+      "objetivo": null,
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 80,
+        "resetThresh": 155
+      },
+      "gauges": [
+        {
+          "label": "Codo",
+          "min": 45,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "Bisagra con espalda neutra",
+        "Tira hacia el ombligo",
+        "Aprieta escápulas",
+        "Baja controlando"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Remo%20con%20Barra%20Hexagonal%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "remo_una_mano",
+      "name": "Remo a una mano con Mancuerna",
+      "emoji": "🎗️",
+      "type": "reps",
+      "equipment": [
+        "dumbbell"
+      ],
+      "muscles": "Dorsal · bíceps",
+      "view": "De lado, apoyado en banco",
+      "group": "upper",
+      "category": "fuerza",
+      "objetivo": null,
+      "bilateral": true,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 75,
+        "resetThresh": 155
+      },
+      "gauges": [
+        {
+          "label": "Codo",
+          "min": 40,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "Apoya rodilla y mano en el banco",
+        "Espalda plana",
+        "Tira el codo al costado",
+        "Baja con control"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Remo%20a%20una%20mano%20con%20Mancuerna%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "remo_soporte_pecho",
+      "name": "Remo con Soporte en Pecho",
+      "emoji": "🛋️",
+      "type": "reps",
+      "equipment": [
+        "dumbbell"
+      ],
+      "muscles": "Espalda media · bíceps",
+      "view": "De lado, tumbado en banco inclinado",
+      "group": "upper",
+      "category": "fuerza",
+      "objetivo": null,
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 78,
+        "resetThresh": 155
+      },
+      "gauges": [
+        {
+          "label": "Codo",
+          "min": 40,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "Pecho apoyado en banco inclinado",
+        "Sin impulso de lumbar",
+        "Tira y aprieta escápulas",
+        "Baja controlando"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Remo%20con%20Soporte%20en%20Pecho%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "encogimientos_hexagonal",
+      "name": "Encogimientos (Shrugs)",
+      "emoji": "🤷",
+      "type": "reps",
+      "equipment": [
+        "bar",
+        "dumbbell"
+      ],
+      "muscles": "Trapecio",
+      "view": "De frente, medio cuerpo",
+      "group": "upper",
+      "category": "fuerza",
+      "objetivo": null,
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": true,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [],
+      "cues": [
+        "Peso colgando, brazos rectos",
+        "Eleva los hombros hacia las orejas",
+        "Aprieta arriba 1 s",
+        "Baja controlando"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Encogimientos%20(Shrugs)%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "press_hombros_sentado",
+      "name": "Press de Hombros Sentado",
+      "emoji": "🪑",
+      "type": "reps",
+      "equipment": [
+        "dumbbell"
+      ],
+      "muscles": "Hombro · tríceps",
+      "view": "De frente, medio cuerpo",
+      "group": "upper",
+      "category": "fuerza",
+      "objetivo": null,
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": false,
+      "compound": true,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "high",
+        "effortThresh": 160,
+        "resetThresh": 100
+      },
+      "gauges": [
+        {
+          "label": "Codo",
+          "min": 60,
+          "max": 180
+        }
+      ],
+      "cues": [
+        "Espalda apoyada",
+        "Mancuernas a la altura de las orejas",
+        "Empuja arriba sin bloquear",
+        "Baja controlando"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Press%20de%20Hombros%20Sentado%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "elevaciones_frontales",
+      "name": "Elevaciones Frontales",
+      "emoji": "🙌",
+      "type": "reps",
+      "equipment": [
+        "dumbbell"
+      ],
+      "muscles": "Deltoides anterior",
+      "view": "De lado, medio cuerpo",
+      "group": "upper",
+      "category": "fuerza",
+      "objetivo": null,
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": true,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "high",
+        "effortThresh": 80,
+        "resetThresh": 40
+      },
+      "gauges": [
+        {
+          "label": "Hombro",
+          "min": 10,
+          "max": 120
+        }
+      ],
+      "cues": [
+        "Sube al frente hasta la horizontal",
+        "Sin balanceo",
+        "Controla la bajada",
+        "Codos casi rectos"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Elevaciones%20Frontales%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "pajaros",
+      "name": "Pájaros (Rear Delt Flyes)",
+      "emoji": "🕊️",
+      "type": "reps",
+      "equipment": [
+        "dumbbell"
+      ],
+      "muscles": "Deltoides posterior · espalda alta",
+      "view": "De lado, tronco inclinado",
+      "group": "upper",
+      "category": "fuerza",
+      "objetivo": null,
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": true,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "high",
+        "effortThresh": 75,
+        "resetThresh": 35
+      },
+      "gauges": [
+        {
+          "label": "Hombro",
+          "min": 10,
+          "max": 110
+        }
+      ],
+      "cues": [
+        "Tronco inclinado, espalda neutra",
+        "Abre en arco",
+        "Aprieta escápulas",
+        "Baja controlando"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20P%C3%A1jaros%20(Rear%20Delt%20Flyes)%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "extension_tras_nuca",
+      "name": "Extensión Tras Nuca",
+      "emoji": "💪",
+      "type": "reps",
+      "equipment": [
+        "dumbbell"
+      ],
+      "muscles": "Tríceps",
+      "view": "De lado, medio cuerpo",
+      "group": "upper",
+      "category": "fuerza",
+      "objetivo": null,
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": true,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 70,
+        "resetThresh": 155
+      },
+      "gauges": [
+        {
+          "label": "Codo",
+          "min": 40,
+          "max": 175
+        }
+      ],
+      "cues": [
+        "Mancuerna sobre la cabeza",
+        "Codos apuntando al frente",
+        "Baja tras la nuca",
+        "Extiende arriba"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Extensi%C3%B3n%20Tras%20Nuca%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "patada_triceps",
+      "name": "Patada de Tríceps (Kickbacks)",
+      "emoji": "🦵",
+      "type": "reps",
+      "equipment": [
+        "dumbbell"
+      ],
+      "muscles": "Tríceps",
+      "view": "De lado, tronco inclinado",
+      "group": "upper",
+      "category": "fuerza",
+      "objetivo": null,
+      "bilateral": true,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": true,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "high",
+        "effortThresh": 160,
+        "resetThresh": 100
+      },
+      "gauges": [
+        {
+          "label": "Codo",
+          "min": 60,
+          "max": 180
+        }
+      ],
+      "cues": [
+        "Tronco inclinado, codo alto y fijo",
+        "Extiende el antebrazo atrás",
+        "Aprieta el tríceps",
+        "Vuelve controlando"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Patada%20de%20Tr%C3%ADceps%20(Kickbacks)%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "curl_alterno_mancuernas",
+      "name": "Curl Alterno con Mancuernas",
+      "emoji": "💪",
+      "type": "reps",
+      "equipment": [
+        "dumbbell"
+      ],
+      "muscles": "Bíceps",
+      "view": "De frente, medio cuerpo",
+      "group": "upper",
+      "category": "fuerza",
+      "objetivo": null,
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": true,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 55,
+        "resetThresh": 150
+      },
+      "gauges": [
+        {
+          "label": "Codo",
+          "min": 30,
+          "max": 170
+        }
+      ],
+      "cues": [
+        "Codos pegados al cuerpo",
+        "Sube alternando, sin balanceo",
+        "Aprieta arriba",
+        "Baja controlando"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Curl%20Alterno%20con%20Mancuernas%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "curl_martillo",
+      "name": "Curl Martillo (Hammer Curls)",
+      "emoji": "🔨",
+      "type": "reps",
+      "equipment": [
+        "dumbbell"
+      ],
+      "muscles": "Bíceps · braquial · antebrazo",
+      "view": "De frente, medio cuerpo",
+      "group": "upper",
+      "category": "fuerza",
+      "objetivo": null,
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": true,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 55,
+        "resetThresh": 150
+      },
+      "gauges": [
+        {
+          "label": "Codo",
+          "min": 30,
+          "max": 170
+        }
+      ],
+      "cues": [
+        "Agarre neutro (palmas enfrentadas)",
+        "Codos fijos",
+        "Sube sin balanceo",
+        "Baja controlando"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Curl%20Martillo%20(Hammer%20Curls)%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "curl_arana",
+      "name": "Curl Araña (Spider Curl)",
+      "emoji": "🕷️",
+      "type": "reps",
+      "equipment": [
+        "dumbbell"
+      ],
+      "muscles": "Bíceps (pico)",
+      "view": "De lado, pecho en banco inclinado",
+      "group": "upper",
+      "category": "fuerza",
+      "objetivo": null,
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": true,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 55,
+        "resetThresh": 150
+      },
+      "gauges": [
+        {
+          "label": "Codo",
+          "min": 30,
+          "max": 170
+        }
+      ],
+      "cues": [
+        "Pecho apoyado, brazos colgando",
+        "Sube sin mover el hombro",
+        "Aprieta el pico arriba",
+        "Baja completo"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Curl%20Ara%C3%B1a%20(Spider%20Curl)%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "curl_concentrado",
+      "name": "Curl Concentrado",
+      "emoji": "🎯",
+      "type": "reps",
+      "equipment": [
+        "dumbbell"
+      ],
+      "muscles": "Bíceps (pico)",
+      "view": "De lado, sentado",
+      "group": "upper",
+      "category": "fuerza",
+      "objetivo": null,
+      "bilateral": true,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": true,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 55,
+        "resetThresh": 150
+      },
+      "gauges": [
+        {
+          "label": "Codo",
+          "min": 30,
+          "max": 170
+        }
+      ],
+      "cues": [
+        "Codo apoyado en el muslo",
+        "Sube concentrando el bíceps",
+        "Aprieta arriba",
+        "Baja controlando"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Curl%20Concentrado%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "russian_twists_disco",
+      "name": "Russian Twists con Disco",
+      "emoji": "🌀",
+      "type": "reps",
+      "equipment": [
+        "dumbbell"
+      ],
+      "muscles": "Oblicuos · core",
+      "view": "De frente, sentado",
+      "group": "core",
+      "category": "fuerza",
+      "objetivo": null,
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": true,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [],
+      "cues": [
+        "Tronco inclinado atrás, core firme",
+        "Gira el peso lado a lado",
+        "Controla el giro",
+        "Talones ligeros o elevados"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Russian%20Twists%20con%20Disco%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "crunch_peso",
+      "name": "Crunch con Peso",
+      "emoji": "🔻",
+      "type": "reps",
+      "equipment": [
+        "dumbbell"
+      ],
+      "muscles": "Recto abdominal",
+      "view": "De lado, tumbado",
+      "group": "core",
+      "category": "fuerza",
+      "objetivo": null,
+      "bilateral": false,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": true,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 120,
+        "resetThresh": 150
+      },
+      "gauges": [
+        {
+          "label": "Tronco",
+          "min": 95,
+          "max": 170
+        }
+      ],
+      "cues": [
+        "Peso en el pecho",
+        "Enrolla la columna, no el cuello",
+        "Aprieta el abdomen arriba",
+        "Baja controlando"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Crunch%20con%20Peso%20ejercicio%20en%20casa"
+    },
+    {
+      "id": "side_bends",
+      "name": "Side Bends (Inclinaciones laterales)",
+      "emoji": "↔️",
+      "type": "reps",
+      "equipment": [
+        "dumbbell"
+      ],
+      "muscles": "Oblicuos",
+      "view": "De frente, de pie",
+      "group": "core",
+      "category": "fuerza",
+      "objetivo": null,
+      "bilateral": true,
+      "weighted": true,
+      "lowImpact": false,
+      "explosive": false,
+      "cardio": false,
+      "isolation": true,
+      "compound": false,
+      "prehab": false,
+      "prehabFocus": null,
+      "holdDefault": null,
+      "rep": {
+        "effort": "low",
+        "effortThresh": 0,
+        "resetThresh": 999
+      },
+      "gauges": [],
+      "cues": [
+        "Mancuerna en un lado",
+        "Inclínate lateralmente",
+        "Sube contrayendo el oblicuo",
+        "Sin girar el tronco"
+      ],
+      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Side%20Bends%20(Inclinaciones%20laterales)%20ejercicio%20en%20casa"
     }
   ]
 }

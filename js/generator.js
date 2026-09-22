@@ -3,8 +3,8 @@
 // ejecuta el filtrado/selección según los parámetros del usuario. La parte
 // biomecánica (funciones de medición/checks) sigue viviendo en exercises.js;
 // aquí trabajamos solo con la parte declarativa + el historial (sobrecarga).
-import { buildGuidedPlan, getExercise } from './exercises.js?v=32';
-import { lastResultFor, loadPlans } from './storage.js?v=32';
+import { buildGuidedPlan, getExercise } from './exercises.js?v=33';
+import { lastResultFor, loadPlans } from './storage.js?v=33';
 
 // Semana del mesociclo (1..4+) a partir del primer día auto-planificado en el calendario
 function mesoWeek(){
@@ -29,7 +29,7 @@ let _catalog = null, _loading = null;
 export async function loadCatalog(){
   if(_catalog) return _catalog;
   if(_loading) return _loading;
-  _loading = fetch('data/exercises.json?v=32')
+  _loading = fetch('data/exercises.json?v=33')
     .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
     .then(j=>{ _catalog = j.exercises || []; return _catalog; })
     .catch(err=>{ console.warn('[generator] no se pudo cargar el catálogo JSON:', err.message); _catalog = []; return _catalog; });
@@ -42,8 +42,8 @@ export function getCatalog(){ return _catalog || []; }
 const INJURY_CONTRA = {
   rodilla:  ['jump_squat','thruster','bulgarian','lunge','push_press'],
   hombro:   ['ohp','push_press','upright_row','dip','thruster','lateral','pullup'],
-  espalda:  ['rdl','swing','thruster','superman','cobra','upright_row','deadlift'],
-  lumbar:   ['rdl','swing','thruster','superman','cobra','good_morning'],
+  espalda:  ['rdl','swing','thruster','superman','cobra','upright_row','deadlift','remo_pendlay','remo_barra_hexagonal'],
+  lumbar:   ['rdl','swing','thruster','superman','cobra','good_morning','buenos_dias','peso_muerto_convencional','sentadilla_trasera','remo_pendlay','row','russian_twists_disco','side_bends'],
   cadera:   ['swing','bulgarian','lunge','jump_squat'],
   tobillo:  ['jump_squat','thruster','marching'],
   muneca:   ['pushup','plank','mountain_climber','dip','scapular_pushup','bird_dog'],
@@ -63,6 +63,35 @@ export function injuriesToExclude(injuries=[]){
     }
   }
   return ex;
+}
+
+// ---- Sustitución inteligente por lesión lumbar (Fallback) ----
+// Si tras excluir los lifts de estrés axial la rutina se queda sin un patrón de
+// tirón o de bisagra, fuerza una alternativa segura según el equipo del perfil.
+const PULL_PATTERN  = ['row','trx_row','remo_soporte_pecho','remo_una_mano','remo_pendlay','remo_barra_hexagonal','facepull','pullup'];
+const HINGE_PATTERN = ['rdl','deadlift','peso_muerto_convencional','peso_muerto_hexagonal','peso_muerto_rumano','single_leg_dl','hip_thrust','swing','kb_swing_end','buenos_dias'];
+function swapExercise(step, ex){
+  if(!step || !ex) return;
+  step.id=ex.id; step.ex=ex; step.name=ex.name; step.emoji=ex.emoji;
+  step.type=ex.type||'reps'; step.mode = ex.type==='hold' ? 'hold' : 'reps';
+  step.bilateral=!!ex.bilateral; step.sides=ex.bilateral?2:1;
+}
+function forceLumbarSafe(plan, equip){
+  const cap = k => !!(equip && equip.has(k));
+  let mains = plan.steps.filter(s=>s.phase==='main');
+  if(!mains.length) return;
+  // Patrón de tirón/espalda: remo con soporte en pecho (mancuernas) o remo en TRX (banda)
+  if(!mains.some(s=>PULL_PATTERN.includes(s.id))){
+    const sub = cap('dumbbell') ? getExercise('remo_soporte_pecho')
+              : cap('band')     ? getExercise('trx_row') : null;
+    if(sub) swapExercise(mains[mains.length-1], sub);
+  }
+  // Patrón de bisagra/cadera: peso muerto hexagonal (barra) o hip thrust
+  mains = plan.steps.filter(s=>s.phase==='main');
+  if(!mains.some(s=>HINGE_PATTERN.includes(s.id))){
+    const sub = cap('bar') ? getExercise('peso_muerto_hexagonal') : getExercise('hip_thrust');
+    if(sub) swapExercise(mains[0], sub);
+  }
 }
 
 // ---- Filtrado de candidatos SOBRE el JSON (demuestra el motor de reglas) ----
@@ -225,6 +254,9 @@ export async function generateRoutine(params){
     goal: params.goal, level: params.level, age: params.age, sex: params.sex,
     rest: params.rest, exclude,
   });
+
+  // Sustitución inteligente: si hay lesión lumbar, garantiza patrones seguros.
+  if((params.injuries||[]).some(x=>norm(x).includes('lumbar'))) forceLumbarSafe(plan, params.equip);
 
   plan.candidateCount = candidates.length;
   plan.injuriesApplied = [...exclude];

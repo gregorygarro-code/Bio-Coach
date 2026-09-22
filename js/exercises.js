@@ -1,5 +1,5 @@
 // ===== Biblioteca de ejercicios + motor biomecánico =====
-import { LM, angle, angleFromVertical, midpoint, vis, clamp } from './utils.js?v=32';
+import { LM, angle, angleFromVertical, midpoint, vis, clamp } from './utils.js?v=33';
 
 // --- helpers de ángulos sobre landmarks ---
 function tri(lm, a, b, c){
@@ -817,6 +817,144 @@ const ENDURANCE = [
 ENDURANCE.forEach(e=>{ e.equipment=e.equipment||['bodyweight']; e.gauges=e.gauges||[]; if(!e.rep) e.rep={measure:()=>null,effort:'low',effortThresh:0,resetThresh:999}; if(!e.checks) e.checks=()=>[{level:'good',msg:'Ritmo controlado, calidad de movimiento'}]; });
 EXERCISES.push(...ENDURANCE);
 
+// ================= CATÁLOGO ELITE (barra / mancuernas) =================
+// Ejercicios con carga que no estaban representados. Mapeo de equipo → caps:
+// barra olímpica/hexagonal/rack → 'bar'; mancuernas → 'dumbbell'; discos → carga (held).
+const shoulder = lm => bilateral(lm, SHLDR_L, SHLDR_R);
+const NOREP = { measure:()=>null, effort:'low', effortThresh:0, resetThresh:999 };  // sin auto-conteo (usar +/-)
+const ELITE = [
+  // ---- Tren inferior ----
+  { id:'sentadilla_trasera', name:'Sentadilla Trasera (Back Squat)', emoji:'🏋️', group:'lower', bilateral:false,
+    equipment:['bar'], muscles:'Cuádriceps · glúteo · core', view:'De frente o 45°, cuerpo entero',
+    rep:{ measure:knee, effort:'low', effortThresh:105, resetThresh:158 }, gauges:[{label:'Rodilla',get:knee,min:60,max:175},{label:'Cadera',get:hip,min:60,max:180}],
+    cues:['Barra sobre los trapecios','Pecho alto, core firme','Baja a muslos paralelos','Empuja desde el talón'] },
+  { id:'buenos_dias', name:'Buenos Días (Good Mornings)', emoji:'🙇', group:'lower', bilateral:false,
+    equipment:['bar'], muscles:'Isquios · glúteo · lumbar', view:'De lado, cuerpo entero',
+    rep:{ measure:hip, effort:'low', effortThresh:120, resetThresh:165 }, gauges:[{label:'Cadera',get:hip,min:55,max:185}],
+    cues:['Barra en trapecios','Rodillas algo flexionadas','Bisagra de cadera, espalda neutra','No redondees la lumbar'] },
+  { id:'peso_muerto_convencional', name:'Peso Muerto Convencional', emoji:'🏋️', group:'lower', bilateral:false,
+    equipment:['bar'], muscles:'Cadena posterior completa', view:'De lado, cuerpo entero',
+    rep:{ measure:hip, effort:'low', effortThresh:118, resetThresh:168 }, gauges:[{label:'Cadera',get:hip,min:55,max:185},{label:'Rodilla',get:knee,min:90,max:180}],
+    cues:['Barra pegada a las espinillas','Espalda neutra, pecho alto','Empuja el suelo con los pies','Bloquea con el glúteo'] },
+  { id:'peso_muerto_hexagonal', name:'Peso Muerto Hexagonal', emoji:'⬡', group:'lower', bilateral:false,
+    equipment:['bar'], muscles:'Glúteo · cuádriceps · espalda', view:'De lado, cuerpo entero',
+    rep:{ measure:hip, effort:'low', effortThresh:120, resetThresh:168 }, gauges:[{label:'Cadera',get:hip,min:55,max:185}],
+    cues:['Dentro de la barra hexagonal','Pecho alto, core firme','Empuja con las piernas','Bloquea sin hiperextender'] },
+  { id:'paseo_granjero', name:'Paseo del Granjero', emoji:'🚶', group:'lower', type:'hold', bilateral:false, holdDefault:40,
+    equipment:['bar','dumbbell'], muscles:'Agarre · core · trapecio', view:'De frente, cuerpo entero',
+    gauges:[{label:'Cuerpo',get:bodyLineAngle,min:150,max:185}],
+    cues:['Peso alto en ambas manos','Hombros atrás, pecho alto','Pasos cortos y firmes','Core apretado'],
+    checks(lm){ const bl=bodyLineAngle(lm); return [bl!=null&&bl>=168?ok('Postura erguida, sigue'):warn('Mantente erguido, no te inclines')]; } },
+  { id:'step_ups_peso', name:'Step-Ups con Peso', emoji:'🪜', group:'lower', bilateral:true,
+    equipment:['dumbbell'], muscles:'Cuádriceps · glúteo', view:'De lado, cuerpo entero',
+    rep:{ measure:kneeMinE, effort:'low', effortThresh:100, resetThresh:160 }, gauges:[{label:'Rodilla',get:kneeMinE,min:70,max:175}],
+    cues:['Pie completo sobre el banco','Sube empujando con el talón','Controla la bajada','Alterna la pierna'] },
+  { id:'sentadilla_copa', name:'Sentadilla Copa (Goblet Squat)', emoji:'🏆', group:'lower', bilateral:false,
+    equipment:['dumbbell'], muscles:'Cuádriceps · glúteo · core', view:'De frente, cuerpo entero',
+    rep:{ measure:knee, effort:'low', effortThresh:100, resetThresh:158 }, gauges:[{label:'Rodilla',get:knee,min:60,max:175}],
+    cues:['Mancuerna al pecho, codos dentro','Tronco vertical','Baja profundo','Empuja desde el talón'] },
+  // ---- Empuje (pecho) ----
+  { id:'press_banca_inclinado', name:'Press de Banca Inclinado', emoji:'🛋️', group:'upper', bilateral:false,
+    equipment:['bar'], muscles:'Pecho superior · hombro · tríceps', view:'De lado, medio cuerpo',
+    rep:{ measure:elbow, effort:'low', effortThresh:95, resetThresh:150 }, gauges:[{label:'Codo',get:elbow,min:55,max:175}],
+    cues:['Banco a 30-45°','Baja a la clavícula','Codos ~45° del cuerpo','Empuja sin bloquear de golpe'] },
+  { id:'press_banca_declinado', name:'Press de Banca Declinado', emoji:'🛋️', group:'upper', bilateral:false,
+    equipment:['bar'], muscles:'Pecho inferior · tríceps', view:'De lado, medio cuerpo',
+    rep:{ measure:elbow, effort:'low', effortThresh:95, resetThresh:150 }, gauges:[{label:'Codo',get:elbow,min:55,max:175}],
+    cues:['Banco declinado, pies fijos','Baja al pecho bajo','Codos controlados','Empuja firme'] },
+  { id:'press_banca_cerrado', name:'Press de Banca Agarre Cerrado', emoji:'🤏', group:'upper', bilateral:false,
+    equipment:['bar'], muscles:'Tríceps · pecho', view:'De lado, medio cuerpo',
+    rep:{ measure:elbow, effort:'low', effortThresh:90, resetThresh:150 }, gauges:[{label:'Codo',get:elbow,min:50,max:175}],
+    cues:['Manos al ancho de hombros','Codos pegados al cuerpo','Baja al esternón','Empuja con el tríceps'] },
+  { id:'press_mancuernas', name:'Press con Mancuernas', emoji:'💪', group:'upper', bilateral:false,
+    equipment:['dumbbell'], muscles:'Pecho · hombro · tríceps', view:'De lado, medio cuerpo',
+    rep:{ measure:elbow, effort:'low', effortThresh:95, resetThresh:150 }, gauges:[{label:'Codo',get:elbow,min:55,max:175}],
+    cues:['Mancuernas a los lados del pecho','Baja controlando','Empuja y junta arriba','Muñecas firmes'] },
+  { id:'aperturas_mancuernas', name:'Aperturas con Mancuernas (Flyes)', emoji:'🦋', group:'upper', bilateral:false,
+    equipment:['dumbbell'], muscles:'Pecho', view:'De lado, medio cuerpo',
+    rep:{ measure:shoulder, effort:'low', effortThresh:50, resetThresh:85 }, gauges:[{label:'Hombro',get:shoulder,min:20,max:110}],
+    cues:['Codos ligeramente flexionados y fijos','Abre en arco amplio','Siente el estiramiento del pecho','Junta arriba sin chocar'] },
+  { id:'pullover_mancuerna', name:'Pullover con Mancuerna', emoji:'🏋️', group:'upper', bilateral:false,
+    equipment:['dumbbell'], muscles:'Pecho · dorsal · serrato', view:'De lado, medio cuerpo',
+    rep:{ measure:shoulder, effort:'high', effortThresh:150, resetThresh:95 }, gauges:[{label:'Hombro',get:shoulder,min:60,max:180}],
+    cues:['Mancuerna sobre el pecho','Baja tras la cabeza, codos casi fijos','Siente el estiramiento','Vuelve controlando'] },
+  // ---- Tracción (espalda) ----
+  { id:'remo_pendlay', name:'Remo Pendlay', emoji:'🏋️', group:'upper', bilateral:false,
+    equipment:['bar'], muscles:'Espalda · bíceps · lumbar', view:'De lado, cuerpo entero',
+    rep:{ measure:elbow, effort:'low', effortThresh:80, resetThresh:155 }, gauges:[{label:'Codo',get:elbow,min:45,max:175}],
+    cues:['Tronco casi paralelo al suelo','Espalda neutra','Tira explosivo al abdomen','Baja al suelo cada rep'] },
+  { id:'remo_barra_hexagonal', name:'Remo con Barra Hexagonal', emoji:'⬡', group:'upper', bilateral:false,
+    equipment:['bar'], muscles:'Espalda · trapecio · bíceps', view:'De lado, cuerpo entero',
+    rep:{ measure:elbow, effort:'low', effortThresh:80, resetThresh:155 }, gauges:[{label:'Codo',get:elbow,min:45,max:175}],
+    cues:['Bisagra con espalda neutra','Tira hacia el ombligo','Aprieta escápulas','Baja controlando'] },
+  { id:'remo_una_mano', name:'Remo a una mano con Mancuerna', emoji:'🎗️', group:'upper', bilateral:true,
+    equipment:['dumbbell'], muscles:'Dorsal · bíceps', view:'De lado, apoyado en banco',
+    rep:{ measure:elbow, effort:'low', effortThresh:75, resetThresh:155 }, gauges:[{label:'Codo',get:elbow,min:40,max:175}],
+    cues:['Apoya rodilla y mano en el banco','Espalda plana','Tira el codo al costado','Baja con control'] },
+  { id:'remo_soporte_pecho', name:'Remo con Soporte en Pecho', emoji:'🛋️', group:'upper', bilateral:false,
+    equipment:['dumbbell'], muscles:'Espalda media · bíceps', view:'De lado, tumbado en banco inclinado',
+    rep:{ measure:elbow, effort:'low', effortThresh:78, resetThresh:155 }, gauges:[{label:'Codo',get:elbow,min:40,max:175}],
+    cues:['Pecho apoyado en banco inclinado','Sin impulso de lumbar','Tira y aprieta escápulas','Baja controlando'] },
+  { id:'encogimientos_hexagonal', name:'Encogimientos (Shrugs)', emoji:'🤷', group:'upper', bilateral:false,
+    equipment:['bar','dumbbell'], muscles:'Trapecio', view:'De frente, medio cuerpo',
+    rep:NOREP, gauges:[],
+    cues:['Peso colgando, brazos rectos','Eleva los hombros hacia las orejas','Aprieta arriba 1 s','Baja controlando'] },
+  // ---- Hombro ----
+  { id:'press_hombros_sentado', name:'Press de Hombros Sentado', emoji:'🪑', group:'upper', bilateral:false,
+    equipment:['dumbbell'], muscles:'Hombro · tríceps', view:'De frente, medio cuerpo',
+    rep:{ measure:elbow, effort:'high', effortThresh:160, resetThresh:100 }, gauges:[{label:'Codo',get:elbow,min:60,max:180}],
+    cues:['Espalda apoyada','Mancuernas a la altura de las orejas','Empuja arriba sin bloquear','Baja controlando'] },
+  { id:'elevaciones_frontales', name:'Elevaciones Frontales', emoji:'🙌', group:'upper', bilateral:false,
+    equipment:['dumbbell'], muscles:'Deltoides anterior', view:'De lado, medio cuerpo',
+    rep:{ measure:shoulder, effort:'high', effortThresh:80, resetThresh:40 }, gauges:[{label:'Hombro',get:shoulder,min:10,max:120}],
+    cues:['Sube al frente hasta la horizontal','Sin balanceo','Controla la bajada','Codos casi rectos'] },
+  { id:'pajaros', name:'Pájaros (Rear Delt Flyes)', emoji:'🕊️', group:'upper', bilateral:false,
+    equipment:['dumbbell'], muscles:'Deltoides posterior · espalda alta', view:'De lado, tronco inclinado',
+    rep:{ measure:shoulder, effort:'high', effortThresh:75, resetThresh:35 }, gauges:[{label:'Hombro',get:shoulder,min:10,max:110}],
+    cues:['Tronco inclinado, espalda neutra','Abre en arco','Aprieta escápulas','Baja controlando'] },
+  // ---- Tríceps ----
+  { id:'extension_tras_nuca', name:'Extensión Tras Nuca', emoji:'💪', group:'upper', bilateral:false,
+    equipment:['dumbbell'], muscles:'Tríceps', view:'De lado, medio cuerpo',
+    rep:{ measure:elbow, effort:'low', effortThresh:70, resetThresh:155 }, gauges:[{label:'Codo',get:elbow,min:40,max:175}],
+    cues:['Mancuerna sobre la cabeza','Codos apuntando al frente','Baja tras la nuca','Extiende arriba'] },
+  { id:'patada_triceps', name:'Patada de Tríceps (Kickbacks)', emoji:'🦵', group:'upper', bilateral:true,
+    equipment:['dumbbell'], muscles:'Tríceps', view:'De lado, tronco inclinado',
+    rep:{ measure:elbow, effort:'high', effortThresh:160, resetThresh:100 }, gauges:[{label:'Codo',get:elbow,min:60,max:180}],
+    cues:['Tronco inclinado, codo alto y fijo','Extiende el antebrazo atrás','Aprieta el tríceps','Vuelve controlando'] },
+  // ---- Bíceps ----
+  { id:'curl_alterno_mancuernas', name:'Curl Alterno con Mancuernas', emoji:'💪', group:'upper', bilateral:false,
+    equipment:['dumbbell'], muscles:'Bíceps', view:'De frente, medio cuerpo',
+    rep:{ measure:elbow, effort:'low', effortThresh:55, resetThresh:150 }, gauges:[{label:'Codo',get:elbow,min:30,max:170}],
+    cues:['Codos pegados al cuerpo','Sube alternando, sin balanceo','Aprieta arriba','Baja controlando'] },
+  { id:'curl_martillo', name:'Curl Martillo (Hammer Curls)', emoji:'🔨', group:'upper', bilateral:false,
+    equipment:['dumbbell'], muscles:'Bíceps · braquial · antebrazo', view:'De frente, medio cuerpo',
+    rep:{ measure:elbow, effort:'low', effortThresh:55, resetThresh:150 }, gauges:[{label:'Codo',get:elbow,min:30,max:170}],
+    cues:['Agarre neutro (palmas enfrentadas)','Codos fijos','Sube sin balanceo','Baja controlando'] },
+  { id:'curl_arana', name:'Curl Araña (Spider Curl)', emoji:'🕷️', group:'upper', bilateral:false,
+    equipment:['dumbbell'], muscles:'Bíceps (pico)', view:'De lado, pecho en banco inclinado',
+    rep:{ measure:elbow, effort:'low', effortThresh:55, resetThresh:150 }, gauges:[{label:'Codo',get:elbow,min:30,max:170}],
+    cues:['Pecho apoyado, brazos colgando','Sube sin mover el hombro','Aprieta el pico arriba','Baja completo'] },
+  { id:'curl_concentrado', name:'Curl Concentrado', emoji:'🎯', group:'upper', bilateral:true,
+    equipment:['dumbbell'], muscles:'Bíceps (pico)', view:'De lado, sentado',
+    rep:{ measure:elbow, effort:'low', effortThresh:55, resetThresh:150 }, gauges:[{label:'Codo',get:elbow,min:30,max:170}],
+    cues:['Codo apoyado en el muslo','Sube concentrando el bíceps','Aprieta arriba','Baja controlando'] },
+  // ---- Core con peso ----
+  { id:'russian_twists_disco', name:'Russian Twists con Disco', emoji:'🌀', group:'core', bilateral:false,
+    equipment:['dumbbell'], muscles:'Oblicuos · core', view:'De frente, sentado',
+    rep:NOREP, gauges:[],
+    cues:['Tronco inclinado atrás, core firme','Gira el peso lado a lado','Controla el giro','Talones ligeros o elevados'] },
+  { id:'crunch_peso', name:'Crunch con Peso', emoji:'🔻', group:'core', bilateral:false,
+    equipment:['dumbbell'], muscles:'Recto abdominal', view:'De lado, tumbado',
+    rep:{ measure:hip, effort:'low', effortThresh:120, resetThresh:150 }, gauges:[{label:'Tronco',get:hip,min:95,max:170}],
+    cues:['Peso en el pecho','Enrolla la columna, no el cuello','Aprieta el abdomen arriba','Baja controlando'] },
+  { id:'side_bends', name:'Side Bends (Inclinaciones laterales)', emoji:'↔️', group:'core', bilateral:true,
+    equipment:['dumbbell'], muscles:'Oblicuos', view:'De frente, de pie',
+    rep:NOREP, gauges:[],
+    cues:['Mancuerna en un lado','Inclínate lateralmente','Sube contrayendo el oblicuo','Sin girar el tronco'] },
+];
+ELITE.forEach(e=>{ e.category='fuerza'; e.gauges=e.gauges||[]; if(!e.rep) e.rep=NOREP; if(!e.checks) e.checks=()=>[{level:'good',msg:'Técnica controlada, mantén la calidad'}]; });
+EXERCISES.push(...ELITE);
+
 // --- Grupo muscular, categoría, atributos y enlace de vídeo por ejercicio ---
 const GROUP_MAP = {
   squat:'lower', pushup:'upper', lunge:'lower', plank:'core', curl:'upper',
@@ -825,8 +963,14 @@ const GROUP_MAP = {
 };
 const A_EXPLOSIVE = new Set(['swing','jump_squat','thruster','push_press']);
 const A_CARDIO    = new Set(['mountain_climber','bicycle','marching','jump_squat','thruster']);
-const A_ISOLATION = new Set(['curl','lateral','triceps_ext','facepull','upright_row']);
-const A_COMPOUND  = new Set(['squat','lunge','rdl','bulgarian','glute_bridge','pushup','ohp','row','pullup','dip','bench','thruster','push_press','chair_squat','wall_pushup','jump_squat']);
+const A_ISOLATION = new Set(['curl','lateral','triceps_ext','facepull','upright_row',
+  'aperturas_mancuernas','pullover_mancuerna','encogimientos_hexagonal','elevaciones_frontales','pajaros',
+  'extension_tras_nuca','patada_triceps','curl_alterno_mancuernas','curl_martillo','curl_arana','curl_concentrado',
+  'crunch_peso','russian_twists_disco','side_bends']);
+const A_COMPOUND  = new Set(['squat','lunge','rdl','bulgarian','glute_bridge','pushup','ohp','row','pullup','dip','bench','thruster','push_press','chair_squat','wall_pushup','jump_squat',
+  'sentadilla_trasera','buenos_dias','peso_muerto_convencional','peso_muerto_hexagonal','sentadilla_copa','step_ups_peso','paseo_granjero',
+  'press_banca_inclinado','press_banca_declinado','press_banca_cerrado','press_mancuernas',
+  'remo_pendlay','remo_barra_hexagonal','remo_una_mano','remo_soporte_pecho','press_hombros_sentado']);
 // Ejercicios unilaterales: se ejecutan y cuentan por cada lado (izquierdo y derecho).
 const A_BILATERAL = new Set([
   'lunge','bulgarian','seated_knee','side_plank',
