@@ -735,3 +735,25 @@ main{max-width:1200px;margin:0 auto;padding:16px}
    explicación (no en fila) y no recortarse al desplegarse. */
 .gp-item{ display:block; align-items:initial; overflow:visible; }
 .gp-list{ max-height:none; overflow:visible; }
+
+/* ===== Fix v29 · Modales largos (informe final) hacen scroll y no bloquean ===== */
+.modal{ overflow-y:auto; align-items:flex-start; }
+.modal-box{ max-height:calc(100vh - 40px); overflow-y:auto; margin:auto; }
+@media(max-width:640px){ .modal-box{ max-height:calc(100vh - 24px); } }
+.report-body{ overflow-wrap:break-word; }
+
+/* ===== Guía técnica (v29) ===== */
+.guia-intro h2{ margin-bottom:6px; }
+.guia-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; margin-top:12px; }
+.guia-type{ background:var(--panel2); border:1px solid var(--line); border-radius:18px; padding:14px 16px; }
+.guia-type h3{ font-size:15px; margin:0 0 6px; }
+.guia-type p{ font-size:14px; color:var(--muted); margin:0 0 8px; }
+.guia-specs{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:4px; }
+.guia-specs li{ font-size:13px; color:var(--txt); }
+.guia-specs li b{ color:var(--muted); font-weight:600; }
+.guia-note{ margin-top:14px; padding:12px 14px; background:var(--grad-soft); border:1px solid var(--line); border-radius:14px; }
+.guia-vs{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:10px; }
+.guia-vs .vs-col{ background:var(--panel2); border:1px solid var(--line); border-radius:16px; padding:14px 16px; }
+.guia-vs h4{ margin:0 0 6px; font-size:14px; }
+.guia-vs p{ font-size:14px; color:var(--muted); margin:0; }
+@media(max-width:640px){ .guia-vs{ grid-template-columns:1fr; } }

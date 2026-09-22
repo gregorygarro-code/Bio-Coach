@@ -1,5 +1,5 @@
 // ===== Biblioteca de ejercicios + motor biomecánico =====
-import { LM, angle, angleFromVertical, midpoint, vis, clamp } from './utils.js?v=28';
+import { LM, angle, angleFromVertical, midpoint, vis, clamp } from './utils.js?v=29';
 
 // --- helpers de ángulos sobre landmarks ---
 function tri(lm, a, b, c){
@@ -854,9 +854,9 @@ export const GROUPS = {
 // y un sesgo de selección de ejercicios. Cambiarlo re-genera la rutina al instante.
 export const TRAIN_GOALS = {
   general:      {label:'General / Salud',    ic:'✅', reps:[10,12], setsDelta:0,  rest:60,  load:'Moderado',                tempo:'Controlado',                 bias:'balanced',  exDelta:0,  info:'Equilibrio de fuerza y tono para estar en forma.'},
-  fuerza:       {label:'Fuerza',             ic:'🏋️', reps:[4,6],   setsDelta:1,  rest:150, load:'Pesado (≈85% 1RM)',       tempo:'Controlado, lejos del fallo',bias:'compound',  exDelta:-1, info:'Cargas altas, pocas reps y descansos largos. Ejercicios compuestos.'},
+  fuerza:       {label:'Fuerza',             ic:'🏋️', reps:[4,6],   setsDelta:1,  rest:120, load:'Pesado (≈85% 1RM)',       tempo:'Controlado, lejos del fallo',bias:'compound',  exDelta:-1, info:'Cargas altas, pocas reps y descansos largos. Ejercicios compuestos.'},
   hipertrofia:  {label:'Hipertrofia',        ic:'💪', reps:[8,12],  setsDelta:0,  rest:75,  load:'Moderado-alto (≈70-80%)', tempo:'2-0-2, cerca del fallo',     bias:'balanced',  exDelta:0,  info:'Volumen moderado para ganar músculo.'},
-  potencia:     {label:'Potencia',           ic:'⚡', reps:[3,5],   setsDelta:1,  rest:120, load:'Explosivo (≈50-70%)',     tempo:'Máxima velocidad al subir',  bias:'explosive', exDelta:0,  info:'Movimientos explosivos, pocas reps, descanso completo.'},
+  potencia:     {label:'Potencia',           ic:'⚡', reps:[3,5],   setsDelta:1,  rest:90,  load:'Explosivo (≈50-70%)',     tempo:'Máxima velocidad al subir',  bias:'explosive', exDelta:0,  info:'Movimientos explosivos, pocas reps, descanso amplio.'},
   resistencia:  {label:'Resistencia musc.',  ic:'🔁', reps:[15,20], setsDelta:-1, rest:40,  load:'Ligero',                  tempo:'Continuo',                   bias:'endurance', exDelta:0,  info:'Muchas reps con poco descanso para aguante muscular.'},
   perdida_grasa:{label:'Pérdida de grasa',   ic:'🔥', reps:[12,15], setsDelta:0,  rest:25,  load:'Ligero-moderado',         tempo:'Ritmo alto (circuito)',      bias:'cardio',    exDelta:2,  info:'Formato circuito con cardio y descansos cortos.'},
 };
@@ -948,7 +948,10 @@ export function buildGuidedPlan(group, equip, minutes, opts={}){
   const sidesOf = ex => ex.bilateral ? 2 : 1;   // unilaterales = dos lados
   const workOf = (mode,reps,secs,sides=1)=> (mode==='hold' ? secs : Math.round(reps*3.2))*sides + (sides>1?8:0);
   // tiempo realista: principal = series*(trabajo+descanso)+transición; movilidad = duración + transición corta
-  const estOf = (mode,sets,reps,secs,phase,sides=1)=> phase==='main' ? sets*(workOf(mode,reps,secs,sides)+restS)+trans : (workOf(mode,reps,secs,sides)+15);
+  // El descanso ocurre ENTRE series, no tras la última (ahí se transiciona al
+  // siguiente ejercicio). Contar (sets-1) descansos evita inflar el tiempo y
+  // deja que la sesión empaque más ejercicios hasta llenar el tiempo real.
+  const estOf = (mode,sets,reps,secs,phase,sides=1)=> phase==='main' ? sets*workOf(mode,reps,secs,sides)+Math.max(0,sets-1)*restS+trans : (workOf(mode,reps,secs,sides)+15);
   const mk = (ex,mode,sets,reps,secs,phase,repsLabel)=>{ const sides=sidesOf(ex); return { id:ex.id, ex, name:ex.name, emoji:ex.emoji, type:ex.type, mode, sets, reps, secs, phase, repsLabel, bilateral:ex.bilateral, sides, est:estOf(mode,sets,reps,secs,phase,sides) }; };
   const meta = { key: opts.goal||'general', ...goal };
   const steps=[];

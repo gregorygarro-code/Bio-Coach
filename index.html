@@ -65,7 +65,7 @@
   }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=28" />
+  <link rel="stylesheet" href="css/styles.css?v=29" />
 </head>
 <body>
   <header class="topbar">
@@ -79,6 +79,7 @@
     <nav class="tabs">
       <button class="tab active" data-view="inicio">Inicio</button>
       <button class="tab" data-view="entrenar">Entrenar</button>
+      <button class="tab" data-view="guia">Guía</button>
       <button class="tab" data-view="calendario" hidden>Calendario</button>
       <button class="tab" data-view="historial" hidden>Historial</button>
       <button class="tab" data-view="perfil">Perfil</button>
@@ -499,6 +500,124 @@
       </div>
     </section>
 
+    <!-- ===================== VISTA GUÍA ===================== -->
+    <section id="view-guia" class="view">
+      <div class="card guia-intro">
+        <h2>📚 Guía técnica de entrenamiento</h2>
+        <p class="muted">Entiende <b>qué</b> estás entrenando y <b>por qué</b>. Cada objetivo cambia las repeticiones, la carga, el ritmo (tempo) y —sobre todo— el <b>descanso entre series</b>. Elegir bien estas variables es lo que hace que la sesión funcione.</p>
+      </div>
+
+      <!-- Tipos de entrenamiento -->
+      <div class="card">
+        <h2>🎯 Tipos de entrenamiento</h2>
+        <p class="muted small">Repeticiones, carga, tempo y descanso recomendados según el objetivo (referencia: NSCA / ACSM).</p>
+        <div class="guia-grid">
+
+          <article class="guia-type">
+            <h3>🏋️ Fuerza (halterofilia)</h3>
+            <p>Levantar <b>cargas altas</b> para producir la máxima tensión. El sistema nervioso aprende a reclutar más fibras: te vuelves más fuerte sin necesariamente ganar mucho tamaño.</p>
+            <ul class="guia-specs">
+              <li><b>Reps:</b> 3–6 por serie</li>
+              <li><b>Carga:</b> pesada (≈85–90% de tu 1RM)</li>
+              <li><b>Tempo:</b> controlado, sin llegar al fallo</li>
+              <li><b>Descanso:</b> 2–5 min (recuperación completa)</li>
+              <li><b>Ejemplos:</b> sentadilla, peso muerto, press</li>
+            </ul>
+          </article>
+
+          <article class="guia-type">
+            <h3>⚡ Potencia</h3>
+            <p>Mover una carga <b>submáxima lo más rápido posible</b>. No es lo mismo que fuerza: aquí importa la <b>velocidad</b> (fuerza × velocidad = potencia). Clave para salto, sprint y deporte.</p>
+            <ul class="guia-specs">
+              <li><b>Reps:</b> 3–5 explosivas</li>
+              <li><b>Carga:</b> ligera-moderada (≈50–70%) movida rápido</li>
+              <li><b>Tempo:</b> máxima velocidad en la fase de empuje</li>
+              <li><b>Descanso:</b> 2–3 min (para no perder velocidad)</li>
+              <li><b>Ejemplos:</b> sentadilla con salto, swing, cargadas</li>
+            </ul>
+          </article>
+
+          <article class="guia-type">
+            <h3>💪 Hipertrofia</h3>
+            <p>Maximizar el <b>crecimiento muscular</b> acumulando volumen (series × reps × carga) cerca del fallo.</p>
+            <ul class="guia-specs">
+              <li><b>Reps:</b> 8–12 por serie</li>
+              <li><b>Carga:</b> moderada-alta (≈70–80%)</li>
+              <li><b>Tempo:</b> 2-0-2, controlando la bajada</li>
+              <li><b>Descanso:</b> 30–90 s</li>
+            </ul>
+          </article>
+
+          <article class="guia-type">
+            <h3>🔁 Resistencia muscular</h3>
+            <p>Aguantar <b>muchas repeticiones</b> con poco descanso. Mejora el tono y la capacidad de trabajo del músculo.</p>
+            <ul class="guia-specs">
+              <li><b>Reps:</b> 15–20+</li>
+              <li><b>Carga:</b> ligera</li>
+              <li><b>Tempo:</b> continuo y sostenido</li>
+              <li><b>Descanso:</b> ≤30–60 s</li>
+            </ul>
+          </article>
+
+          <article class="guia-type">
+            <h3>🔥 Pérdida de grasa</h3>
+            <p>Formato <b>circuito</b>: encadena ejercicios con descansos muy cortos para mantener alta la frecuencia cardíaca y el gasto calórico.</p>
+            <ul class="guia-specs">
+              <li><b>Reps:</b> 12–15</li>
+              <li><b>Carga:</b> ligera-moderada</li>
+              <li><b>Tempo:</b> ritmo alto</li>
+              <li><b>Descanso:</b> 15–30 s</li>
+            </ul>
+          </article>
+
+          <article class="guia-type">
+            <h3>🛡️ Prevención / Bajo impacto</h3>
+            <p>Trabajo de <b>estabilidad, movilidad y control</b> (prehab) para articulaciones sanas. Sin impacto ni cargas balísticas; ideal para rehabilitación o poblaciones especiales.</p>
+            <ul class="guia-specs">
+              <li><b>Reps:</b> 12–15 controladas o isométricos</li>
+              <li><b>Carga:</b> ligera y sin dolor</li>
+              <li><b>Tempo:</b> lento y consciente</li>
+              <li><b>Descanso:</b> el necesario para mantener la calidad</li>
+            </ul>
+          </article>
+
+        </div>
+        <p class="muted small guia-note">⏱️ <b>¿Por qué el descanso importa?</b> Un descanso corto (30–60 s) mantiene el estímulo metabólico (hipertrofia/resistencia); uno largo (2–5 min) permite recuperar fuerza y velocidad para el trabajo pesado o explosivo. Descansar de más "enfría" la sesión; de menos, baja el rendimiento de las series siguientes.</p>
+      </div>
+
+      <!-- Diferencia clave -->
+      <div class="card guia-compare">
+        <h2>⚖️ Halterofilia vs. Potencia</h2>
+        <p class="muted small">Se confunden a menudo, pero buscan cosas distintas:</p>
+        <div class="guia-vs">
+          <div class="vs-col">
+            <h4>🏋️ Fuerza / Halterofilia</h4>
+            <p>Prioriza <b>cuánto</b> peso mueves. Cargas máximas, pocas reps, mucha recuperación. La barra puede subir lento.</p>
+          </div>
+          <div class="vs-col">
+            <h4>⚡ Potencia</h4>
+            <p>Prioriza <b>qué tan rápido</b> mueves un peso menor. La velocidad es el objetivo; si la barra frena, la serie termina.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grupos musculares -->
+      <div class="card">
+        <h2>🦾 Grupos musculares</h2>
+        <p class="muted small">Cómo agrupamos el cuerpo al armar tu rutina.</p>
+        <div class="guia-grid">
+          <article class="guia-type"><h3>💪 Tren superior — Empuje</h3><p>Pecho, hombro (deltoides) y tríceps. Alejan la carga del cuerpo: flexiones, press, fondos.</p></article>
+          <article class="guia-type"><h3>🎗️ Tren superior — Tracción</h3><p>Espalda (dorsal, trapecio), bíceps y deltoides posterior. Traen la carga hacia el cuerpo: remo, dominadas, curl.</p></article>
+          <article class="guia-type"><h3>🦵 Tren inferior</h3><p>Cuádriceps, glúteo, isquiosurales y gemelos. Los músculos más grandes y potentes: sentadillas, zancadas, peso muerto, hip thrust.</p></article>
+          <article class="guia-type"><h3>🧱 Core</h3><p>Abdomen, oblicuos y lumbar. Estabilizan la columna y transfieren fuerza entre tren superior e inferior: plancha, bird-dog.</p></article>
+          <article class="guia-type"><h3>🤸 Movilidad / Estiramiento</h3><p>Rango de movimiento articular. Calentamiento (dinámico) y vuelta a la calma (estático) para moverte mejor y recuperar.</p></article>
+          <article class="guia-type"><h3>🛡️ Prevención</h3><p>Manguito rotador, glúteo medio, estabilizadores. Trabajo específico para blindar articulaciones frágiles.</p></article>
+        </div>
+      </div>
+
+      <p class="muted small" style="text-align:center;padding:0 8px 8px">Contenido educativo orientativo. No sustituye la valoración de un profesional de la salud.</p>
+    </section>
+
     <!-- ===================== VISTA AJUSTES ===================== -->
     <section id="view-ajustes" class="view">
       <div class="card">
@@ -725,8 +844,8 @@
   <div id="loader" class="loader hidden"><div class="spinner"></div><p id="loader-msg">Cargando modelo de pose…</p></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-  <script src="js/config.js?v=28"></script>
-  <script type="module" src="js/app.js?v=28"></script>
+  <script src="js/config.js?v=29"></script>
+  <script type="module" src="js/app.js?v=29"></script>
 
   <!-- Registro del Service Worker (PWA / offline) -->
   <script>

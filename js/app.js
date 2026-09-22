@@ -1,13 +1,13 @@
 // ===== FitCoach Casa · app principal =====
-import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS } from './exercises.js?v=28';
-import { createPoseLandmarker } from './pose.js?v=28';
-import { createDemoPlayer } from './demos.js?v=28';
-import * as generator from './generator.js?v=28';
-import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=28';
-import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=28';
-import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=28';
-import * as api from './api.js?v=28';
-import * as store from './storage.js?v=28';
+import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS } from './exercises.js?v=29';
+import { createPoseLandmarker } from './pose.js?v=29';
+import { createDemoPlayer } from './demos.js?v=29';
+import * as generator from './generator.js?v=29';
+import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=29';
+import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=29';
+import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=29';
+import * as api from './api.js?v=29';
+import * as store from './storage.js?v=29';
 
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
