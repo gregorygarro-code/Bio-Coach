@@ -1,5 +1,5 @@
 // ===== Biblioteca de ejercicios + motor biomecánico =====
-import { LM, angle, angleFromVertical, midpoint, vis, clamp } from './utils.js?v=29';
+import { LM, angle, angleFromVertical, midpoint, vis, clamp } from './utils.js?v=30';
 
 // --- helpers de ángulos sobre landmarks ---
 function tri(lm, a, b, c){
@@ -627,12 +627,6 @@ const DYNAMIC = [
     gauges:[{label:'Rodilla', get:knee, min:70, max:175},{label:'Codo', get:elbow, min:70, max:180}],
     cues:['Sentadilla profunda','Sube explosivo y empuja el peso arriba','Un solo movimiento fluido','Controla la bajada'],
     checks(lm,c){ const out=[]; const d=c.lastRepMin??c.repMin; if(isFinite(d)) out.push(d<=120?ok('Buena sentadilla'):warn('Baja más en la sentadilla')); return out; } },
-  { id:'jumping_jacks', name:'Saltos de tijera', emoji:'🤸', group:'core',
-    equipment:['bodyweight'], muscles:'Cardio · full body', view:'De frente, cuerpo entero',
-    rep:{ measure:lm=>bilateral(lm,SHLDR_L,SHLDR_R), effort:'high', effortThresh:120, resetThresh:60 },
-    gauges:[{label:'Brazos', get:lm=>bilateral(lm,SHLDR_L,SHLDR_R), min:20, max:170}],
-    cues:['Abre brazos y piernas a la vez','Sube las manos sobre la cabeza','Ritmo constante','Aterriza suave'],
-    checks(){ return [ok('Abre bien brazos y piernas, ritmo constante')]; } },
 ];
 EXERCISES.push(...DYNAMIC);
 
@@ -808,8 +802,8 @@ const GROUP_MAP = {
   ohp:'upper', row:'upper', rdl:'lower', swing:'full', facepull:'upper',
   lateral:'upper', pullup:'upper', dip:'upper', bench:'upper',
 };
-const A_EXPLOSIVE = new Set(['swing','jump_squat','thruster','push_press','jumping_jacks']);
-const A_CARDIO    = new Set(['mountain_climber','bicycle','jumping_jacks','marching','jump_squat','thruster']);
+const A_EXPLOSIVE = new Set(['swing','jump_squat','thruster','push_press']);
+const A_CARDIO    = new Set(['mountain_climber','bicycle','marching','jump_squat','thruster']);
 const A_ISOLATION = new Set(['curl','lateral','triceps_ext','facepull','upright_row']);
 const A_COMPOUND  = new Set(['squat','lunge','rdl','bulgarian','glute_bridge','pushup','ohp','row','pullup','dip','bench','thruster','push_press','chair_squat','wall_pushup','jump_squat']);
 // Ejercicios unilaterales: se ejecutan y cuentan por cada lado (izquierdo y derecho).

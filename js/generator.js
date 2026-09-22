@@ -3,8 +3,8 @@
 // ejecuta el filtrado/selección según los parámetros del usuario. La parte
 // biomecánica (funciones de medición/checks) sigue viviendo en exercises.js;
 // aquí trabajamos solo con la parte declarativa + el historial (sobrecarga).
-import { buildGuidedPlan, getExercise } from './exercises.js?v=29';
-import { lastResultFor, loadPlans } from './storage.js?v=29';
+import { buildGuidedPlan, getExercise } from './exercises.js?v=30';
+import { lastResultFor, loadPlans } from './storage.js?v=30';
 
 // Semana del mesociclo (1..4+) a partir del primer día auto-planificado en el calendario
 function mesoWeek(){
@@ -29,7 +29,7 @@ let _catalog = null, _loading = null;
 export async function loadCatalog(){
   if(_catalog) return _catalog;
   if(_loading) return _loading;
-  _loading = fetch('data/exercises.json?v=29')
+  _loading = fetch('data/exercises.json?v=30')
     .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
     .then(j=>{ _catalog = j.exercises || []; return _catalog; })
     .catch(err=>{ console.warn('[generator] no se pudo cargar el catálogo JSON:', err.message); _catalog = []; return _catalog; });
@@ -40,12 +40,12 @@ export function getCatalog(){ return _catalog || []; }
 // ---- Mapa de contraindicaciones por lesión (lesión → ids a excluir) ----
 // Conservador: ante una molestia, quitamos lo que carga o impacta esa zona.
 const INJURY_CONTRA = {
-  rodilla:  ['jump_squat','jumping_jacks','thruster','bulgarian','lunge','push_press'],
+  rodilla:  ['jump_squat','thruster','bulgarian','lunge','push_press'],
   hombro:   ['ohp','push_press','upright_row','dip','thruster','lateral','pullup'],
   espalda:  ['rdl','swing','thruster','superman','cobra','upright_row','deadlift'],
   lumbar:   ['rdl','swing','thruster','superman','cobra','good_morning'],
   cadera:   ['swing','bulgarian','lunge','jump_squat'],
-  tobillo:  ['jump_squat','jumping_jacks','thruster','marching'],
+  tobillo:  ['jump_squat','thruster','marching'],
   muneca:   ['pushup','plank','mountain_climber','dip','scapular_pushup','bird_dog'],
   cuello:   ['crunch','bicycle','upright_row'],
   codo:     ['dip','pullup','triceps_ext'],
@@ -152,7 +152,7 @@ function applyProgressiveOverload(plan, feel){
 
 // ---- Filtro de poblaciones especiales (bajo impacto) ----
 // Excluye ejercicios balísticos/pliométricos/de potencia (saltos, swings, thrusters…).
-const BALLISTIC_IDS = ['jump_squat','jumping_jacks','thruster','push_press','swing'];
+const BALLISTIC_IDS = ['jump_squat','thruster','push_press','swing'];
 function lowImpactExclusions(){
   const ex = new Set(BALLISTIC_IDS);
   getCatalog().forEach(e=>{ if(e.explosive) ex.add(e.id); });   // usa la etiqueta del catálogo

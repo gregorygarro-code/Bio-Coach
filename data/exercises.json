@@ -1,7 +1,7 @@
 {
   "version": 1,
   "generated": "2026-09-21",
-  "count": 76,
+  "count": 75,
   "exercises": [
     {
       "id": "squat",
@@ -1935,49 +1935,6 @@
         "Controla la bajada"
       ],
       "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Thruster%20ejercicio%20en%20casa"
-    },
-    {
-      "id": "jumping_jacks",
-      "name": "Saltos de tijera",
-      "emoji": "🤸",
-      "type": "reps",
-      "equipment": [
-        "bodyweight"
-      ],
-      "muscles": "Cardio · full body",
-      "view": "De frente, cuerpo entero",
-      "group": "core",
-      "category": "fuerza",
-      "objetivo": null,
-      "bilateral": false,
-      "weighted": false,
-      "lowImpact": false,
-      "explosive": true,
-      "cardio": true,
-      "isolation": false,
-      "compound": false,
-      "prehab": false,
-      "prehabFocus": null,
-      "holdDefault": null,
-      "rep": {
-        "effort": "high",
-        "effortThresh": 120,
-        "resetThresh": 60
-      },
-      "gauges": [
-        {
-          "label": "Brazos",
-          "min": 20,
-          "max": 170
-        }
-      ],
-      "cues": [
-        "Abre brazos y piernas a la vez",
-        "Sube las manos sobre la cabeza",
-        "Ritmo constante",
-        "Aterriza suave"
-      ],
-      "yt": "https://www.youtube.com/results?search_query=t%C3%A9cnica%20Saltos%20de%20tijera%20ejercicio%20en%20casa"
     },
     {
       "id": "band_pull_apart",

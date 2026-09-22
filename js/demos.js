@@ -95,7 +95,6 @@ export const DEMOS = {
   jump_squat:{ a:{hipX:100,hipY:104,uarm:-40,farm:-40,thigh:92,shin:92}, b:{hipX:96,hipY:150,torso:-58,uarm:20,farm:20,thigh:40,shin:126}, speed:1.4 },
   push_press:{ a:{hipX:100,hipY:126,torso:-90,uarm:-135,farm:-92,thigh:70,shin:110}, b:{uarm:-90,farm:-90,thigh:90,shin:90}, speed:1.3 },
   thruster:{ a:{hipX:96,hipY:150,torso:-58,uarm:-130,farm:-96,thigh:40,shin:126}, b:{uarm:-90,farm:-90,thigh:90,shin:90}, speed:1.2 },
-  jumping_jacks:{ a:{uarm:88,farm:88,thigh:96,shin:88}, b:{uarm:-64,farm:-64,thigh:66,shin:104}, speed:1.5 },
 
   // ===== PREVENCIÓN DE LESIONES / PREHAB =====
   band_pull_apart:{ a:{uarm:6,farm:6}, b:{uarm:2,farm:-14}, speed:0.8 },
