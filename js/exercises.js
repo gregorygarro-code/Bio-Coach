@@ -1,5 +1,5 @@
 // ===== Biblioteca de ejercicios + motor biomecánico =====
-import { LM, angle, angleFromVertical, midpoint, vis, clamp } from './utils.js?v=37';
+import { LM, angle, angleFromVertical, midpoint, vis, clamp } from './utils.js?v=38';
 
 // --- helpers de ángulos sobre landmarks ---
 function tri(lm, a, b, c){
@@ -1190,9 +1190,10 @@ export function buildGuidedPlan(group, equip, minutes, opts={}){
   const budget=minutes*60;
   const total=()=>steps.reduce((s,x)=>s+x.est,0);
   const coolReserve = cfgBase.cool*(30+15);          // reserva realista de la vuelta a la calma
-  // Volumen dinámico por tiempo (P4): ~30 min → 6-7, ~45 → 10-11, ~60 → 13-14 ejercicios.
-  const MAX_MAIN = Math.max(5, Math.min(16, Math.round(minutes*0.23)));
-  const MIN_MAIN = Math.max(5, MAX_MAIN-1);
+  // Volumen dinámico REAL: el nº de ejercicios lo limita el TIEMPO disponible
+  // (TUT + descansos ≤ minutos). Con más descanso/series → menos ejercicios.
+  const MAX_MAIN = 16;   // tope alto; el límite efectivo es el presupuesto de tiempo
+  const MIN_MAIN = 4;    // mínimo razonable de la fase principal
 
   for(let k=0;k<cfgBase.warm;k++){ const ex=byId(warmIds[k]); if(ex) steps.push(mk(ex,'hold',1,0,Math.min(ex.holdDefault||30,30),'warmup')); }
 
@@ -1216,14 +1217,15 @@ export function buildGuidedPlan(group, equip, minutes, opts={}){
     }
     const mainCount = steps.filter(s=>s.phase==='main').length;
     if(mainCount>=MAX_MAIN) break;
-    // Escala hasta MAX_MAIN; tolerancia amplia para alcanzar el volumen objetivo por tiempo.
-    if(mainCount < MIN_MAIN || total()+st.est+coolReserve <= budget*1.25) steps.push(st);
+    // Ajuste estricto al tiempo: solo añade si cabe en el presupuesto (mín MIN_MAIN).
+    if(mainCount < MIN_MAIN || total()+st.est+coolReserve <= budget) steps.push(st);
     else break;
   }
 
   for(let k=0;k<cfgBase.cool;k++){ const ex=byId(coolIds[k]); if(ex) steps.push(mk(ex,'hold',1,0,ex.holdDefault||30,'cooldown')); }
 
-  while(total() > budget*1.6){
+  // Recorta si se pasó del tiempo (respeta el rango; nunca baja de MIN_MAIN).
+  while(total() > budget*1.05){
     const idxMain = steps.map((s,i)=>s.phase==='main'?i:-1).filter(i=>i>=0);
     if(idxMain.length<=MIN_MAIN) break;
     steps.splice(idxMain[idxMain.length-1],1);
