@@ -2,7 +2,7 @@
 // Cachea los estáticos locales (HTML, CSS, JS, JSON de ejercicios, iconos) para
 // funcionar sin conexión y sin servidor. Los recursos externos (MediaPipe, fuentes,
 // Supabase) se cachean bajo demanda tras el primer uso.
-const V = 'v38';
+const V = 'v39';
 const CACHE = 'fitcoach-' + V;
 
 // Estáticos locales a precachear. Las rutas con ?v= deben coincidir con index.html.
@@ -12,18 +12,19 @@ const ASSETS = [
   'manifest.json',
   'icon.svg',
   'og-image.svg',
-  'css/styles.css?v=38',
-  'js/app.js?v=38',
-  'js/exercises.js?v=38',
-  'js/generator.js?v=38',
-  'js/demos.js?v=38',
-  'js/pose.js?v=38',
-  'js/utils.js?v=38',
-  'js/audio.js?v=38',
-  'js/storage.js?v=38',
-  'js/api.js?v=38',
-  'js/config.js?v=38',
-  'data/exercises.json?v=38',
+  'css/styles.css?v=39',
+  'js/app.js?v=39',
+  'js/exercises.js?v=39',
+  'js/generator.js?v=39',
+  'js/demos.js?v=39',
+  'js/pose.js?v=39',
+  'js/utils.js?v=39',
+  'js/audio.js?v=39',
+  'js/storage.js?v=39',
+  'js/api.js?v=39',
+  'js/config.js?v=39',
+  'data/exercises.json?v=39',
+  'media/3d/index.json?v=39',   // los vídeos 3D se cachean al verlos (app.js los pide enteros)
 ];
 
 self.addEventListener('install', e=>{

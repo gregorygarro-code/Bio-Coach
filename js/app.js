@@ -1,13 +1,13 @@
 // ===== FitCoach Casa · app principal =====
-import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS, parseWeightList, barbellLadder } from './exercises.js?v=38';
-import { createDemoPlayer, resolveDemo } from './demos.js?v=38';
-import { createPoseLandmarker } from './pose.js?v=38';
-import * as generator from './generator.js?v=38';
-import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=38';
-import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=38';
-import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=38';
-import * as api from './api.js?v=38';
-import * as store from './storage.js?v=38';
+import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS, parseWeightList, barbellLadder } from './exercises.js?v=39';
+import { createDemoPlayer, resolveDemo } from './demos.js?v=39';
+import { createPoseLandmarker } from './pose.js?v=39';
+import * as generator from './generator.js?v=39';
+import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=39';
+import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=39';
+import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=39';
+import * as api from './api.js?v=39';
+import * as store from './storage.js?v=39';
 
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -379,13 +379,50 @@ $('#gb-quit').addEventListener('click', ()=>{ if(setActive) endSet(false); guide
 // ======================================================
 // Modal de demostración (antes de empezar)
 // ======================================================
-let previewEx=null, previewDemo=null;
-// Previsualización: animación 2D (con alias para los ejercicios nuevos) y, si no
-// hay animación, un emoji grande. El botón "Ver en YouTube" (búsqueda) complementa.
+let previewEx=null, previewDemo=null, previewToken=0, previewBlobUrl=null;
+// Demos 3D pregrabadas (visor-3d → media/3d/<id>.webm|mp4|jpg); index.json lista los ids disponibles.
+let video3d=null;
+const video3dIds=()=> video3d ??= fetch('media/3d/index.json?v=39')
+  .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }).then(a=>new Set(a))
+  .catch(()=>{ video3d=null; return new Set(); });   // sin memorizar el fallo: se reintenta en la siguiente demo
+const webmOk=()=> document.createElement('video').canPlayType('video/webm; codecs="vp9"')!=='';
+
+// Previsualización: vídeo 3D si existe; si no, animación 2D (con alias); si tampoco, un emoji grande.
+// El botón "Ver en YouTube" (búsqueda) complementa.
 function renderPreviewVideo(ex){
   const box=$('#preview-video'); if(!box) return;
-  previewDemo?.stop(); previewDemo=null;
+  stopPreviewMedia();
   box.innerHTML='';
+  const token=previewToken;
+  video3dIds().then(ids=>{
+    if(token!==previewToken) return;          // el modal se cerró o cambió de ejercicio
+    if(ids.has(ex.id)) renderPreview3d(box, ex, token);
+    else renderPreview2d(box, ex);
+  });
+}
+function renderPreview3d(box, ex, token){
+  const base=`media/3d/${ex.id}`;
+  const img=document.createElement('img');
+  img.className='demo-video'; img.src=`${base}.jpg?v=39`; img.alt=`Demostración 3D: ${ex.name}`;
+  box.appendChild(img);                         // póster inmediato (y único fotograma con movimiento reducido)
+  if(settings.reduceMotion) return;
+  // Se descarga entero como blob: <video> pide rangos (206) que el service worker no puede cachear
+  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=39`)
+    .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.blob(); })
+    .then(blob=>{
+      if(token!==previewToken) return;
+      previewBlobUrl=URL.createObjectURL(blob);
+      const v=Object.assign(document.createElement('video'), { src:previewBlobUrl, muted:true, loop:true, autoplay:true, playsInline:true });
+      v.className='demo-video'; v.setAttribute('aria-label', img.alt);
+      v.addEventListener('loadeddata', ()=>{
+        if(token!==previewToken) return;
+        img.replaceWith(v);
+        v.play().catch(()=>{});                // sin sonido: autoplay permitido; si falla queda el primer fotograma
+      }, { once:true });
+    })
+    .catch(()=>{ if(token===previewToken){ box.innerHTML=''; renderPreview2d(box, ex); } });
+}
+function renderPreview2d(box, ex){
   const key=resolveDemo(ex.id);
   if(key){
     const c=document.createElement('canvas'); c.width=260; c.height=260; c.className='demo-canvas';
@@ -395,6 +432,11 @@ function renderPreviewVideo(ex){
   }else{
     box.innerHTML=`<div class="demo-fallback">${ex.emoji||'🏋️'}</div>`;
   }
+}
+function stopPreviewMedia(){
+  previewToken++;
+  previewDemo?.stop(); previewDemo=null;
+  if(previewBlobUrl){ URL.revokeObjectURL(previewBlobUrl); previewBlobUrl=null; }
 }
 function openPreview(ex, review=false){
   previewEx=ex;
@@ -408,7 +450,7 @@ function openPreview(ex, review=false){
 }
 function closePreview(){
   $('#preview').classList.add('hidden');
-  previewDemo?.stop(); previewDemo=null;
+  stopPreviewMedia();
 }
 $('#preview-close').addEventListener('click', closePreview);
 $('#preview').addEventListener('click', e=>{ if(e.target.id==='preview') closePreview(); });

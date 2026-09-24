@@ -787,6 +787,9 @@ main{max-width:1200px;margin:0 auto;padding:16px}
 @media(max-width:640px){ .preview-grid{ grid-template-columns:1fr; } }
 .preview-video{ display:grid; place-items:center; width:100%; aspect-ratio:1/1; max-height:280px; background:var(--panel2); border:1px solid var(--line); border-radius:16px; overflow:hidden; }
 .preview-video .demo-canvas{ width:100%; height:100%; }
+/* Vídeo 3D: absoluto para que la caja (cuadrada, máx. 280px de alto) no crezca con el tamaño intrínseco del vídeo */
+.preview-video{ position:relative; }
+.preview-video .demo-video{ position:absolute; inset:0; width:100%; height:100%; object-fit:contain; display:block; }
 .demo-fallback{ font-size:110px; line-height:1; }
 .preview-disclaimer{ margin:8px 0 0; font-size:12px; line-height:1.4; color:var(--muted); }
 
