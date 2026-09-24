@@ -1,13 +1,13 @@
 // ===== FitCoach Casa · app principal =====
-import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS, parseWeightList, barbellLadder } from './exercises.js?v=39';
-import { createDemoPlayer, resolveDemo } from './demos.js?v=39';
-import { createPoseLandmarker } from './pose.js?v=39';
-import * as generator from './generator.js?v=39';
-import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=39';
-import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=39';
-import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=39';
-import * as api from './api.js?v=39';
-import * as store from './storage.js?v=39';
+import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS, parseWeightList, barbellLadder } from './exercises.js?v=40';
+import { createDemoPlayer, resolveDemo } from './demos.js?v=40';
+import { createPoseLandmarker } from './pose.js?v=40';
+import * as generator from './generator.js?v=40';
+import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=40';
+import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=40';
+import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=40';
+import * as api from './api.js?v=40';
+import * as store from './storage.js?v=40';
 
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -97,11 +97,29 @@ function goTo(view){ const b=document.querySelector(`.tab[data-view="${view}"]`)
 document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click', ()=>goTo(b.dataset.goto)));
 document.querySelector('.brand')?.addEventListener('click', ()=>goTo('inicio'));
 
-// Animación biomecánica del hero
+// Vídeos 3D (media/3d): WebM VP9 si el navegador lo reproduce; si no (Safari), MP4
+const webmOk=()=> document.createElement('video').canPlayType('video/webm; codecs="vp9"')!=='';
+
+// Animación del hero: sentadilla 3D en bucle (media/3d); el emoji del HTML queda como respaldo.
+// El contador de reps avanza con cada vuelta del bucle (3 s = 1 rep).
 (function heroDemo(){
-  const reps=document.getElementById('hero-reps'); if(reps && !settings.reduceMotion){
-    let n=0; setInterval(()=>{ n=(n%12)+1; reps.textContent=n; }, 2200);
-  }
+  const fig=document.querySelector('.hero-figure'), reps=document.getElementById('hero-reps');
+  if(!fig) return;
+  const base='media/3d/squat';
+  const img=Object.assign(document.createElement('img'), { src:`${base}.jpg?v=40`, alt:'', className:'hero-3d' });
+  img.onload=()=>fig.replaceWith(img);
+  if(settings.reduceMotion) return;
+  // Descarga completa como blob (igual que en la previsualización) para que el service worker la cachee
+  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=40`)
+    .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.blob(); })
+    .then(blob=>{
+      const v=Object.assign(document.createElement('video'), { src:URL.createObjectURL(blob), muted:true, loop:true, autoplay:true, playsInline:true, className:'hero-3d' });
+      v.setAttribute('aria-hidden','true');
+      let last=0, n=0;
+      v.addEventListener('timeupdate', ()=>{ if(v.currentTime<last && reps){ n=(n%12)+1; reps.textContent=n; } last=v.currentTime; });
+      v.addEventListener('loadeddata', ()=>{ (img.isConnected ? img : fig).replaceWith(v); v.play().catch(()=>{}); }, { once:true });
+    })
+    .catch(()=>{});                              // sin vídeo: queda el póster o el emoji
 })();
 
 // ======================================================
@@ -382,10 +400,9 @@ $('#gb-quit').addEventListener('click', ()=>{ if(setActive) endSet(false); guide
 let previewEx=null, previewDemo=null, previewToken=0, previewBlobUrl=null;
 // Demos 3D pregrabadas (visor-3d → media/3d/<id>.webm|mp4|jpg); index.json lista los ids disponibles.
 let video3d=null;
-const video3dIds=()=> video3d ??= fetch('media/3d/index.json?v=39')
+const video3dIds=()=> video3d ??= fetch('media/3d/index.json?v=40')
   .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }).then(a=>new Set(a))
   .catch(()=>{ video3d=null; return new Set(); });   // sin memorizar el fallo: se reintenta en la siguiente demo
-const webmOk=()=> document.createElement('video').canPlayType('video/webm; codecs="vp9"')!=='';
 
 // Previsualización: vídeo 3D si existe; si no, animación 2D (con alias); si tampoco, un emoji grande.
 // El botón "Ver en YouTube" (búsqueda) complementa.
@@ -403,11 +420,11 @@ function renderPreviewVideo(ex){
 function renderPreview3d(box, ex, token){
   const base=`media/3d/${ex.id}`;
   const img=document.createElement('img');
-  img.className='demo-video'; img.src=`${base}.jpg?v=39`; img.alt=`Demostración 3D: ${ex.name}`;
+  img.className='demo-video'; img.src=`${base}.jpg?v=40`; img.alt=`Demostración 3D: ${ex.name}`;
   box.appendChild(img);                         // póster inmediato (y único fotograma con movimiento reducido)
   if(settings.reduceMotion) return;
   // Se descarga entero como blob: <video> pide rangos (206) que el service worker no puede cachear
-  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=39`)
+  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=40`)
     .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.blob(); })
     .then(blob=>{
       if(token!==previewToken) return;
