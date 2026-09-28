@@ -1,5 +1,5 @@
 // Fase 3 · Dashboard del entrenador (protegido por Firebase Auth + rol).
-import { FIREBASE_ENABLED, fb } from './firebase.js?v=42';
+import { FIREBASE_ENABLED, fb } from './firebase.js?v=43';
 
 const $ = s => document.querySelector(s);
 let M = null, meUid = null, currentClient = null;

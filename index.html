@@ -65,7 +65,7 @@
   }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=42" />
+  <link rel="stylesheet" href="css/styles.css?v=43" />
 </head>
 <body>
   <header class="topbar">
@@ -422,9 +422,20 @@
       <div id="auth-card" class="card" hidden>
         <h2 id="auth-title">Iniciar sesión</h2>
         <p class="muted small">Crea tu cuenta para guardar tu perfil y tu progreso de forma individual.</p>
+        <div id="auth-role-row" class="setting col" hidden>
+          <label>¿Cómo entras?</label>
+          <div class="chips">
+            <button type="button" class="chip goal on" data-role="client">🏃 Atleta</button>
+            <button type="button" class="chip goal" data-role="trainer">🧑‍🏫 Coach</button>
+          </div>
+        </div>
         <div id="auth-name-row" class="setting" hidden>
           <label for="auth-name">Nombre</label>
           <input id="auth-name" type="text" autocomplete="name" />
+        </div>
+        <div id="auth-code-row" class="setting" hidden>
+          <label for="auth-trainer">Código de tu entrenador (ID) <span class="muted small">opcional</span></label>
+          <input id="auth-trainer" type="text" placeholder="si un coach te lo dio" />
         </div>
         <div class="setting"><label for="auth-email">Email</label><input id="auth-email" type="email" autocomplete="email" /></div>
         <div class="setting"><label for="auth-pass">Contraseña</label><input id="auth-pass" type="password" autocomplete="current-password" /></div>
@@ -849,8 +860,8 @@
   <div id="loader" class="loader hidden"><div class="spinner"></div><p id="loader-msg">Cargando modelo de pose…</p></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-  <script src="js/config.js?v=42"></script>
-  <script type="module" src="js/app.js?v=42"></script>
+  <script src="js/config.js?v=43"></script>
+  <script type="module" src="js/app.js?v=43"></script>
 
   <!-- Registro del Service Worker (PWA / offline) -->
   <script>
