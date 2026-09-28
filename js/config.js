@@ -1,8 +1,7 @@
-// ===== Configuración de Supabase =====
-// Datos de tu proyecto (Project Settings → API). La "anon/publishable key" es
-// PÚBLICA: la seguridad la dan las políticas RLS (ver supabase_schema.sql).
-// Déjalo vacío para volver al "modo invitado".
+// ===== Configuración de backend =====
+// Supabase retirado: la app usa Firebase (Auth + Firestore). Ver js/firebase-config.js.
+// Se deja vacío para desactivar por completo la capa Supabase/api antigua.
 window.APP_CONFIG = {
-  supabaseUrl: 'https://cpvlihzzutsexvmdkubn.supabase.co',
-  supabaseAnonKey: 'sb_publishable_WhZbBamOpJ-hM7j0C7-7KA_SIsl0k8M',
+  supabaseUrl: '',
+  supabaseAnonKey: '',
 };
