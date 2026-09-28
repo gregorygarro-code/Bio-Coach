@@ -1,5 +1,5 @@
 // Fase 3 · Dashboard del entrenador (protegido por Firebase Auth + rol).
-import { FIREBASE_ENABLED, fb } from './firebase.js?v=45';
+import { FIREBASE_ENABLED, fb } from './firebase.js?v=46';
 
 const $ = s => document.querySelector(s);
 let M = null, meUid = null, currentClient = null;
@@ -18,16 +18,18 @@ async function boot(){
     $('#td-me').textContent = user.email || '';
     let prof = null;
     try{ const s = await M.getDoc(M.doc(M.db, 'users', user.uid)); prof = s.exists() ? s.data() : null; }catch{}
-    if(!prof || prof.role !== 'trainer'){
+    const isAdmin = prof && prof.role === 'admin';
+    if(!prof || (prof.role !== 'trainer' && !isAdmin)){
       $('#td-gate-title').textContent = 'Acceso solo para entrenadores';
       $('#td-gate-msg').textContent = 'Esta cuenta no tiene rol de entrenador.';
       show('#td-gate'); $('#td-logout').hidden = false; return;
     }
-    if(prof.isApproved !== true){
+    if(!isAdmin && prof.isApproved !== true){
       $('#td-gate-title').textContent = 'Cuenta pendiente de aprobación';
       $('#td-gate-msg').textContent = 'Un administrador debe autorizar tu cuenta de entrenador antes de acceder.';
       show('#td-gate'); $('#td-logout').hidden = false; return;
     }
+    if(isAdmin){ const a=$('#td-admin-link'); if(a) a.hidden=false; }
     show('#td-dash'); $('#td-logout').hidden = false;
     loadClients();
   });
