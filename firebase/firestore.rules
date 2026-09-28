@@ -1,0 +1,63 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---- Helpers ----
+    function signedIn() { return request.auth != null; }
+    function uid() { return request.auth.uid; }
+    function userDoc(u) { return get(/databases/$(database)/documents/users/$(u)).data; }
+    function myRole() { return userDoc(uid()).role; }
+    function isAdmin() { return signedIn() && myRole() == 'admin'; }
+    function isApprovedTrainer() {
+      return signedIn() && myRole() == 'trainer' && userDoc(uid()).isApproved == true;
+    }
+    // Cambios que solo un admin puede hacer sobre users (rol / aprobación).
+    function immutablePrivilege() {
+      return request.resource.data.role == resource.data.role
+          && request.resource.data.isApproved == resource.data.isApproved;
+    }
+
+    // ---- users ----
+    match /users/{userId} {
+      allow read: if signedIn() && (uid() == userId || isAdmin()
+                     || (isApprovedTrainer() && resource.data.trainerId == uid()));
+      // Alta propia: solo rol 'client' y sin auto-aprobarse ni auto-asignarse admin/trainer.
+      allow create: if signedIn() && uid() == userId
+                     && request.resource.data.role in ['client', 'trainer']
+                     && (request.resource.data.role == 'client'
+                         || request.resource.data.isApproved == false);
+      // El dueño edita su perfil pero NO su rol/aprobación; el admin puede todo.
+      allow update: if isAdmin()
+                     || (signedIn() && uid() == userId && immutablePrivilege());
+      allow delete: if isAdmin();
+    }
+
+    // ---- clients_dossier ----
+    // Exclusividad: solo el propio cliente, su entrenador asignado (aprobado) o un admin.
+    match /clients_dossier/{clientId} {
+      function dossierTrainer() { return resource.data.trainerId; }
+      allow read: if isAdmin()
+                   || (signedIn() && uid() == clientId)
+                   || (isApprovedTrainer() && dossierTrainer() == uid());
+      // El cliente crea/edita su propio expediente; el trainer NO reescribe la anamnesis.
+      allow create: if signedIn() && uid() == clientId
+                     && request.resource.data.uid == clientId;
+      allow update: if isAdmin() || (signedIn() && uid() == clientId);
+      allow delete: if isAdmin();
+
+      // ---- assigned_plans (subcolección del cliente) ----
+      // El entrenador asignado escribe planes; el cliente solo los lee.
+      match /assigned_plans/{planId} {
+        function parentTrainer() {
+          return get(/databases/$(database)/documents/clients_dossier/$(clientId)).data.trainerId;
+        }
+        allow read: if isAdmin()
+                     || (signedIn() && uid() == clientId)
+                     || (isApprovedTrainer() && parentTrainer() == uid());
+        allow create, update, delete: if isAdmin()
+                     || (isApprovedTrainer() && parentTrainer() == uid()
+                         && request.resource.data.trainerId == uid());
+      }
+    }
+  }
+}

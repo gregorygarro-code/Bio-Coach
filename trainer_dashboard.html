@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FitCoach Casa · Panel del entrenador</title>
+  <meta name="theme-color" content="#FAF8F5" />
+  <link rel="icon" href="icon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css?v=41" />
+  <style>
+    .td-wrap{display:grid;grid-template-columns:260px 1fr;gap:16px;max-width:1200px;margin:0 auto}
+    @media(max-width:820px){ .td-wrap{grid-template-columns:1fr} }
+    .td-client{display:block;width:100%;text-align:left;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--panel);margin-bottom:8px;cursor:pointer}
+    .td-client.on{background:var(--ink);color:#fff}
+    .td-field{margin:6px 0;font-size:14px}
+    .td-field b{color:var(--muted);font-weight:600}
+    .td-tags span{display:inline-block;background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:2px;font-size:12px}
+    #td-plan-json{width:100%;min-height:180px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px}
+  </style>
+</head>
+<body>
+  <header class="topbar"><div class="brand"><span class="logo">🏋️</span><div><h1>Panel del entrenador</h1><p class="tagline" id="td-me"></p></div></div>
+    <nav class="tabs"><button id="td-logout" class="link" hidden>Cerrar sesión</button></nav>
+  </header>
+
+  <main>
+    <!-- Login -->
+    <section id="td-auth" class="view active" hidden style="max-width:460px;margin:0 auto">
+      <div class="card">
+        <h2>Acceso de entrenador</h2>
+        <div class="setting"><label for="td-email">Email</label><input id="td-email" type="email" /></div>
+        <div class="setting"><label for="td-pass">Contraseña</label><input id="td-pass" type="password" /></div>
+        <div class="auth-actions"><button id="td-login" class="btn accent">Entrar</button></div>
+        <p id="td-auth-msg" class="muted small"></p>
+      </div>
+    </section>
+
+    <section id="td-gate" class="view active" hidden style="max-width:520px;margin:0 auto">
+      <div class="card"><h2 id="td-gate-title">Cuenta no autorizada</h2><p id="td-gate-msg" class="muted"></p>
+        <div class="auth-actions"><button id="td-gate-logout" class="btn ghost">Cerrar sesión</button></div></div>
+    </section>
+
+    <!-- Dashboard -->
+    <section id="td-dash" class="view active" hidden>
+      <div class="td-wrap">
+        <aside>
+          <div class="card"><h2 style="font-size:16px">Mis clientes</h2><div id="td-list"><p class="muted small">Cargando…</p></div></div>
+        </aside>
+        <div>
+          <div id="td-dossier" class="card"><p class="muted">Selecciona un cliente para ver su expediente.</p></div>
+
+          <div id="td-builder" class="card" hidden>
+            <h2>Constructor de plan (Mesociclo Fuerza Útil)</h2>
+            <div class="pf-grid">
+              <div class="setting"><label for="td-plan-title">Título</label><input id="td-plan-title" type="text" placeholder="Fuerza Útil · S1 D1" /></div>
+              <div class="setting"><label for="td-plan-date">Fecha (día del plan)</label><input id="td-plan-date" type="date" /></div>
+            </div>
+            <div class="setting col">
+              <label for="td-plan-json">Plan JSON — array de pasos <span class="muted small">[{ "id", "sets", "reps", "rest", "phase" }]</span></label>
+              <textarea id="td-plan-json" placeholder='[
+  { "id": "sentadilla_trasera", "sets": 4, "reps": "5", "rest": 150, "phase": "main" },
+  { "id": "press_banca_plano", "sets": 4, "reps": "6", "rest": 150, "phase": "main" },
+  { "id": "remo_pendlay", "sets": 4, "reps": "6", "rest": 120, "phase": "main" }
+]'></textarea>
+            </div>
+            <div class="auth-actions">
+              <input id="td-plan-file" type="file" accept="application/json,.json" hidden />
+              <button id="td-plan-upload" class="btn ghost">⬆ Cargar archivo JSON</button>
+              <button id="td-plan-send" class="btn accent">Enviar plan al cliente</button>
+            </div>
+            <p id="td-plan-msg" class="muted small"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div id="td-disabled" class="card" hidden style="max-width:520px;margin:0 auto">
+      <h2>Backend no configurado</h2><p class="muted">Activa Firebase en <code>js/firebase-config.js</code>.</p>
+    </div>
+  </main>
+
+  <script type="module" src="js/trainer_dashboard.js?v=41"></script>
+</body>
+</html>

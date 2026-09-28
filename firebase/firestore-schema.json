@@ -1,0 +1,74 @@
+{
+  "_notas": "Estructura de datos (documentos de ejemplo). assigned_plans es SUBCOLECCIÓN de clients_dossier/{clientId}.",
+
+  "users/{uid}": {
+    "uid": "abc123",
+    "email": "persona@mail.com",
+    "name": "Nombre Apellido",
+    "role": "admin | trainer | client",
+    "isApproved": false,
+    "trainerId": null,
+    "createdAt": 1700000000000
+  },
+
+  "users/{uid}__ejemplo_trainer": {
+    "uid": "trn_1",
+    "email": "coach@mail.com",
+    "name": "Coach Uno",
+    "role": "trainer",
+    "isApproved": true,
+    "trainerId": null,
+    "createdAt": 1700000000000
+  },
+
+  "users/{uid}__ejemplo_client": {
+    "uid": "cli_1",
+    "email": "cliente@mail.com",
+    "name": "Cliente Uno",
+    "role": "client",
+    "isApproved": true,
+    "trainerId": "trn_1",
+    "createdAt": 1700000000000
+  },
+
+  "clients_dossier/{clientId}": {
+    "uid": "cli_1",
+    "trainerId": "trn_1",
+    "updatedAt": 1700000000000,
+    "fisico": {
+      "equipment": ["dumbbells", "barbell", "plates", "bands"],
+      "weights": { "dumbbells": "10,15,20,25", "barbell": "20", "plates": "5,10,25" },
+      "sports": ["ciclismo", "escalada"],
+      "injuries": ["lumbar", "hombro derecho"]
+    },
+    "habitos": {
+      "diet": "3 comidas + snack; poco procesado",
+      "sleepHours": 7,
+      "stress": "medio"
+    },
+    "estiloVida": {
+      "workRoutine": "sedentario | activo | mixto",
+      "hoursAvailable": 4
+    },
+    "psicologia": {
+      "motivation": "salud | estética | rendimiento | otro",
+      "motivationText": "quiero volver a escalar sin dolor",
+      "barriers": "falta de tiempo y constancia"
+    }
+  },
+
+  "clients_dossier/{clientId}/assigned_plans/{planId}": {
+    "planId": "2026-09-28",
+    "date": "2026-09-28",
+    "trainerId": "trn_1",
+    "clientId": "cli_1",
+    "title": "Mesociclo Fuerza Útil · S1 D1",
+    "goal": "fuerza",
+    "createdAt": 1700000000000,
+    "steps": [
+      { "id": "sentadilla_trasera", "sets": 4, "reps": "5", "rest": 150, "phase": "main" },
+      { "id": "press_banca_plano",  "sets": 4, "reps": "6", "rest": 150, "phase": "main" },
+      { "id": "remo_pendlay",       "sets": 4, "reps": "6", "rest": 120, "phase": "main" }
+    ]
+  }
+}

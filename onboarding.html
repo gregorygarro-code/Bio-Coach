@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FitCoach Casa · Cuestionario del cliente</title>
+  <meta name="theme-color" content="#FAF8F5" />
+  <link rel="icon" href="icon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css?v=41" />
+</head>
+<body>
+  <header class="topbar"><div class="brand"><span class="logo">🏋️</span><div><h1>Cuestionario del cliente</h1><p class="tagline">Anamnesis profunda · tu entrenador diseñará tu plan</p></div></div></header>
+
+  <main>
+    <section class="view active" style="max-width:820px;margin:0 auto">
+
+      <!-- Autenticación -->
+      <div id="ob-auth" class="card" hidden>
+        <h2 id="ob-auth-title">Crear cuenta de cliente</h2>
+        <p class="muted small">Regístrate para guardar tu cuestionario y recibir el plan de tu entrenador.</p>
+        <div class="setting" id="ob-name-row"><label for="ob-name">Nombre</label><input id="ob-name" type="text" autocomplete="name" /></div>
+        <div class="setting"><label for="ob-email">Email</label><input id="ob-email" type="email" autocomplete="email" /></div>
+        <div class="setting"><label for="ob-pass">Contraseña</label><input id="ob-pass" type="password" autocomplete="current-password" /></div>
+        <div class="setting" id="ob-code-row"><label for="ob-trainer">Código de tu entrenador (ID)</label><input id="ob-trainer" type="text" placeholder="opcional" /></div>
+        <div class="auth-actions">
+          <button id="ob-submit" class="btn accent">Crear cuenta</button>
+          <button id="ob-toggle" class="link">¿Ya tienes cuenta? Iniciar sesión</button>
+        </div>
+        <p id="ob-auth-msg" class="muted small"></p>
+      </div>
+
+      <!-- Formulario de anamnesis -->
+      <form id="ob-form" hidden>
+        <div class="card">
+          <div class="row-between"><h2>1 · Físico y deportivo</h2><span id="ob-who" class="muted small"></span></div>
+          <div class="setting col"><label>Equipamiento disponible (marca y anota los pesos)</label>
+            <div id="ob-equip" class="chips-check"></div>
+          </div>
+          <div class="setting col"><label for="ob-sports">Otros deportes que practicas</label>
+            <input id="ob-sports" type="text" placeholder="ej. ciclismo, natación, escalada" /></div>
+          <div class="setting col"><label for="ob-injuries">Historial de lesiones</label>
+            <textarea id="ob-injuries" rows="2" placeholder="ej. molestia lumbar, hombro derecho operado…"></textarea></div>
+        </div>
+
+        <div class="card">
+          <h2>2 · Hábitos</h2>
+          <div class="setting col"><label for="ob-diet">Patrones de alimentación</label>
+            <textarea id="ob-diet" rows="2" placeholder="nº de comidas, tipo de dieta, restricciones…"></textarea></div>
+          <div class="pf-grid">
+            <div class="setting"><label for="ob-sleep">Horas de sueño (media)</label><input id="ob-sleep" type="number" min="3" max="14" step="0.5" /></div>
+            <div class="setting"><label for="ob-stress">Nivel de estrés</label>
+              <select id="ob-stress"><option value="bajo">Bajo</option><option value="medio" selected>Medio</option><option value="alto">Alto</option></select></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>3 · Estilo de vida</h2>
+          <div class="pf-grid">
+            <div class="setting"><label for="ob-work">Rutina de trabajo</label>
+              <select id="ob-work"><option value="sedentario">Sedentario</option><option value="mixto" selected>Mixto</option><option value="activo">Activo</option></select></div>
+            <div class="setting"><label for="ob-hours">Horas reales disponibles / semana</label><input id="ob-hours" type="number" min="1" max="30" /></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>4 · Psicología</h2>
+          <div class="setting"><label for="ob-motiv">Fuente de motivación</label>
+            <select id="ob-motiv"><option value="salud">Salud</option><option value="estetica">Estética</option><option value="rendimiento">Rendimiento deportivo</option><option value="otro">Otro</option></select></div>
+          <div class="setting col"><label for="ob-motiv-text">Cuéntalo con tus palabras</label>
+            <input id="ob-motiv-text" type="text" placeholder="¿qué te mueve a entrenar?" /></div>
+          <div class="setting col"><label for="ob-barriers">Barreras pasadas para entrenar</label>
+            <textarea id="ob-barriers" rows="2" placeholder="ej. falta de tiempo, lesiones, falta de constancia…"></textarea></div>
+        </div>
+
+        <div class="card">
+          <div class="auth-actions">
+            <button id="ob-save" type="submit" class="btn accent">Guardar cuestionario</button>
+            <button id="ob-logout" type="button" class="btn ghost">Cerrar sesión</button>
+          </div>
+          <p id="ob-msg" class="muted small"></p>
+        </div>
+      </form>
+
+      <div id="ob-disabled" class="card" hidden>
+        <h2>Backend no configurado</h2>
+        <p class="muted">Activa Firebase en <code>js/firebase-config.js</code> para usar el cuestionario en la nube.</p>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="js/onboarding.js?v=41"></script>
+</body>
+</html>
