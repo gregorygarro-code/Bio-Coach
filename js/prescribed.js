@@ -1,5 +1,5 @@
 // Fase 4 · Consulta del plan prescrito por el entrenador e inyección en el motor.
-import { getExercise } from './exercises.js?v=46';
+import { getExercise } from './exercises.js?v=47';
 
 const todayKey = () => new Date().toLocaleDateString('sv-SE'); // YYYY-MM-DD local
 

@@ -1,15 +1,15 @@
 // ===== FitCoach Casa · app principal =====
-import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS, parseWeightList, barbellLadder } from './exercises.js?v=46';
-import { createDemoPlayer, resolveDemo } from './demos.js?v=46';
-import { FIREBASE_ENABLED, fb } from './firebase.js?v=46';
-import { getTodaysPrescribedPlan, buildPlanFromPrescription } from './prescribed.js?v=46';
-import { createPoseLandmarker } from './pose.js?v=46';
-import * as generator from './generator.js?v=46';
-import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=46';
-import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=46';
-import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=46';
-import * as api from './api.js?v=46';
-import * as store from './storage.js?v=46';
+import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS, parseWeightList, barbellLadder } from './exercises.js?v=47';
+import { createDemoPlayer, resolveDemo } from './demos.js?v=47';
+import { FIREBASE_ENABLED, fb } from './firebase.js?v=47';
+import { getTodaysPrescribedPlan, buildPlanFromPrescription } from './prescribed.js?v=47';
+import { createPoseLandmarker } from './pose.js?v=47';
+import * as generator from './generator.js?v=47';
+import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=47';
+import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=47';
+import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=47';
+import * as api from './api.js?v=47';
+import * as store from './storage.js?v=47';
 
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -108,11 +108,11 @@ const webmOk=()=> document.createElement('video').canPlayType('video/webm; codec
   const fig=document.querySelector('.hero-figure'), reps=document.getElementById('hero-reps');
   if(!fig) return;
   const base='media/3d/squat';
-  const img=Object.assign(document.createElement('img'), { src:`${base}.jpg?v=46`, alt:'', className:'hero-3d' });
+  const img=Object.assign(document.createElement('img'), { src:`${base}.jpg?v=47`, alt:'', className:'hero-3d' });
   img.onload=()=>fig.replaceWith(img);
   if(settings.reduceMotion) return;
   // Descarga completa como blob (igual que en la previsualización) para que el service worker la cachee
-  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=46`)
+  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=47`)
     .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.blob(); })
     .then(blob=>{
       const v=Object.assign(document.createElement('video'), { src:URL.createObjectURL(blob), muted:true, loop:true, autoplay:true, playsInline:true, className:'hero-3d' });
@@ -423,7 +423,7 @@ $('#gb-quit').addEventListener('click', ()=>{ if(setActive) endSet(false); guide
 let previewEx=null, previewDemo=null, previewToken=0, previewBlobUrl=null;
 // Demos 3D pregrabadas (visor-3d → media/3d/<id>.webm|mp4|jpg); index.json lista los ids disponibles.
 let video3d=null;
-const video3dIds=()=> video3d ??= fetch('media/3d/index.json?v=46')
+const video3dIds=()=> video3d ??= fetch('media/3d/index.json?v=47')
   .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }).then(a=>new Set(a))
   .catch(()=>{ video3d=null; return new Set(); });   // sin memorizar el fallo: se reintenta en la siguiente demo
 
@@ -443,11 +443,11 @@ function renderPreviewVideo(ex){
 function renderPreview3d(box, ex, token){
   const base=`media/3d/${ex.id}`;
   const img=document.createElement('img');
-  img.className='demo-video'; img.src=`${base}.jpg?v=46`; img.alt=`Demostración 3D: ${ex.name}`;
+  img.className='demo-video'; img.src=`${base}.jpg?v=47`; img.alt=`Demostración 3D: ${ex.name}`;
   box.appendChild(img);                         // póster inmediato (y único fotograma con movimiento reducido)
   if(settings.reduceMotion) return;
   // Se descarga entero como blob: <video> pide rangos (206) que el service worker no puede cachear
-  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=46`)
+  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=47`)
     .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.blob(); })
     .then(blob=>{
       if(token!==previewToken) return;

@@ -1,5 +1,6 @@
 // Fase 3 · Dashboard del entrenador (protegido por Firebase Auth + rol).
-import { FIREBASE_ENABLED, fb } from './firebase.js?v=46';
+import { FIREBASE_ENABLED, fb } from './firebase.js?v=47';
+import { EQUIPMENT_DETAIL } from './exercises.js?v=47';
 
 const $ = s => document.querySelector(s);
 let M = null, meUid = null, currentClient = null;
@@ -116,5 +117,64 @@ $('#td-login').onclick = async () => {
 };
 const logout = () => M.signOut(M.auth);
 $('#td-logout').onclick = logout; $('#td-gate-logout').onclick = logout;
+
+// ---- Alta de cliente (cuenta + anamnesis) sin perder la sesión del coach ----
+const NC_EQUIP = () => EQUIPMENT_DETAIL.filter(e => e.id!=='bodyweight' && e.id!=='yoga_mat');
+function renderNcEquip(){
+  const box = $('#nc-equip'); if(!box) return;
+  box.innerHTML = NC_EQUIP().map(it=>{
+    const w = it.weight ? `<input class="pf-w" data-w="${it.id}" type="text" placeholder="${it.wl||'peso'}" hidden />` : '';
+    return `<div class="equip-row"><button type="button" class="chip-check" data-k="${it.id}"><span>${it.ic}</span>${it.label}</button>${w}</div>`;
+  }).join('');
+  box.querySelectorAll('.chip-check').forEach(b=>b.onclick=()=>{ b.classList.toggle('on');
+    const wi=box.querySelector(`[data-w="${b.dataset.k}"]`); if(wi) wi.hidden=!b.classList.contains('on'); });
+}
+function ncCollectEquip(){
+  const box=$('#nc-equip'), equipment=[], weights={};
+  box.querySelectorAll('.chip-check.on').forEach(b=>{ equipment.push(b.dataset.k);
+    const wi=box.querySelector(`[data-w="${b.dataset.k}"]`); if(wi&&wi.value.trim()) weights[b.dataset.k]=wi.value.trim(); });
+  return { equipment, weights };
+}
+const ncOpen  = () => { renderNcEquip(); $('#nc-msg').textContent=''; $('#nc-modal').classList.remove('hidden'); };
+const ncClose = () => $('#nc-modal').classList.add('hidden');
+$('#td-add-client')?.addEventListener('click', ncOpen);
+$('#nc-close')?.addEventListener('click', ncClose);
+$('#nc-cancel')?.addEventListener('click', ncClose);
+$('#nc-modal')?.addEventListener('click', e=>{ if(e.target.id==='nc-modal') ncClose(); });
+
+$('#nc-save')?.addEventListener('click', async ()=>{
+  const msg=$('#nc-msg');
+  const email=$('#nc-email').value.trim(), pass=$('#nc-pass').value, name=$('#nc-name').value.trim();
+  if(!email || pass.length<6){ msg.textContent='Email válido y contraseña de mínimo 6 caracteres.'; return; }
+  msg.textContent='Creando cliente…';
+  // App secundaria: crea la cuenta sin cerrar la sesión del entrenador.
+  const sec = M.initializeApp(M.CONFIG, 'client-alta-'+Date.now());
+  const secAuth = M.getAuth(sec), secDb = M.getFirestore(sec);
+  try{
+    const cred = await M.createUserWithEmailAndPassword(secAuth, email, pass);
+    const cid = cred.user.uid;
+    await M.setDoc(M.doc(secDb,'users',cid), {
+      uid:cid, email, name, role:'client', isApproved:true, trainerId: meUid, createdAt: Date.now(),
+    });
+    const eq = ncCollectEquip();
+    await M.setDoc(M.doc(secDb,'clients_dossier',cid), {
+      uid:cid, trainerId: meUid, updatedAt: Date.now(),
+      fisico:{ equipment:eq.equipment, weights:eq.weights,
+        sports: $('#nc-sports').value.split(',').map(s=>s.trim()).filter(Boolean),
+        injuries: $('#nc-injuries').value.split(',').map(s=>s.trim()).filter(Boolean) },
+      habitos:{ diet:$('#nc-diet').value.trim(), sleepHours:+$('#nc-sleep').value||null, stress:$('#nc-stress').value },
+      estiloVida:{ workRoutine:$('#nc-work').value, hoursAvailable:+$('#nc-hours').value||null },
+      psicologia:{ motivation:$('#nc-motiv').value, motivationText:$('#nc-motiv-text').value.trim(), barriers:$('#nc-barriers').value.trim() },
+    });
+    await M.signOut(secAuth);
+    await M.deleteApp(sec);
+    msg.textContent='✅ Cliente creado.';
+    ['nc-name','nc-email','nc-pass','nc-sports','nc-injuries','nc-diet','nc-sleep','nc-hours','nc-motiv-text','nc-barriers'].forEach(id=>{const el=document.getElementById(id); if(el) el.value='';});
+    setTimeout(()=>{ ncClose(); loadClients(); }, 900);
+  }catch(err){
+    try{ await M.deleteApp(sec); }catch{}
+    msg.textContent = err.code==='auth/email-already-in-use' ? 'Ese email ya tiene cuenta.' : err.message;
+  }
+});
 
 boot();

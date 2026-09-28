@@ -1,6 +1,6 @@
 // Inicialización perezosa de Firebase (Auth + Firestore) vía CDN modular v10.
 // Solo carga el SDK cuando FIREBASE_ENABLED === true y se solicita.
-import { FIREBASE_CONFIG, FIREBASE_ENABLED } from './firebase-config.js?v=46';
+import { FIREBASE_CONFIG, FIREBASE_ENABLED } from './firebase-config.js?v=47';
 
 const SDK = 'https://www.gstatic.com/firebasejs/10.12.2';
 let _mods = null, _loading = null;
@@ -21,7 +21,7 @@ export async function fb(){
     const app  = appM.initializeApp(FIREBASE_CONFIG);
     const auth = authM.getAuth(app);
     const db   = fsM.getFirestore(app);
-    _mods = { app, auth, db, ...authM, ...fsM };
+    _mods = { app, auth, db, CONFIG: FIREBASE_CONFIG, ...appM, ...authM, ...fsM };
     return _mods;
   })();
   return _loading;
