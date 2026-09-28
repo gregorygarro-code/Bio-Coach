@@ -1,40 +1,44 @@
 // ===== Historial de entrenamientos (localStorage) =====
-const KEY='fitcoach.history.v1';
-const SETTINGS='fitcoach.settings.v1';
-const PLANS='fitcoach.plans.v1';
-const PROFILE='fitcoach.profile.v1';
-const SESSIONS='fitcoach.sessions.v1';   // feedback por sesión (RPE/Likert)
+// Namespace por usuario: historial/planes/perfil/sesiones se aíslan por uid
+// para que cuentas distintas en el mismo navegador NO compartan datos.
+let NS = '';
+export function setNamespace(uid){ NS = uid ? ('u.'+uid+'.') : ''; }
+const KEY=()=>NS+'fitcoach.history.v1';
+const SETTINGS='fitcoach.settings.v1';   // ajustes de dispositivo: globales
+const PLANS=()=>NS+'fitcoach.plans.v1';
+const PROFILE=()=>NS+'fitcoach.profile.v1';
+const SESSIONS=()=>NS+'fitcoach.sessions.v1';   // feedback por sesión (RPE/Likert)
 
 // Perfil local (modo invitado)
-export function loadProfile(){ try{ return JSON.parse(localStorage.getItem(PROFILE))||null; }catch{ return null; } }
-export function saveProfileLocal(p){ try{ localStorage.setItem(PROFILE, JSON.stringify(p)); }catch{} }
+export function loadProfile(){ try{ return JSON.parse(localStorage.getItem(PROFILE()))||null; }catch{ return null; } }
+export function saveProfileLocal(p){ try{ localStorage.setItem(PROFILE(), JSON.stringify(p)); }catch{} }
 // ¿Hay un perfil guardado en este navegador? (para el CTA "Crea tu perfil")
-export function hasSavedProfile(){ try{ return !!localStorage.getItem(PROFILE); }catch{ return false; } }
+export function hasSavedProfile(){ try{ return !!localStorage.getItem(PROFILE()); }catch{ return false; } }
 
 // Reemplaza historial y planes locales con los del servidor (al iniciar sesión)
 export function replaceAll(progress){
   try{
-    localStorage.setItem(KEY, JSON.stringify(progress?.history || []));
-    localStorage.setItem(PLANS, JSON.stringify(progress?.plans || {}));
+    localStorage.setItem(KEY(), JSON.stringify(progress?.history || []));
+    localStorage.setItem(PLANS(), JSON.stringify(progress?.plans || {}));
   }catch{}
 }
 
 export function loadHistory(){
-  try{ return JSON.parse(localStorage.getItem(KEY)) || []; }
+  try{ return JSON.parse(localStorage.getItem(KEY())) || []; }
   catch{ return []; }
 }
 export function saveSet(entry){
   // entry: {exerciseId, name, reps, avgRom, form, ts}
   const h=loadHistory();
   h.push({...entry, ts: entry.ts ?? Date.now()});
-  try{ localStorage.setItem(KEY, JSON.stringify(h)); }catch{}
+  try{ localStorage.setItem(KEY(), JSON.stringify(h)); }catch{}
 }
-export function clearHistory(){ try{ localStorage.removeItem(KEY); }catch{} }
+export function clearHistory(){ try{ localStorage.removeItem(KEY()); }catch{} }
 // Añade campos (RPE, molestia…) a la última serie guardada
 export function patchLastSet(fields){
   const h=loadHistory(); if(!h.length) return;
   Object.assign(h[h.length-1], fields);
-  try{ localStorage.setItem(KEY, JSON.stringify(h)); }catch{}
+  try{ localStorage.setItem(KEY(), JSON.stringify(h)); }catch{}
 }
 
 export function loadSettings(){
@@ -72,15 +76,15 @@ export function dateKey(d){
   return `${y}-${m}-${day}`;
 }
 export function loadPlans(){
-  try{ return JSON.parse(localStorage.getItem(PLANS)) || {}; }catch{ return {}; }
+  try{ return JSON.parse(localStorage.getItem(PLANS())) || {}; }catch{ return {}; }
 }
 export function savePlan(key, plan){
   const p=loadPlans(); p[key]=plan;
-  try{ localStorage.setItem(PLANS, JSON.stringify(p)); }catch{}
+  try{ localStorage.setItem(PLANS(), JSON.stringify(p)); }catch{}
 }
 export function deletePlan(key){
   const p=loadPlans(); delete p[key];
-  try{ localStorage.setItem(PLANS, JSON.stringify(p)); }catch{}
+  try{ localStorage.setItem(PLANS(), JSON.stringify(p)); }catch{}
 }
 // Series realizadas agrupadas por fecha (dateKey → array de entradas)
 export function historyByDate(){
@@ -146,12 +150,12 @@ export function lastResultFor(exerciseId){
 }
 
 // ===== Feedback post-sesión (Escala Likert 1-5) =====
-export function loadSessions(){ try{ return JSON.parse(localStorage.getItem(SESSIONS))||[]; }catch{ return []; } }
+export function loadSessions(){ try{ return JSON.parse(localStorage.getItem(SESSIONS()))||[]; }catch{ return []; } }
 // feedback: { focus, goal, rpe (1-5) }
 export function saveSessionFeedback(feedback){
   const s=loadSessions();
   s.push({ ...feedback, date:dateKey(new Date()), ts:Date.now() });
-  try{ localStorage.setItem(SESSIONS, JSON.stringify(s)); }catch{}
+  try{ localStorage.setItem(SESSIONS(), JSON.stringify(s)); }catch{}
 }
 // Último RPE (1-5) para un foco concreto (o el más reciente global si no hay del foco)
 export function lastSessionRPE(focus){
@@ -189,12 +193,12 @@ export function sessionStreak(profileDays=3){
 }
 
 // ===== Portabilidad de datos (backup local) =====
-const BACKUP_KEYS = { history:KEY, settings:SETTINGS, plans:PLANS, profile:PROFILE, sessions:SESSIONS };
+const backupKeys = () => ({ history:KEY(), settings:SETTINGS, plans:PLANS(), profile:PROFILE(), sessions:SESSIONS() });
 
 // Empaqueta todo el estado relevante y descarga fitcoach_backup.json
 export function exportUserData(){
   const data = { app:'FitCoach Casa', kind:'backup', version:1, exportedAt:new Date().toISOString() };
-  for(const [name,key] of Object.entries(BACKUP_KEYS)){
+  for(const [name,key] of Object.entries(backupKeys())){
     try{ data[name] = JSON.parse(localStorage.getItem(key)); }catch{ data[name]=null; }
   }
   const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
@@ -214,7 +218,7 @@ export function importUserData(jsonString){
   if(!data || typeof data!=='object' || data.kind!=='backup')
     return {ok:false, error:'No parece un backup de FitCoach Casa.'};
   try{
-    for(const [name,key] of Object.entries(BACKUP_KEYS)){
+    for(const [name,key] of Object.entries(backupKeys())){
       if(data[name]!==undefined && data[name]!==null) localStorage.setItem(key, JSON.stringify(data[name]));
     }
     return {ok:true};
