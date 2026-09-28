@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FitCoach Casa · Panel de administración</title>
+  <meta name="theme-color" content="#FAF8F5" />
+  <link rel="icon" href="icon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css?v=45" />
+  <style>
+    .ad-wrap{max-width:900px;margin:0 auto}
+    .ad-row{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:8px;background:var(--panel)}
+    .ad-row .who b{display:block}
+    .ad-actions{display:flex;gap:8px}
+    .badge-ok{color:var(--good);font-weight:700;font-size:13px}
+    .badge-wait{color:var(--warn);font-weight:700;font-size:13px}
+  </style>
+</head>
+<body>
+  <header class="topbar"><div class="brand"><span class="logo">🏋️</span><div><h1>Panel de administración</h1><p class="tagline" id="ad-me"></p></div></div>
+    <nav class="tabs"><button id="ad-logout" class="link" hidden>Cerrar sesión</button></nav>
+  </header>
+
+  <main>
+    <section id="ad-auth" class="view active" hidden style="max-width:460px;margin:0 auto">
+      <div class="card"><h2>Acceso de administrador</h2>
+        <div class="setting"><label for="ad-email">Email</label><input id="ad-email" type="email" /></div>
+        <div class="setting"><label for="ad-pass">Contraseña</label><input id="ad-pass" type="password" /></div>
+        <div class="auth-actions"><button id="ad-login" class="btn accent">Entrar</button></div>
+        <p id="ad-auth-msg" class="muted small"></p>
+      </div>
+    </section>
+
+    <section id="ad-gate" class="view active" hidden style="max-width:520px;margin:0 auto">
+      <div class="card"><h2>Acceso restringido</h2>
+        <p class="muted">Esta sección es solo para administradores.</p>
+        <p class="muted small" id="ad-gate-hint"></p>
+        <div class="auth-actions"><button id="ad-gate-logout" class="btn ghost">Cerrar sesión</button></div></div>
+    </section>
+
+    <section id="ad-dash" class="view active" hidden>
+      <div class="ad-wrap">
+        <div class="card">
+          <h2>⏳ Entrenadores pendientes de aprobación</h2>
+          <div id="ad-pending"><p class="muted small">Cargando…</p></div>
+        </div>
+        <div class="card">
+          <h2>✅ Entrenadores aprobados</h2>
+          <div id="ad-approved"><p class="muted small">Cargando…</p></div>
+        </div>
+        <div class="card">
+          <h2>👥 Todos los usuarios</h2>
+          <div id="ad-users"><p class="muted small">Cargando…</p></div>
+        </div>
+      </div>
+    </section>
+
+    <div id="ad-disabled" class="card" hidden style="max-width:520px;margin:0 auto">
+      <h2>Backend no configurado</h2><p class="muted">Activa Firebase en <code>js/firebase-config.js</code>.</p>
+    </div>
+  </main>
+
+  <script type="module" src="js/admin.js?v=45"></script>
+</body>
+</html>
