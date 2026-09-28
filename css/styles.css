@@ -75,6 +75,7 @@ main{max-width:1200px;margin:0 auto;padding:16px}
 .setup{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
 .setup > .card{margin-bottom:0}
 .setup .guided-card{grid-column:1 / -1}
+.setup #mode-card{grid-column:1 / -1}
 @media(max-width:820px){ .setup{grid-template-columns:1fr} }
 .row-between{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 
