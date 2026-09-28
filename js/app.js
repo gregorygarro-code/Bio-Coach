@@ -1,15 +1,15 @@
 // ===== FitCoach Casa · app principal =====
-import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS, parseWeightList, barbellLadder } from './exercises.js?v=47';
-import { createDemoPlayer, resolveDemo } from './demos.js?v=47';
-import { FIREBASE_ENABLED, fb } from './firebase.js?v=47';
-import { getTodaysPrescribedPlan, buildPlanFromPrescription } from './prescribed.js?v=47';
-import { createPoseLandmarker } from './pose.js?v=47';
-import * as generator from './generator.js?v=47';
-import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=47';
-import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=47';
-import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=47';
-import * as api from './api.js?v=47';
-import * as store from './storage.js?v=47';
+import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS, parseWeightList, barbellLadder } from './exercises.js?v=48';
+import { createDemoPlayer, resolveDemo } from './demos.js?v=48';
+import { FIREBASE_ENABLED, fb } from './firebase.js?v=48';
+import { getTodaysPrescribedPlan, buildPlanFromPrescription } from './prescribed.js?v=48';
+import { createPoseLandmarker } from './pose.js?v=48';
+import * as generator from './generator.js?v=48';
+import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=48';
+import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=48';
+import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=48';
+import * as api from './api.js?v=48';
+import * as store from './storage.js?v=48';
 
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -108,11 +108,11 @@ const webmOk=()=> document.createElement('video').canPlayType('video/webm; codec
   const fig=document.querySelector('.hero-figure'), reps=document.getElementById('hero-reps');
   if(!fig) return;
   const base='media/3d/squat';
-  const img=Object.assign(document.createElement('img'), { src:`${base}.jpg?v=47`, alt:'', className:'hero-3d' });
+  const img=Object.assign(document.createElement('img'), { src:`${base}.jpg?v=48`, alt:'', className:'hero-3d' });
   img.onload=()=>fig.replaceWith(img);
   if(settings.reduceMotion) return;
   // Descarga completa como blob (igual que en la previsualización) para que el service worker la cachee
-  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=47`)
+  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=48`)
     .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.blob(); })
     .then(blob=>{
       const v=Object.assign(document.createElement('video'), { src:URL.createObjectURL(blob), muted:true, loop:true, autoplay:true, playsInline:true, className:'hero-3d' });
@@ -223,10 +223,47 @@ function personalCtx(){
 // Genera (y guarda) un plan nuevo mediante el generador experto (carga JSON,
 // aplica lesiones y sobrecarga progresiva) y refresca la vista previa.
 let prescribedLock = false;
-// Fase 4: si el entrenador prescribió un plan para HOY, se carga tal cual y
-// se anula la generación automática/aleatoria (incluida "Otra variante").
+// Modo de entrenamiento del atleta: 'autonomous' (app) | 'coach' (plan prescrito).
+let trainingMode = localStorage.getItem('fc_trainingMode') || 'autonomous';
+function setTrainingMode(mode){
+  trainingMode = mode;
+  try{ localStorage.setItem('fc_trainingMode', mode); }catch{}
+  prescribedLock = false;            // permite recargar el plan según el nuevo modo
+  renderModeCard();
+  regenPlan();
+}
+// Muestra el selector de modo solo a atletas con sesión iniciada.
+function renderModeCard(){
+  const card = $('#mode-card'); if(!card) return;
+  const isAthlete = FIREBASE_ENABLED && auth.loggedIn && (!auth.user.role || auth.user.role==='client');
+  card.hidden = !isAthlete;
+  if(!isAthlete) return;
+  document.querySelectorAll('#mode-chips .chip[data-mode]').forEach(c=>c.classList.toggle('on', c.dataset.mode===trainingMode));
+  const hasCoach = !!(auth.user && auth.user.trainerId);
+  const hint = $('#mode-hint');
+  if(trainingMode==='coach'){
+    hint.textContent = hasCoach ? 'Cargarás la rutina que te prescriba tu entrenador (si hay plan para hoy).'
+                                : 'Vincúlate con tu entrenador usando su código para recibir sus rutinas.';
+  }else{
+    hint.textContent = 'La app genera tu rutina según tu objetivo, equipo y tiempo.';
+  }
+  const connect = $('#mode-connect'); if(connect) connect.hidden = !(trainingMode==='coach' && !hasCoach);
+}
+document.querySelectorAll('#mode-chips .chip[data-mode]').forEach(c=>c.addEventListener('click', ()=>setTrainingMode(c.dataset.mode)));
+$('#mode-coach-save')?.addEventListener('click', async ()=>{
+  const code = $('#mode-coach-code').value.trim(); if(!code) return;
+  try{
+    const m = await fb(); const u = m.auth.currentUser; if(!u) return;
+    await m.setDoc(m.doc(m.db,'users',u.uid), { trainerId: code }, { merge:true });
+    auth.user.trainerId = code;
+    $('#mode-hint').textContent = '✅ Vinculado. Tu entrenador ya puede asignarte planes.';
+    renderModeCard(); regenPlan();
+  }catch(err){ $('#mode-hint').textContent = err.message; }
+});
+// Fase 4: en modo coach, si el entrenador prescribió un plan para HOY, se carga
+// tal cual y se anula la generación automática/aleatoria (incluida "Otra variante").
 async function loadPrescribedForToday(){
-  if(!FIREBASE_ENABLED) return null;
+  if(!FIREBASE_ENABLED || trainingMode!=='coach') return null;
   try{
     const m = await fb();
     const u = m.auth.currentUser;
@@ -423,7 +460,7 @@ $('#gb-quit').addEventListener('click', ()=>{ if(setActive) endSet(false); guide
 let previewEx=null, previewDemo=null, previewToken=0, previewBlobUrl=null;
 // Demos 3D pregrabadas (visor-3d → media/3d/<id>.webm|mp4|jpg); index.json lista los ids disponibles.
 let video3d=null;
-const video3dIds=()=> video3d ??= fetch('media/3d/index.json?v=47')
+const video3dIds=()=> video3d ??= fetch('media/3d/index.json?v=48')
   .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }).then(a=>new Set(a))
   .catch(()=>{ video3d=null; return new Set(); });   // sin memorizar el fallo: se reintenta en la siguiente demo
 
@@ -443,11 +480,11 @@ function renderPreviewVideo(ex){
 function renderPreview3d(box, ex, token){
   const base=`media/3d/${ex.id}`;
   const img=document.createElement('img');
-  img.className='demo-video'; img.src=`${base}.jpg?v=47`; img.alt=`Demostración 3D: ${ex.name}`;
+  img.className='demo-video'; img.src=`${base}.jpg?v=48`; img.alt=`Demostración 3D: ${ex.name}`;
   box.appendChild(img);                         // póster inmediato (y único fotograma con movimiento reducido)
   if(settings.reduceMotion) return;
   // Se descarga entero como blob: <video> pide rangos (206) que el service worker no puede cachear
-  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=47`)
+  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=48`)
     .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.blob(); })
     .then(blob=>{
       if(token!==previewToken) return;
@@ -1761,7 +1798,7 @@ async function initAccount(){
         if(u){
           let prof=null; try{ const s=await m.getDoc(m.doc(m.db,'users',u.uid)); prof=s.exists()?s.data():null; }catch{}
           auth.backend=true; auth.loggedIn=true;
-          auth.user={ id:u.uid, email:u.email, name:(prof&&prof.name)||u.email, role:(prof&&prof.role)||'client' };
+          auth.user={ id:u.uid, email:u.email, name:(prof&&prof.name)||u.email, role:(prof&&prof.role)||'client', trainerId:(prof&&prof.trainerId)||null };
         }else{
           auth.backend=true; auth.loggedIn=false; auth.user=null;
         }
@@ -1802,6 +1839,7 @@ function updateAuthCTAs(){
 
 // Renderiza el dashboard "Hoy". Es también renderTodayDashboard() (alias abajo).
 function renderToday(){
+  renderModeCard();
   const card=$('#today-card'); if(!card) return;
   const prof = profileData || {};
   const days = prof.days || 3;

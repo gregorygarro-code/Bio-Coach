@@ -65,7 +65,7 @@
   }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=47" />
+  <link rel="stylesheet" href="css/styles.css?v=48" />
 </head>
 <body>
   <header class="topbar">
@@ -194,6 +194,19 @@
           <div id="today-noprofile" hidden>
             <p class="today-label">Empieza aquí</p>
             <button id="btn-create-profile" class="btn accent today-start">👤 Crea tu perfil para poder crear tu plan de entrenamiento</button>
+          </div>
+        </div>
+
+        <div id="mode-card" class="card" hidden>
+          <h2>¿Cómo quieres entrenar?</h2>
+          <div id="mode-chips" class="chips">
+            <button type="button" class="chip goal" data-mode="autonomous">🤖 Autónomo</button>
+            <button type="button" class="chip goal" data-mode="coach">🧑‍🏫 Con mi coach</button>
+          </div>
+          <p id="mode-hint" class="muted small"></p>
+          <div id="mode-connect" class="ai-row" hidden>
+            <input id="mode-coach-code" type="text" placeholder="Código (ID) de tu entrenador" />
+            <button id="mode-coach-save" class="btn accent">Vincular</button>
           </div>
         </div>
 
@@ -859,8 +872,8 @@
 
   <div id="loader" class="loader hidden"><div class="spinner"></div><p id="loader-msg">Cargando modelo de pose…</p></div>
 
-  <script src="js/config.js?v=47"></script>
-  <script type="module" src="js/app.js?v=47"></script>
+  <script src="js/config.js?v=48"></script>
+  <script type="module" src="js/app.js?v=48"></script>
 
   <!-- Registro del Service Worker (PWA / offline) -->
   <script>
