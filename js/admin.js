@@ -1,5 +1,5 @@
 // Panel de administración · aprobar/gestionar entrenadores (rol admin).
-import { FIREBASE_ENABLED, fb } from './firebase.js?v=51';
+import { FIREBASE_ENABLED, fb } from './firebase.js?v=52';
 
 const $ = s => document.querySelector(s);
 let M = null;

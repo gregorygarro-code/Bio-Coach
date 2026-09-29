@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <defs>
     <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#34d399"/><stop offset="1" stop-color="#3b82f6"/>
+      <stop offset="0" stop-color="#0FA69C"/><stop offset="1" stop-color="#F65B4E"/>
     </linearGradient>
     <radialGradient id="bg" cx="0.2" cy="0.1" r="1">
-      <stop offset="0" stop-color="#16202e"/><stop offset="1" stop-color="#0b0f16"/>
+      <stop offset="0" stop-color="#0E2A2A"/><stop offset="1" stop-color="#08181A"/>
     </radialGradient>
   </defs>
   <rect width="1200" height="630" fill="url(#bg)"/>
@@ -12,6 +12,6 @@
   <text x="76" y="300" font-family="Sora, Arial, sans-serif" font-size="86" font-weight="800" fill="#e9eef5">Tu entrenador personal</text>
   <text x="76" y="392" font-family="Sora, Arial, sans-serif" font-size="86" font-weight="800" fill="url(#g)">con visión por computador</text>
   <text x="80" y="470" font-family="Inter, Arial, sans-serif" font-size="34" fill="#93a1b2">Corrige tu técnica en tiempo real · rutinas guiadas · en casa</text>
-  <text x="80" y="560" font-family="Sora, Arial, sans-serif" font-size="40" font-weight="700" fill="#e9eef5">🏋️ FitCoach Casa</text>
+  <text x="80" y="560" font-family="Sora, Arial, sans-serif" font-size="40" font-weight="700" fill="#e9eef5">Kinera · Movimiento inteligente</text>
   <rect x="0" y="614" width="1200" height="16" fill="url(#g)"/>
 </svg>

@@ -195,16 +195,16 @@ export function sessionStreak(profileDays=3){
 // ===== Portabilidad de datos (backup local) =====
 const backupKeys = () => ({ history:KEY(), settings:SETTINGS, plans:PLANS(), profile:PROFILE(), sessions:SESSIONS() });
 
-// Empaqueta todo el estado relevante y descarga fitcoach_backup.json
+// Empaqueta todo el estado relevante y descarga kinera_backup.json
 export function exportUserData(){
-  const data = { app:'FitCoach Casa', kind:'backup', version:1, exportedAt:new Date().toISOString() };
+  const data = { app:'Kinera', kind:'backup', version:1, exportedAt:new Date().toISOString() };
   for(const [name,key] of Object.entries(backupKeys())){
     try{ data[name] = JSON.parse(localStorage.getItem(key)); }catch{ data[name]=null; }
   }
   const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = 'fitcoach_backup.json';
+  a.href = url; a.download = 'kinera_backup.json';
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(url), 1000);
   return data;
@@ -216,7 +216,7 @@ export function importUserData(jsonString){
   try{ data = JSON.parse(jsonString); }
   catch{ return {ok:false, error:'El archivo no es un JSON válido.'}; }
   if(!data || typeof data!=='object' || data.kind!=='backup')
-    return {ok:false, error:'No parece un backup de FitCoach Casa.'};
+    return {ok:false, error:'No parece un backup de Kinera.'};
   try{
     for(const [name,key] of Object.entries(backupKeys())){
       if(data[name]!==undefined && data[name]!==null) localStorage.setItem(key, JSON.stringify(data[name]));

@@ -1,15 +1,15 @@
 // ===== FitCoach Casa · app principal =====
-import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS, parseWeightList, barbellLadder } from './exercises.js?v=51';
-import { createDemoPlayer, resolveDemo } from './demos.js?v=51';
-import { FIREBASE_ENABLED, fb } from './firebase.js?v=51';
-import { getTodaysPrescribedPlan, buildPlanFromPrescription } from './prescribed.js?v=51';
-import { createPoseLandmarker } from './pose.js?v=51';
-import * as generator from './generator.js?v=51';
-import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=51';
-import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=51';
-import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=51';
-import * as api from './api.js?v=51';
-import * as store from './storage.js?v=51';
+import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS, parseWeightList, barbellLadder } from './exercises.js?v=52';
+import { createDemoPlayer, resolveDemo } from './demos.js?v=52';
+import { FIREBASE_ENABLED, fb } from './firebase.js?v=52';
+import { getTodaysPrescribedPlan, buildPlanFromPrescription } from './prescribed.js?v=52';
+import { createPoseLandmarker } from './pose.js?v=52';
+import * as generator from './generator.js?v=52';
+import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=52';
+import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=52';
+import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=52';
+import * as api from './api.js?v=52';
+import * as store from './storage.js?v=52';
 
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -108,11 +108,11 @@ const webmOk=()=> document.createElement('video').canPlayType('video/webm; codec
   const fig=document.querySelector('.hero-figure'), reps=document.getElementById('hero-reps');
   if(!fig) return;
   const base='media/3d/squat';
-  const img=Object.assign(document.createElement('img'), { src:`${base}.jpg?v=51`, alt:'', className:'hero-3d' });
+  const img=Object.assign(document.createElement('img'), { src:`${base}.jpg?v=52`, alt:'', className:'hero-3d' });
   img.onload=()=>fig.replaceWith(img);
   if(settings.reduceMotion) return;
   // Descarga completa como blob (igual que en la previsualización) para que el service worker la cachee
-  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=51`)
+  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=52`)
     .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.blob(); })
     .then(blob=>{
       const v=Object.assign(document.createElement('video'), { src:URL.createObjectURL(blob), muted:true, loop:true, autoplay:true, playsInline:true, className:'hero-3d' });
@@ -331,30 +331,42 @@ function renderGuidedPreview(){
 // Construye la COLA de ejecución por super-series. Cada celda = una serie a
 // realizar, con el descanso que va DESPUÉS (corto dentro del par, completo tras él).
 // En una superserie [A,B] el orden es A(r1)→B(r1)→A(r2)→B(r2)… alternando.
-const INTRA_REST = 15;   // descanso entre ejercicios del par (superserie)
+const INTRA_REST = 20;   // descanso al pasar de una estación a otra dentro de la ronda
 const PHASE_REST = 10;   // descanso tras calentamiento/movilidad
+const BLOCK_SIZE = 3;    // ejercicios por bloque (formato circuito: 3 bloques de 3×3)
+// Fase principal en formato CIRCUITO: se agrupan los ejercicios en bloques de hasta 3.
+// En cada ronda se hace una serie de cada ejercicio del bloque (A→B→C) con un descanso
+// corto entre estaciones; el descanso "completo" (reducido ~40 %) va entre rondas, porque
+// mientras un músculo descansa se trabaja otro. Así se aprovecha mejor el tiempo del cliente.
 function buildSupersetQueue(steps, fullRest){
   const warm = steps.filter(s=>s.phase==='warmup');
   const main = steps.filter(s=>s.phase==='main');
   const cool = steps.filter(s=>s.phase==='cooldown');
+  const roundRest = Math.max(25, Math.round(fullRest * 0.6));   // circuito: descanso reducido entre rondas
   const q=[]; let blockNo=0;
   const single=(s,tipo,rest)=>{ blockNo++; const t=s.sets||1;
     for(let set=1;set<=t;set++) q.push({ step:s, ex:s.ex, setNum:set, totalSets:t, blockNo, tipo,
-      posInBlock:0, blockSize:1, restAfter:rest, newExercise:(set===1) }); };
+      posInBlock:0, blockSize:1, restAfter:(set===t?rest:roundRest), newExercise:(set===1) }); };
 
   warm.forEach(s=>single(s,'Calentamiento',PHASE_REST));
 
-  for(let i=0;i<main.length;i+=2){
-    const pair=main.slice(i,i+2); blockNo++;
-    if(pair.length===2){
-      const [A,B]=pair; const rounds=Math.max(A.sets||1,B.sets||1);
-      for(let r=1;r<=rounds;r++){
-        q.push({ step:A, ex:A.ex, setNum:r, totalSets:rounds, blockNo, tipo:'Superserie',
-                 posInBlock:0, blockSize:2, restAfter:INTRA_REST, newExercise:true });   // A → (15s) → B
-        q.push({ step:B, ex:B.ex, setNum:r, totalSets:rounds, blockNo, tipo:'Superserie',
-                 posInBlock:1, blockSize:2, restAfter:fullRest, newExercise:true });      // B → descanso completo
-      }
-    }else single(pair[0],'Serie',fullRest);
+  const TIPO = {1:'Serie', 2:'Superserie', 3:'Circuito'};
+  for(let i=0;i<main.length;i+=BLOCK_SIZE){
+    const block=main.slice(i,i+BLOCK_SIZE);
+    if(block.length===1){ single(block[0],'Serie',roundRest); continue; }
+    blockNo++;
+    const size=block.length, tipo=TIPO[size]||'Circuito';
+    const rounds=Math.max(...block.map(s=>s.sets||1));
+    for(let r=1;r<=rounds;r++){
+      block.forEach((s,pos)=>{
+        const lastStation = pos===size-1;
+        const lastRound = r===rounds;
+        // entre estaciones: descanso corto · fin de ronda: descanso reducido · fin de bloque: descanso reducido
+        const restAfter = !lastStation ? INTRA_REST : (lastRound ? roundRest : roundRest);
+        q.push({ step:s, ex:s.ex, setNum:r, totalSets:rounds, blockNo, tipo,
+                 posInBlock:pos, blockSize:size, restAfter, newExercise:true });
+      });
+    }
   }
 
   cool.forEach(s=>single(s,'Vuelta a la calma',PHASE_REST));
@@ -395,7 +407,8 @@ function updateGuidedBar(){
   const totalBlocks=q[q.length-1].blockNo;
   const perSide = c.step.bilateral ? (c.step.mode==='hold'?' ×2 lados':' por lado') : '';
   const dose = (c.step.mode==='hold' ? `${c.step.secs}s` : `${c.step.repsLabel||c.step.reps} reps`) + perSide;
-  const tag = c.blockSize===2 ? `Superserie ${c.posInBlock===0?'A':'B'}` : c.tipo;
+  const station = String.fromCharCode(65 + (c.posInBlock||0));   // A, B, C…
+  const tag = c.blockSize>=2 ? `${c.tipo} ${station}` : c.tipo;
   $('#gb-title').textContent=`Bloque ${c.blockNo}/${totalBlocks} · ${tag} · Ronda ${c.setNum}/${c.totalSets}`;
   $('#gb-fill').style.width=`${(guided.qi/q.length)*100}%`;
   const next=q[guided.qi+1];
@@ -460,7 +473,7 @@ $('#gb-quit').addEventListener('click', ()=>{ if(setActive) endSet(false); guide
 let previewEx=null, previewDemo=null, previewToken=0, previewBlobUrl=null;
 // Demos 3D pregrabadas (visor-3d → media/3d/<id>.webm|mp4|jpg); index.json lista los ids disponibles.
 let video3d=null;
-const video3dIds=()=> video3d ??= fetch('media/3d/index.json?v=51')
+const video3dIds=()=> video3d ??= fetch('media/3d/index.json?v=52')
   .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }).then(a=>new Set(a))
   .catch(()=>{ video3d=null; return new Set(); });   // sin memorizar el fallo: se reintenta en la siguiente demo
 
@@ -480,11 +493,11 @@ function renderPreviewVideo(ex){
 function renderPreview3d(box, ex, token){
   const base=`media/3d/${ex.id}`;
   const img=document.createElement('img');
-  img.className='demo-video'; img.src=`${base}.jpg?v=51`; img.alt=`Demostración 3D: ${ex.name}`;
+  img.className='demo-video'; img.src=`${base}.jpg?v=52`; img.alt=`Demostración 3D: ${ex.name}`;
   box.appendChild(img);                         // póster inmediato (y único fotograma con movimiento reducido)
   if(settings.reduceMotion) return;
   // Se descarga entero como blob: <video> pide rangos (206) que el service worker no puede cachear
-  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=51`)
+  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=52`)
     .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.blob(); })
     .then(blob=>{
       if(token!==previewToken) return;
@@ -731,6 +744,7 @@ async function startCamera(){
   $('#btn-cam').textContent='Cámara activa';
   $('#btn-cam').disabled=true;
   updateSetButtons();
+  updatePauseBtn();   // pausa disponible en cuanto la cámara está activa
   requestAnimationFrame(loop);
   // en rutina guiada, arranca automáticamente la serie pendiente al activar la cámara
   // (solo si ya hay un ejercicio cargado y no estamos en la demo previa)
@@ -975,8 +989,10 @@ $('#btn-finish').addEventListener('click', ()=>{
 });
 
 // --- Pausa de la serie / temporizador en curso ---
+// Se puede pausar durante toda la sesión: serie activa, descanso o cuenta atrás.
+const canPause = () => running || setActive;
 function togglePause(){
-  if(!setActive) return;
+  if(!canPause()) return;
   paused=!paused;
   updatePauseBtn();
   if(paused){ sfx.tick?.(); speak('Pausa',{force:true}); }
@@ -985,11 +1001,11 @@ function togglePause(){
 function updatePauseBtn(){
   const btn=$('#btn-pause'), ov=$('#pause-overlay');
   if(btn){
-    btn.classList.toggle('hidden', !setActive);
+    btn.classList.toggle('hidden', !canPause());
     btn.textContent = paused ? '▶ Reanudar' : '⏸ Pausar';
     btn.classList.toggle('accent', paused);
   }
-  if(ov) ov.classList.toggle('hidden', !(setActive && paused));
+  if(ov) ov.classList.toggle('hidden', !(canPause() && paused));
 }
 $('#btn-pause')?.addEventListener('click', togglePause);
 
@@ -1481,7 +1497,7 @@ $('#btn-tutorial').addEventListener('click', ()=>startOnboarding(true));
 // Onboarding (Fase 1)
 // ======================================================
 const ONB_STEPS = [
-  {emoji:'🏋️', h:'Bienvenido a FitCoach Casa', p:'Tu entrenador con webcam: cuenta series y repeticiones y te corrige la técnica en tiempo real. Todo se procesa en tu equipo.'},
+  {emoji:'🏃', h:'Bienvenido a Kinera', p:'Tu entrenador con cámara: cuenta series y repeticiones y te corrige la técnica en tiempo real. Todo se procesa en tu equipo.'},
   {emoji:'🎯', h:'Elige objetivo y tiempo', p:'Marca tu equipamiento y objetivo, y usa la Rutina guiada (30/45/60 min): la app arma la sesión y avanza sola.'},
   {emoji:'📷', h:'Coloca bien la cámara', p:'Ponte a 2-3 m, de cuerpo entero y con buena luz. Cada ejercicio te dice si mirar de frente o de lado.'},
   {emoji:'🔊', h:'Sonido y accesibilidad', p:'Activa pitidos y voz para no mirar la pantalla. En Ajustes puedes agrandar el texto, subir el contraste y elegir tu nivel.'},
@@ -2042,7 +2058,7 @@ $('#ai-input')?.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventD
 // ======================================================
 // Copia de seguridad (export / import) — item 5
 // ======================================================
-$('#btn-export')?.addEventListener('click', ()=>{ store.exportUserData(); $('#backup-msg').textContent='✓ Descargado fitcoach_backup.json'; });
+$('#btn-export')?.addEventListener('click', ()=>{ store.exportUserData(); $('#backup-msg').textContent='✓ Descargado kinera_backup.json'; });
 $('#btn-import')?.addEventListener('click', ()=> $('#import-file')?.click());
 $('#import-file')?.addEventListener('change', e=>{
   const f=e.target.files[0]; if(!f) return;

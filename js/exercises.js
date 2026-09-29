@@ -1,5 +1,5 @@
 // ===== Biblioteca de ejercicios + motor biomecánico =====
-import { LM, angle, angleFromVertical, midpoint, vis, clamp } from './utils.js?v=51';
+import { LM, angle, angleFromVertical, midpoint, vis, clamp } from './utils.js?v=52';
 
 // --- helpers de ángulos sobre landmarks ---
 function tri(lm, a, b, c){
@@ -1133,6 +1133,11 @@ export function buildGuidedPlan(group, equip, minutes, opts={}){
   const goal = getGoal(opts.goal);
   const [repLo, repHi] = goal.reps;
   const restS = goal.rest;
+  // Formato circuito (bloques de 3): el descanso real entre series se reduce ~40 %
+  // porque mientras un músculo descansa se trabaja otro ejercicio del bloque.
+  // Usamos este descanso reducido para estimar el tiempo y así aprovechar mejor
+  // los minutos disponibles del cliente. El runner (app.js) usa el mismo factor.
+  const restMain = Math.max(25, Math.round(restS * 0.6));
   const trans = 20;
   const g = (group==='all') ? 'full' : group;
   // Exclusión por lesiones (ids contraindicados que envía el generador experto)
@@ -1145,7 +1150,7 @@ export function buildGuidedPlan(group, equip, minutes, opts={}){
   // El descanso ocurre ENTRE series, no tras la última (ahí se transiciona al
   // siguiente ejercicio). Contar (sets-1) descansos evita inflar el tiempo y
   // deja que la sesión empaque más ejercicios hasta llenar el tiempo real.
-  const estOf = (mode,sets,reps,secs,phase,sides=1)=> phase==='main' ? sets*workOf(mode,reps,secs,sides)+Math.max(0,sets-1)*restS+trans : (workOf(mode,reps,secs,sides)+15);
+  const estOf = (mode,sets,reps,secs,phase,sides=1)=> phase==='main' ? sets*workOf(mode,reps,secs,sides)+Math.max(0,sets-1)*restMain+trans : (workOf(mode,reps,secs,sides)+15);
   const mk = (ex,mode,sets,reps,secs,phase,repsLabel)=>{ const sides=sidesOf(ex); return { id:ex.id, ex, name:ex.name, emoji:ex.emoji, type:ex.type, mode, sets, reps, secs, phase, repsLabel, bilateral:ex.bilateral, sides, est:estOf(mode,sets,reps,secs,phase,sides) }; };
   const meta = { key: opts.goal||'general', ...goal };
   const steps=[];
@@ -1181,7 +1186,10 @@ export function buildGuidedPlan(group, equip, minutes, opts={}){
   let adjSets = 0;
   if(age>=60){ if(bias==='explosive'||bias==='cardio') bias='balanced'; adjSets = -1; }
   if(age && age<=15){ if(bias==='explosive') bias='balanced'; }
-  const sets = Math.max(2, baseSets + goal.setsDelta + adjSets + (level==='avanzado'?1:0) - (level==='principiante'?1:0));
+  // Tope de series por ejercicio: 3 es suficiente en formato circuito (3 bloques de 3
+  // ejercicios × 3 series). Solo 60 min permite 4. Evita las 5 series que resultaban excesivas.
+  const setsCap = {30:3, 45:3, 60:4}[minutes] || 3;
+  const sets = Math.min(setsCap, Math.max(2, baseSets + goal.setsDelta + adjSets + (level==='avanzado'?1:0) - (level==='principiante'?1:0)));
   let pool = exercisesForGroup(g, equip).filter(e=>e.group!=='stretch' && e.group!=='prevencion' && !exclude.has(e.id));
   if(age>=60) pool = pool.filter(e=>!e.explosive) .length ? pool.filter(e=>!e.explosive) : pool;  // mayores: evita explosivos si hay alternativa
   const warmIds=['worlds_greatest','hip_9090','cat_cow','thoracic_rot','shoulder_circles','hip_flexor'];  // movilidad (FRC) primero
@@ -1230,6 +1238,10 @@ export function buildGuidedPlan(group, equip, minutes, opts={}){
     if(idxMain.length<=MIN_MAIN) break;
     steps.splice(idxMain[idxMain.length-1],1);
   }
+  // Evita un bloque suelto de 1 ejercicio: si el nº principal deja resto 1 al agrupar
+  // en bloques de 3, quita el último para dejar bloques limpios (3 o 3+2).
+  const mainIdx = () => steps.map((s,i)=>s.phase==='main'?i:-1).filter(i=>i>=0);
+  if(mainIdx().length % 3 === 1 && mainIdx().length > MIN_MAIN) steps.splice(mainIdx().pop(),1);
   return { steps, estMin:Math.round(total()/60), minutes, goal:meta };
 }
 

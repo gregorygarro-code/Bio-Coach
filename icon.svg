@@ -1,18 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#ff7a18"/>
-      <stop offset="1" stop-color="#ff2e63"/>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0FA69C"/>
+      <stop offset="1" stop-color="#0B7F78"/>
     </linearGradient>
   </defs>
-  <rect width="512" height="512" rx="112" fill="#0a0d13"/>
-  <rect x="24" y="24" width="464" height="464" rx="96" fill="url(#g)"/>
-  <!-- barra -->
-  <g fill="#0a0d13">
-    <rect x="150" y="238" width="212" height="36" rx="18"/>
-    <rect x="120" y="196" width="40" height="120" rx="16"/>
-    <rect x="352" y="196" width="40" height="120" rx="16"/>
-    <rect x="86" y="220" width="34" height="72" rx="14"/>
-    <rect x="392" y="220" width="34" height="72" rx="14"/>
-  </g>
+  <!-- Kinera · marca "K" cinética: figura en movimiento (teal + coral) -->
+  <rect width="512" height="512" rx="116" fill="url(#bg)"/>
+  <!-- eje vertical (tronco / asta de la K) -->
+  <rect x="150" y="120" width="46" height="272" rx="23" fill="#F4FBFA"/>
+  <!-- brazo/pierna superior (coral) -->
+  <path d="M196 256 L322 132 a24 24 0 0 1 40 26 L250 266 Z" fill="#F65B4E"/>
+  <!-- brazo/pierna inferior en zancada (coral, más claro) -->
+  <path d="M196 256 L322 380 a24 24 0 0 0 40 -26 L250 246 Z" fill="#FF8577"/>
+  <!-- cabeza / punto de energía -->
+  <circle cx="173" cy="96" r="30" fill="#F65B4E"/>
 </svg>
