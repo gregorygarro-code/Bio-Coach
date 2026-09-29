@@ -149,6 +149,18 @@ main{max-width:1200px;margin:0 auto;padding:16px}
 .gp-item .gp-main{flex:1}
 .gp-item .gp-name{font-weight:600}
 .gp-item .gp-sets{color:var(--accent);font-weight:600;white-space:nowrap}
+/* Previsualización por bloques (formato circuito, como en el calendario) */
+.gp-block{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px}
+.gp-block.main{border-left:3px solid var(--accent)}
+.gp-block.warm{border-left:3px solid var(--accent2)}
+.gp-block.cool{border-left:3px solid var(--good)}
+.gp-bhead{font-weight:700;color:var(--accent);font-size:13px;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px}
+.gp-block.warm .gp-bhead{color:var(--accent2)}
+.gp-block.cool .gp-bhead{color:var(--good)}
+.gp-block .gp-list{background:transparent}
+.gp-brest{margin:8px 0 0}
+.gp-station{flex:none;width:20px;height:20px;display:grid;place-items:center;border-radius:6px;background:var(--accent);color:#fff;font-weight:700;font-size:12px}
+.gp-block.warm .gp-station,.gp-block.cool .gp-station{background:var(--accent2)}
 .gp-phase{font-size:10px;text-transform:uppercase;letter-spacing:.5px;padding:1px 6px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
 .gp-phase.warmup{color:#8ec5ff;border-color:#2f81f7}
 .gp-phase.cooldown{color:#8fe6e0;border-color:#2aa}

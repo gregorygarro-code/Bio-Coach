@@ -1,15 +1,15 @@
 // ===== FitCoach Casa · app principal =====
-import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS, parseWeightList, barbellLadder } from './exercises.js?v=52';
-import { createDemoPlayer, resolveDemo } from './demos.js?v=52';
-import { FIREBASE_ENABLED, fb } from './firebase.js?v=52';
-import { getTodaysPrescribedPlan, buildPlanFromPrescription } from './prescribed.js?v=52';
-import { createPoseLandmarker } from './pose.js?v=52';
-import * as generator from './generator.js?v=52';
-import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=52';
-import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=52';
-import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=52';
-import * as api from './api.js?v=52';
-import * as store from './storage.js?v=52';
+import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS, parseWeightList, barbellLadder } from './exercises.js?v=53';
+import { createDemoPlayer, resolveDemo } from './demos.js?v=53';
+import { FIREBASE_ENABLED, fb } from './firebase.js?v=53';
+import { getTodaysPrescribedPlan, buildPlanFromPrescription } from './prescribed.js?v=53';
+import { createPoseLandmarker } from './pose.js?v=53';
+import * as generator from './generator.js?v=53';
+import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=53';
+import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=53';
+import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=53';
+import * as api from './api.js?v=53';
+import * as store from './storage.js?v=53';
 
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -108,11 +108,11 @@ const webmOk=()=> document.createElement('video').canPlayType('video/webm; codec
   const fig=document.querySelector('.hero-figure'), reps=document.getElementById('hero-reps');
   if(!fig) return;
   const base='media/3d/squat';
-  const img=Object.assign(document.createElement('img'), { src:`${base}.jpg?v=52`, alt:'', className:'hero-3d' });
+  const img=Object.assign(document.createElement('img'), { src:`${base}.jpg?v=53`, alt:'', className:'hero-3d' });
   img.onload=()=>fig.replaceWith(img);
   if(settings.reduceMotion) return;
   // Descarga completa como blob (igual que en la previsualización) para que el service worker la cachee
-  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=52`)
+  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=53`)
     .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.blob(); })
     .then(blob=>{
       const v=Object.assign(document.createElement('video'), { src:URL.createObjectURL(blob), muted:true, loop:true, autoplay:true, playsInline:true, className:'hero-3d' });
@@ -292,37 +292,75 @@ async function regenPlan(){
   renderGuidedPreview();
 }
 
+// Tarjeta expandible de un ejercicio (reutilizada en la vista por bloques)
+function gpItemHTML(s, n){
+  const perSide = s.bilateral ? (s.mode==='hold' ? ' ×2 lados' : ' por lado') : '';
+  const dose = (s.mode==='hold' ? `${s.sets>1?s.sets+'× ':''}${s.secs}s` : `${s.sets} × ${s.repsLabel||s.reps}`) + perSide;
+  const ov = s.overload ? `<span class="gp-phase ov" title="${s.overload.note}">⬆ ${s.overload.note}</span>` : '';
+  const cues = s.ex.cues.map(c=>`<li>${c}</li>`).join('');
+  const tag = n ? `<span class="gp-station">${n}</span>` : '';
+  return `<details class="gp-item">
+    <summary class="gp-sum">
+      ${tag}<span class="gp-emoji">${s.emoji}</span>
+      <span class="gp-main"><span class="gp-name">${s.name}</span> ${ov}</span>
+      <span class="gp-sets">${dose}</span>
+      <span class="gp-chevron">▾</span>
+    </summary>
+    <div class="gp-detail">
+      <p class="gp-muscles">${s.ex.muscles} · 📷 ${s.ex.view}</p>
+      <p class="gp-cues-title">Cómo hacerlo bien</p>
+      <ul>${cues}</ul>
+      <button class="link gp-demo" data-id="${s.id}">▶ Ver demostración animada</button>
+    </div>
+  </details>`;
+}
 function renderGuidedPreview(){
   const box=$('#guided-preview');
   const plan=currentGuidedPlan;
   if(!plan || !plan.steps.length){ box.innerHTML='<p class="muted small">No hay ejercicios para esta combinación. Prueba con otro equipamiento u objetivo.</p>'; return; }
   const label = GROUPS[currentGroup]?.label || 'Full body';
   const G = plan.goal;
-  const items = plan.steps.map((s,i)=>{
-    const perSide = s.bilateral ? (s.mode==='hold' ? ' ×2 lados' : ' por lado') : '';
-    const dose = (s.mode==='hold' ? `${s.sets>1?s.sets+'× ':''}${s.secs}s` : `${s.sets} × ${s.repsLabel||s.reps}`) + perSide;
-    const ph = s.phase!=='main' ? `<span class="gp-phase ${s.phase}">${PHASE_LABEL[s.phase]}</span>` : '';
-    const ov = s.overload ? `<span class="gp-phase ov" title="${s.overload.note}">⬆ ${s.overload.note}</span>` : '';
-    const cues = s.ex.cues.map(c=>`<li>${c}</li>`).join('');
-    return `<details class="gp-item">
-      <summary class="gp-sum">
-        <span class="gp-emoji">${s.emoji}</span>
-        <span class="gp-main"><span class="gp-name">${i+1}. ${s.name}</span> ${ph} ${ov}</span>
-        <span class="gp-sets">${dose}</span>
-        <span class="gp-chevron">▾</span>
-      </summary>
-      <div class="gp-detail">
-        <p class="gp-muscles">${s.ex.muscles} · 📷 ${s.ex.view}</p>
-        <p class="gp-cues-title">Cómo hacerlo bien</p>
-        <ul>${cues}</ul>
-        <button class="link gp-demo" data-id="${s.id}">▶ Ver demostración animada</button>
-      </div>
-    </details>`;
-  }).join('');
-  box.innerHTML = `<div class="gp-head"><span>${label} · <b>${G.label}</b> · ~${plan.estMin} min · ${plan.steps.length} ejercicios</span></div>
-    <div class="gp-scheme">💪 Carga: ${G.load} · ⏱️ Descanso: ${G.rest}s · Tempo: ${G.tempo}</div>
-    <p class="gp-hint muted small">Toca un ejercicio para ver su explicación antes de empezar.</p>
-    <div class="gp-list">${items}</div>`;
+  const fullRest = (G && G.rest) || settings.rest;
+  const roundRest = Math.max(25, Math.round(fullRest*0.6));   // igual que el runner (circuito)
+
+  const warm = plan.steps.filter(s=>s.phase==='warmup');
+  const main = plan.steps.filter(s=>s.phase==='main');
+  const cool = plan.steps.filter(s=>s.phase==='cooldown');
+  const TIPO = {1:'Serie', 2:'Superserie', 3:'Circuito'};
+  const STATION = i => String.fromCharCode(65+i);   // A, B, C…
+
+  // Bloque genérico (cabecera + ejercicios + nota de descanso)
+  const blockHTML = (title, cls, items, restNote) =>
+    `<div class="gp-block ${cls}">
+       <div class="gp-bhead"><span>${title}</span></div>
+       <div class="gp-list">${items}</div>
+       ${restNote?`<p class="gp-brest muted small">${restNote}</p>`:''}
+     </div>`;
+
+  let html = '';
+  if(warm.length){
+    html += blockHTML('🔥 Calentamiento', 'warm', warm.map(s=>gpItemHTML(s)).join(''),
+      `${PHASE_REST}s de transición entre ejercicios`);
+  }
+  for(let i=0, b=1; i<main.length; i+=BLOCK_SIZE, b++){
+    const block = main.slice(i, i+BLOCK_SIZE);
+    const size = block.length, rounds = Math.max(...block.map(s=>s.sets||1));
+    const tipo = TIPO[size] || 'Circuito';
+    const items = block.map((s,idx)=>gpItemHTML(s, size>1 ? STATION(idx) : '')).join('');
+    const rest = size>1
+      ? `${rounds} rondas · ${INTRA_REST}s entre ejercicios · ${roundRest}s entre rondas`
+      : `${rounds} series · ${roundRest}s de descanso`;
+    html += blockHTML(`Bloque ${b} · ${tipo}`, 'main', items, rest);
+  }
+  if(cool.length){
+    html += blockHTML('🧊 Vuelta a la calma', 'cool', cool.map(s=>gpItemHTML(s)).join(''), '');
+  }
+
+  const nBlocks = Math.ceil(main.length/BLOCK_SIZE);
+  box.innerHTML = `<div class="gp-head"><span>${label} · <b>${G.label}</b> · ~${plan.estMin} min · ${main.length} ejercicios · ${nBlocks} bloques</span></div>
+    <div class="gp-scheme">💪 Carga: ${G.load} · ⏱️ Descanso entre rondas: ${roundRest}s · Tempo: ${G.tempo}</div>
+    <p class="gp-hint muted small">Formato circuito: haz una serie de cada ejercicio del bloque y repite. Toca un ejercicio para ver su explicación.</p>
+    ${html}`;
   box.querySelectorAll('.gp-demo').forEach(b=>b.addEventListener('click', e=>{
     e.preventDefault(); e.stopPropagation(); openPreview(getExercise(b.dataset.id), true);
   }));
@@ -473,7 +511,7 @@ $('#gb-quit').addEventListener('click', ()=>{ if(setActive) endSet(false); guide
 let previewEx=null, previewDemo=null, previewToken=0, previewBlobUrl=null;
 // Demos 3D pregrabadas (visor-3d → media/3d/<id>.webm|mp4|jpg); index.json lista los ids disponibles.
 let video3d=null;
-const video3dIds=()=> video3d ??= fetch('media/3d/index.json?v=52')
+const video3dIds=()=> video3d ??= fetch('media/3d/index.json?v=53')
   .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }).then(a=>new Set(a))
   .catch(()=>{ video3d=null; return new Set(); });   // sin memorizar el fallo: se reintenta en la siguiente demo
 
@@ -493,11 +531,11 @@ function renderPreviewVideo(ex){
 function renderPreview3d(box, ex, token){
   const base=`media/3d/${ex.id}`;
   const img=document.createElement('img');
-  img.className='demo-video'; img.src=`${base}.jpg?v=52`; img.alt=`Demostración 3D: ${ex.name}`;
+  img.className='demo-video'; img.src=`${base}.jpg?v=53`; img.alt=`Demostración 3D: ${ex.name}`;
   box.appendChild(img);                         // póster inmediato (y único fotograma con movimiento reducido)
   if(settings.reduceMotion) return;
   // Se descarga entero como blob: <video> pide rangos (206) que el service worker no puede cachear
-  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=52`)
+  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=53`)
     .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.blob(); })
     .then(blob=>{
       if(token!==previewToken) return;
