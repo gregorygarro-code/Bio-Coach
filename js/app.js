@@ -1,15 +1,16 @@
 // ===== FitCoach Casa · app principal =====
-import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS, parseWeightList, barbellLadder } from './exercises.js?v=53';
-import { createDemoPlayer, resolveDemo } from './demos.js?v=53';
-import { FIREBASE_ENABLED, fb } from './firebase.js?v=53';
-import { getTodaysPrescribedPlan, buildPlanFromPrescription } from './prescribed.js?v=53';
-import { createPoseLandmarker } from './pose.js?v=53';
-import * as generator from './generator.js?v=53';
-import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=53';
-import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=53';
-import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=53';
-import * as api from './api.js?v=53';
-import * as store from './storage.js?v=53';
+import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS, parseWeightList, barbellLadder } from './exercises.js?v=54';
+import { createDemoPlayer, resolveDemo } from './demos.js?v=54';
+import { FIREBASE_ENABLED, fb } from './firebase.js?v=54';
+import { getTodaysPrescribedPlan, buildPlanFromPrescription } from './prescribed.js?v=54';
+import { createPoseLandmarker } from './pose.js?v=54';
+import * as generator from './generator.js?v=54';
+import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=54';
+import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=54';
+import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=54';
+import * as api from './api.js?v=54';
+import * as store from './storage.js?v=54';
+import { detectDeviations, signatureOf, MovementMatcher } from './biomech.js?v=54';
 
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -49,6 +50,9 @@ let guestSex = '';                        // ajuste rápido para invitados (sexo
 let guestAge = null;                      // ajuste rápido para invitados (edad)
 let currentInjuries = [];                 // lesiones activas (de la IA o del perfil) para excluir ejercicios
 let paused = false;                       // pausa de la serie/temporizador en curso
+let lastDeviations = [];                   // desviaciones de postura detectadas en el último frame
+let matcher = null;                        // clasificador de movimiento de la serie en curso
+let moveWarned = false;                     // ya se avisó de ejercicio no coincidente en esta serie
 let currentGuidedPlan = null;            // plan generado (se reusa al empezar / regenerar variante)
 let guided = { active:false, plan:null, i:0, set:1, done:0, rest:60 };
 let guidedPreview = false;               // el modal de demo abre para el siguiente paso guiado
@@ -108,11 +112,11 @@ const webmOk=()=> document.createElement('video').canPlayType('video/webm; codec
   const fig=document.querySelector('.hero-figure'), reps=document.getElementById('hero-reps');
   if(!fig) return;
   const base='media/3d/squat';
-  const img=Object.assign(document.createElement('img'), { src:`${base}.jpg?v=53`, alt:'', className:'hero-3d' });
+  const img=Object.assign(document.createElement('img'), { src:`${base}.jpg?v=54`, alt:'', className:'hero-3d' });
   img.onload=()=>fig.replaceWith(img);
   if(settings.reduceMotion) return;
   // Descarga completa como blob (igual que en la previsualización) para que el service worker la cachee
-  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=53`)
+  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=54`)
     .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.blob(); })
     .then(blob=>{
       const v=Object.assign(document.createElement('video'), { src:URL.createObjectURL(blob), muted:true, loop:true, autoplay:true, playsInline:true, className:'hero-3d' });
@@ -511,7 +515,7 @@ $('#gb-quit').addEventListener('click', ()=>{ if(setActive) endSet(false); guide
 let previewEx=null, previewDemo=null, previewToken=0, previewBlobUrl=null;
 // Demos 3D pregrabadas (visor-3d → media/3d/<id>.webm|mp4|jpg); index.json lista los ids disponibles.
 let video3d=null;
-const video3dIds=()=> video3d ??= fetch('media/3d/index.json?v=53')
+const video3dIds=()=> video3d ??= fetch('media/3d/index.json?v=54')
   .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }).then(a=>new Set(a))
   .catch(()=>{ video3d=null; return new Set(); });   // sin memorizar el fallo: se reintenta en la siguiente demo
 
@@ -531,11 +535,11 @@ function renderPreviewVideo(ex){
 function renderPreview3d(box, ex, token){
   const base=`media/3d/${ex.id}`;
   const img=document.createElement('img');
-  img.className='demo-video'; img.src=`${base}.jpg?v=53`; img.alt=`Demostración 3D: ${ex.name}`;
+  img.className='demo-video'; img.src=`${base}.jpg?v=54`; img.alt=`Demostración 3D: ${ex.name}`;
   box.appendChild(img);                         // póster inmediato (y único fotograma con movimiento reducido)
   if(settings.reduceMotion) return;
   // Se descarga entero como blob: <video> pide rangos (206) que el service worker no puede cachear
-  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=53`)
+  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=54`)
     .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.blob(); })
     .then(blob=>{
       if(token!==previewToken) return;
@@ -849,9 +853,10 @@ function drawSkeleton(lm){
     ctx.beginPath(); ctx.arc(x,y,5,0,Math.PI*2);
     ctx.fillStyle=OVERLAY_DOT; ctx.fill();
   }
-  // Alertas de prevención en tiempo real (P2): valgo de rodilla / curvatura lumbar
+  // Alertas de desviación en tiempo real: valgo, lumbar, cadera, impulso… por patrón
   if(setActive){
-    const alerts=evaluarAngulosPrevencion(lm);
+    const alerts=detectDeviations(lm, currentEx, counter);
+    lastDeviations=alerts;
     for(const a of alerts){
       const [ax,ay]=pt({x:a.at[0], y:a.at[1]});
       const col = a.level==='bad' ? '#E5484D' : '#F5A623';
@@ -949,11 +954,36 @@ function analyze(lm){
     }
   }
 
+  // clasificación del movimiento (¿coincide con el ejercicio esperado?)
+  if(matcher && setMode!=='hold'){ matcher.observe(lm); updateMoveVerdict(); }
+
   // feedback de técnica (throttle ~150ms)
   const now=performance.now();
   if(now-lastFormRun>150){
     lastFormRun=now;
     runFormChecks(lm);
+  }
+}
+
+// Muestra el veredicto del clasificador y avisa una vez si no coincide el ejercicio.
+function updateMoveVerdict(){
+  if(!matcher) return;
+  const r=matcher.score();
+  const mb=$('#badge-move'); if(!mb) return;
+  if(!r.ready){ return; }
+  mb.classList.remove('hidden');
+  if(r.pct>=60){
+    mb.textContent=`✓ ${currentEx.name} ${r.pct}%`;
+    mb.className='badge move ok';
+  }else{
+    const alt=matcher.suggest(EXERCISES);
+    const altTxt = (alt && alt.id!==currentEx.id) ? ` · ¿${alt.name}?` : '';
+    mb.textContent=`⚠ Movimiento no coincide${altTxt}`;
+    mb.className='badge move warnmove';
+    if(!moveWarned){
+      moveWarned=true;
+      speak('El movimiento no coincide con el ejercicio seleccionado');
+    }
   }
 }
 
@@ -966,7 +996,10 @@ function updateGauge(fillSel,valSel,gauge,val){
 
 function runFormChecks(lm){
   const ex=currentEx;
-  const checks = ex.checks ? ex.checks(lm, counter) : [];
+  const technique = ex.checks ? ex.checks(lm, counter) : [];
+  // Desviaciones de postura/seguridad (valgo, lumbar, cadera…) van primero y marcadas.
+  const safety = (lastDeviations||[]).map(d=>({level:d.level, msg:d.msg, safety:true}));
+  const checks = safety.concat(technique);
   // cue principal = severidad más alta
   const order={bad:3,warn:2,good:1};
   let main=null;
@@ -982,7 +1015,7 @@ function runFormChecks(lm){
   // lista detallada
   const ul=$('#form-list');
   if(checks.length){
-    ul.innerHTML=checks.map(c=>`<li class="${c.level}">${iconFor(c.level)} ${c.msg}</li>`).join('');
+    ul.innerHTML=checks.map(c=>`<li class="${c.level}${c.safety?' safety':''}">${c.safety?'🛡':iconFor(c.level)} ${c.msg}</li>`).join('');
   }
   // recuento para el informe de técnica (solo con la serie activa)
   if(setActive && !paused){
@@ -1106,6 +1139,10 @@ function runPrep(done){
 function beginSet(){
   setActive=true; paused=false; updatePauseBtn();
   counter.reset(); smoother.reset(); lastPhase='reset';
+  // Clasificador de movimiento de la serie (identifica si coincide con el ejercicio)
+  try{ matcher = currentEx ? new MovementMatcher(signatureOf(currentEx)) : null; }catch{ matcher=null; }
+  moveWarned=false; lastDeviations=[];
+  const mb=$('#badge-move'); if(mb){ mb.classList.add('hidden'); }
   holdStart=performance.now();
   updateSideBadge();
   $('#btn-set').textContent = currentEx.type==='hold' ? 'Terminar' : 'Terminar serie';
@@ -1152,6 +1189,7 @@ function endSet(save){
   hideBig();
   $('#rep-adjust').classList.add('hidden');
   setActive=false; paused=false; updatePauseBtn(); updateSideBadge();
+  matcher=null; lastDeviations=[]; { const mb=$('#badge-move'); if(mb) mb.classList.add('hidden'); }
   $('#btn-set').disabled=false;
   $('#btn-set').textContent = currentEx.type==='hold' ? 'Iniciar' : 'Iniciar serie';
   $('#btn-set').classList.add('accent'); $('#btn-set').classList.remove('primary');
