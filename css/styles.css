@@ -820,3 +820,90 @@ main{max-width:1200px;margin:0 auto;padding:16px}
 /* Hero 3D: el fondo claro del vídeo (#FAF8F5) se funde con el degradado de la tarjeta */
 .hero-3d{ width:100%; height:100%; object-fit:contain; mix-blend-mode:multiply; display:block;
   -webkit-mask-image:linear-gradient(to bottom,transparent,#000 12%,#000 88%,transparent); mask-image:linear-gradient(to bottom,transparent,#000 12%,#000 88%,transparent); }
+
+/* ==================================================================== */
+/* ===== Rediseño v56 · sistema "Strava claro" sobre la paleta Kinera ===== */
+/* Un solo acento (coral) + casi negro; teal solo como color de apoyo.   */
+/* Sin degradados ni emojis; píldoras, radios grandes y hairlines.       */
+/* ==================================================================== */
+:root{ --accent-hover:#E04A3E; --accent-soft:#FEECEA; --accent-soft-line:#F9D2CD; --teal-soft:#E2F4F2;
+  --btn-line:#D3DCDC; --dark-muted:#A9B5B6; --radius-lg:32px; }
+body{ background:var(--bg); font-size:16px; line-height:1.6; }
+h1,h2,h3{ letter-spacing:-.025em; }
+input[type=checkbox],input[type=radio],input[type=range]{ accent-color:var(--accent); }
+main{ padding-block:28px 72px; }
+
+/* Botones y chips con la paleta Kinera */
+.btn.primary,.btn.ghost{ border-color:var(--btn-line); }
+.btn.accent:hover:not(:disabled){ background:var(--accent-hover); }
+.btn{ padding:13px 22px; transform:none !important; filter:none !important; }
+.chip,.chip-check{ padding:10px 16px; font-family:var(--font-head); font-size:14.5px; color:#2F3B3D; }
+.chip .ic{ display:none; }
+
+/* Texto destacado y piezas que aún usaban degradado */
+.grad{ background:none; -webkit-background-clip:initial; background-clip:initial; color:var(--accent); }
+.feat-ic{ width:8px; height:8px; border-radius:50%; background:var(--accent); border:none; font-size:0; margin-bottom:18px; }
+.feat:hover{ border-color:var(--accent); box-shadow:none; transform:none; }
+.step{ background:transparent; border:none; border-top:2px solid var(--ink); border-radius:0; padding:18px 0 0; }
+.step-n{ display:block; width:auto; height:auto; background:none; color:var(--accent); border-radius:0; font-size:13px; letter-spacing:.08em; }
+.step-n::before{ content:'PASO '; }
+.faq-item{ background:none; border:none; border-bottom:1px solid var(--line); border-radius:0; padding:0; }
+.faq-item summary{ padding:20px 0; font-family:var(--font-head); font-size:17px; }
+.hero-card{ background:linear-gradient(180deg,var(--teal-soft) 0%,#fff 72%); border-color:var(--line); }
+.hero-3d{ mix-blend-mode:normal; }
+.hb{ border-color:var(--line); }
+.hb b{ color:var(--txt); }
+.final-cta p,.today-card .today-label,.today-card #today-date,.today-card .streak{ color:var(--dark-muted); }
+.guia-note{ background:var(--teal-soft); }
+.guia-type,.guia-vs .vs-col{ background:#fff; }
+.onb-emoji,.pe-emoji{ display:none; }
+
+/* Tintes cálidos heredados → coral suave de Kinera */
+.gp-phase.ov{ color:#B3392F; border-color:var(--accent-soft-line); background:var(--accent-soft); }
+.cue.warn{ background:var(--accent-soft); border-color:var(--accent-soft-line); color:#B3392F; }
+.rest{ background:#fff; border-color:var(--line); border-radius:20px; }
+.cal-cell{ border-radius:16px; }
+.cal-cell.today{ outline:none; border-color:var(--accent); background:var(--accent-soft); }
+.preview-demo{ background:var(--teal-soft); border-color:var(--line); }
+.plan-full{ background:var(--accent-soft); color:#B3392F; border-color:var(--accent-soft-line); }
+.loader{ background:rgba(246,247,247,.92); }
+
+/* Tarjeta "Hoy": entrada principal, ancho completo en casi negro */
+.setup .today-card{ border-radius:var(--radius-lg); padding:clamp(24px,3vw,36px); }
+.today-card #today-summary{ font-size:clamp(26px,4vw,44px); letter-spacing:-.035em; line-height:1.05; }
+#today-date{ text-transform:uppercase; letter-spacing:.08em; font-weight:600; }
+.today-start{ border-radius:999px; }
+
+/* Sesión: la corrección de técnica va SOBRE el vídeo, en tarjeta translúcida */
+.video-wrap{ background:var(--ink); border:none; border-radius:28px; }
+#panel-session .feedback-bar,.feedback-bar{ position:absolute; left:14px; right:14px; bottom:14px; z-index:4; margin:0;
+  background:rgba(14,26,28,.72); backdrop-filter:blur(10px); border-radius:20px; padding:14px 18px; }
+.feedback-bar .cue,.feedback-bar .cue.good,.feedback-bar .cue.warn,.feedback-bar .cue.bad,.feedback-bar .cue.neutral{
+  background:none; border:none; padding:0; color:#fff; font-family:var(--font-head); font-size:clamp(16px,2vw,21px); }
+.feedback-bar .cue.good{ color:#8FE3C9; }
+.feedback-bar .cue.bad{ color:#FFB4AC; }
+.feedback-bar .cue-sub{ color:var(--dark-muted); margin-top:2px; }
+.pause-overlay{ background:rgba(14,26,28,.55); text-transform:none; font-weight:700; }
+
+/* Métricas en tira de cifras con hairlines */
+.counters{ display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); padding:0 !important; overflow:hidden; border-radius:20px; }
+.counter{ background:#fff; padding:12px 8px; text-align:center; }
+.counter span{ font-family:var(--font-head); letter-spacing:-.03em; }
+.counter label{ text-transform:none; letter-spacing:0; }
+
+/* Técnica: punto de color en vez de icono */
+.form-list li,.rep-list li{ background:none; border:none !important; padding:0; display:flex; gap:10px; align-items:flex-start; }
+.form-list li::before,.rep-list li::before{ content:''; flex:none; width:6px; height:6px; border-radius:50%; margin-top:8px; background:var(--muted); }
+.form-list li.good::before,.rep-list li.good::before{ background:var(--good); }
+.form-list li.warn::before,.rep-list li.warn::before{ background:var(--warn); }
+.form-list li.bad::before,.rep-list li.bad::before,.form-list li.safety::before{ background:var(--bad); }
+.form-list li.muted::before{ display:none; }
+.form-list{ gap:10px; }
+
+/* Progreso: barras redondeadas, la última en acento */
+.prog-bar i{ border-radius:999px; max-width:34px; }
+.prog-bar:last-child i{ background:var(--accent); }
+.stat{ border-radius:18px; }
+.stat b{ color:var(--txt); font-family:var(--font-head); letter-spacing:-.03em; }
+.cam-status{ flex-wrap:wrap; align-content:center; column-gap:.28em; color:var(--dark-muted); }
+#panel-session .controls .btn{ padding:11px 12px; font-size:14px; }

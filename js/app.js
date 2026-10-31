@@ -1,16 +1,16 @@
 // ===== FitCoach Casa · app principal =====
-import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, getGoal, resolveGoalId, DEFAULT_GOAL, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS, parseWeightList, barbellLadder } from './exercises.js?v=55';
-import { createDemoPlayer, resolveDemo } from './demos.js?v=55';
-import { FIREBASE_ENABLED, fb } from './firebase.js?v=55';
-import { getTodaysPrescribedPlan, buildPlanFromPrescription } from './prescribed.js?v=55';
-import { createPoseLandmarker } from './pose.js?v=55';
-import * as generator from './generator.js?v=55';
-import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=55';
-import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=55';
-import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=55';
-import * as api from './api.js?v=55';
-import * as store from './storage.js?v=55';
-import { detectDeviations, signatureOf, MovementMatcher } from './biomech.js?v=55';
+import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, getGoal, resolveGoalId, DEFAULT_GOAL, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS, parseWeightList, barbellLadder } from './exercises.js?v=56';
+import { createDemoPlayer, resolveDemo } from './demos.js?v=56';
+import { FIREBASE_ENABLED, fb } from './firebase.js?v=56';
+import { getTodaysPrescribedPlan, buildPlanFromPrescription } from './prescribed.js?v=56';
+import { createPoseLandmarker } from './pose.js?v=56';
+import * as generator from './generator.js?v=56';
+import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=56';
+import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=56';
+import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=56';
+import * as api from './api.js?v=56';
+import * as store from './storage.js?v=56';
+import { detectDeviations, signatureOf, MovementMatcher } from './biomech.js?v=56';
 
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -112,11 +112,11 @@ const webmOk=()=> document.createElement('video').canPlayType('video/webm; codec
   const fig=document.querySelector('.hero-figure'), reps=document.getElementById('hero-reps');
   if(!fig) return;
   const base='media/3d/squat';
-  const img=Object.assign(document.createElement('img'), { src:`${base}.jpg?v=55`, alt:'', className:'hero-3d' });
+  const img=Object.assign(document.createElement('img'), { src:`${base}.jpg?v=56`, alt:'', className:'hero-3d' });
   img.onload=()=>fig.replaceWith(img);
   if(settings.reduceMotion) return;
   // Descarga completa como blob (igual que en la previsualización) para que el service worker la cachee
-  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=55`)
+  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=56`)
     .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.blob(); })
     .then(blob=>{
       const v=Object.assign(document.createElement('video'), { src:URL.createObjectURL(blob), muted:true, loop:true, autoplay:true, playsInline:true, className:'hero-3d' });
@@ -260,7 +260,7 @@ $('#mode-coach-save')?.addEventListener('click', async ()=>{
     const m = await fb(); const u = m.auth.currentUser; if(!u) return;
     await m.setDoc(m.doc(m.db,'users',u.uid), { trainerId: code }, { merge:true });
     auth.user.trainerId = code;
-    $('#mode-hint').textContent = '✅ Vinculado. Tu entrenador ya puede asignarte planes.';
+    $('#mode-hint').textContent = 'Vinculado. Tu entrenador ya puede asignarte planes.';
     renderModeCard(); regenPlan();
   }catch(err){ $('#mode-hint').textContent = err.message; }
 });
@@ -300,7 +300,7 @@ async function regenPlan(){
 function gpItemHTML(s, n){
   const perSide = s.bilateral ? (s.mode==='hold' ? ' ×2 lados' : ' por lado') : '';
   const dose = (s.mode==='hold' ? `${s.sets>1?s.sets+'× ':''}${s.secs}s` : `${s.sets} × ${s.repsLabel||s.reps}`) + perSide;
-  const ov = s.overload ? `<span class="gp-phase ov" title="${s.overload.note}">⬆ ${s.overload.note}</span>` : '';
+  const ov = s.overload ? `<span class="gp-phase ov" title="${s.overload.note}">${s.overload.note}</span>` : '';
   const cues = s.ex.cues.map(c=>`<li>${c}</li>`).join('');
   const tag = n ? `<span class="gp-station">${n}</span>` : '';
   const rir = s.rir ? `<span class="gp-phase" title="${s.cat}: termina la serie con ${s.rir} repeticiones en reserva">${s.cat} · RIR ${s.rir}</span>` : '';
@@ -312,7 +312,7 @@ function gpItemHTML(s, n){
       <span class="gp-chevron">▾</span>
     </summary>
     <div class="gp-detail">
-      <p class="gp-muscles">${s.ex.muscles} · 📷 ${s.ex.view}</p>
+      <p class="gp-muscles">${s.ex.muscles} · ${s.ex.view}</p>
       <p class="gp-cues-title">Cómo hacerlo bien</p>
       <ul>${cues}</ul>
       <button class="link gp-demo" data-id="${s.id}">▶ Ver demostración animada</button>
@@ -343,7 +343,7 @@ function renderGuidedPreview(){
 
   let html = '';
   if(warm.length){
-    html += blockHTML('🔥 Calentamiento', 'warm', warm.map(s=>gpItemHTML(s)).join(''),
+    html += blockHTML('Calentamiento', 'warm', warm.map(s=>gpItemHTML(s)).join(''),
       `${PHASE_REST}s de transición entre ejercicios`);
   }
   for(let i=0, b=1; i<main.length; i+=BLOCK_SIZE, b++){
@@ -358,7 +358,7 @@ function renderGuidedPreview(){
     html += blockHTML(`Bloque ${b} · ${tipo}`, 'main', items, rest);
   }
   if(cool.length){
-    html += blockHTML('🧊 Vuelta a la calma', 'cool', cool.map(s=>gpItemHTML(s)).join(''), '');
+    html += blockHTML('Vuelta a la calma', 'cool', cool.map(s=>gpItemHTML(s)).join(''), '');
   }
 
   const nBlocks = Math.ceil(main.length/BLOCK_SIZE);
@@ -439,7 +439,7 @@ function loadGuidedCell(qi){
   if(c.step.mode==='hold'){ $('#in-secs').value=c.step.secs; }
   else { $('#in-timed').checked=false; $('#obj-time').classList.add('hidden'); $('#in-target').value=c.step.reps; }
   const sp=$('#session-plan');
-  if(sp){ const g=c.step.mode==='hold'?`${c.step.secs}s`:`${c.step.repsLabel||c.step.reps} reps`; const w=c.ex.weighted?` · 🏋️ ${c.ex.suggestedWeight||0} ${c.ex.suggestedUnit||'kg'}`:''; sp.textContent=`🎯 ${g}${w}${c.step.rir?` · RIR ${c.step.rir}`:''}`; }
+  if(sp){ const g=c.step.mode==='hold'?`${c.step.secs}s`:`${c.step.repsLabel||c.step.reps} reps`; const w=c.ex.weighted?` · ${c.ex.suggestedWeight||0} ${c.ex.suggestedUnit||'kg'}`:''; sp.textContent=`${g}${w}${c.step.rir?` · RIR ${c.step.rir}`:''}`; }
   $('#guided-bar').classList.remove('hidden');
   updateGuidedBar();
   if(running || c.ex.camOptional){ startSet(); }
@@ -492,7 +492,7 @@ function guidedFinish(){
   clearInterval(restInterval); $('#rest-timer').classList.add('hidden');
   paused=false; updatePauseBtn(); updateSideBadge();
   speak('Rutina completada, buen trabajo',{force:true});
-  const sub=`🎉 ¡Rutina completada! · ${total} series · ${GROUPS[currentGroup]?.label||'Full body'} · ${getGoal(currentGoal).label} · ${sessionMinutes} min`;
+  const sub=`¡Rutina completada! · ${total} series · ${GROUPS[currentGroup]?.label||'Full body'} · ${getGoal(currentGoal).label} · ${sessionMinutes} min`;
   $('#panel-session').classList.add('hidden');
   $('#panel-setup').classList.remove('hidden');
   // Primero el feedback de esfuerzo (Likert 1-5), luego el informe de técnica.
@@ -518,7 +518,7 @@ $('#gb-quit').addEventListener('click', ()=>{ if(setActive) endSet(false); guide
 let previewEx=null, previewDemo=null, previewToken=0, previewBlobUrl=null;
 // Demos 3D pregrabadas (visor-3d → media/3d/<id>.webm|mp4|jpg); index.json lista los ids disponibles.
 let video3d=null;
-const video3dIds=()=> video3d ??= fetch('media/3d/index.json?v=55')
+const video3dIds=()=> video3d ??= fetch('media/3d/index.json?v=56')
   .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }).then(a=>new Set(a))
   .catch(()=>{ video3d=null; return new Set(); });   // sin memorizar el fallo: se reintenta en la siguiente demo
 
@@ -538,11 +538,11 @@ function renderPreviewVideo(ex){
 function renderPreview3d(box, ex, token){
   const base=`media/3d/${ex.id}`;
   const img=document.createElement('img');
-  img.className='demo-video'; img.src=`${base}.jpg?v=55`; img.alt=`Demostración 3D: ${ex.name}`;
+  img.className='demo-video'; img.src=`${base}.jpg?v=56`; img.alt=`Demostración 3D: ${ex.name}`;
   box.appendChild(img);                         // póster inmediato (y único fotograma con movimiento reducido)
   if(settings.reduceMotion) return;
   // Se descarga entero como blob: <video> pide rangos (206) que el service worker no puede cachear
-  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=55`)
+  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=56`)
     .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.blob(); })
     .then(blob=>{
       if(token!==previewToken) return;
@@ -577,7 +577,7 @@ function openPreview(ex, review=false){
   previewEx=ex;
   $('#preview-name').textContent=`${ex.emoji} ${ex.name}`;
   $('#preview-muscles').textContent=ex.muscles;
-  $('#preview-view').textContent=`📷 Vista recomendada: ${ex.view}`;
+  $('#preview-view').textContent=`Vista recomendada: ${ex.view}`;
   $('#preview-cues').innerHTML=ex.cues.map(c=>`<li>${c}</li>`).join('');
   $('#preview-start').hidden = review;   // en modo repaso no se inicia, solo se revisa
   $('#preview').classList.remove('hidden');
@@ -663,8 +663,8 @@ function configureObjective(ex){
   const sp=$('#session-plan');
   if(sp){
     const goalTxt = ex.type==='hold' ? `${$('#in-secs').value}s` : `${$('#in-target').value} reps`;
-    const wTxt = ex.weighted ? ` · 🏋️ ${ex.suggestedWeight||0} ${ex.suggestedUnit||'kg'}` : '';
-    sp.textContent = `🎯 ${goalTxt}${wTxt}`;
+    const wTxt = ex.weighted ? ` · ${ex.suggestedWeight||0} ${ex.suggestedUnit||'kg'}` : '';
+    sp.textContent = `${goalTxt}${wTxt}`;
   }
 }
 // Unidad de peso sugerida: barra → kg; mancuernas/discos → lb
@@ -886,7 +886,7 @@ function evaluarAngulosPrevencion(lm){
   if(V(25)&&V(26)&&V(27)&&V(28)){
     const kneeGap=Math.abs(lm[25].x-lm[26].x), ankGap=Math.abs(lm[27].x-lm[28].x);
     if(ankGap>0.03 && kneeGap/ankGap<0.7)
-      out.push({zone:'rodilla', level:'bad', msg:'⚠ Rodillas hacia dentro', at:[(lm[25].x+lm[26].x)/2,(lm[25].y+lm[26].y)/2]});
+      out.push({zone:'rodilla', level:'bad', msg:'Rodillas hacia dentro', at:[(lm[25].x+lm[26].x)/2,(lm[25].y+lm[26].y)/2]});
   }
   // (b) Curvatura/inclinación lumbar (vista lateral): tronco muy inclinado en bisagra profunda
   if(V(11)&&V(12)&&V(23)&&V(24)&&V(25)&&V(26)){
@@ -894,7 +894,7 @@ function evaluarAngulosPrevencion(lm){
     const lean=Math.abs(Math.atan2(sh.x-hp.x, -(sh.y-hp.y))*180/Math.PI);   // 0 = vertical
     const hipAng=ang3(sh,hp,kn);
     if(lean>60 && hipAng!=null && hipAng>110)
-      out.push({zone:'lumbar', level:'warn', msg:'⚠ Espalda neutra, no redondees', at:[hp.x,hp.y]});
+      out.push({zone:'lumbar', level:'warn', msg:'Espalda neutra, no redondees', at:[hp.x,hp.y]});
   }
   return out;
 }
@@ -976,12 +976,12 @@ function updateMoveVerdict(){
   if(!r.ready){ return; }
   mb.classList.remove('hidden');
   if(r.pct>=60){
-    mb.textContent=`✓ ${currentEx.name} ${r.pct}%`;
+    mb.textContent=`${currentEx.name} ${r.pct}%`;
     mb.className='badge move ok';
   }else{
     const alt=matcher.suggest(EXERCISES);
     const altTxt = (alt && alt.id!==currentEx.id) ? ` · ¿${alt.name}?` : '';
-    mb.textContent=`⚠ Movimiento no coincide${altTxt}`;
+    mb.textContent=`Movimiento no coincide${altTxt}`;
     mb.className='badge move warnmove';
     if(!moveWarned){
       moveWarned=true;
@@ -1018,7 +1018,7 @@ function runFormChecks(lm){
   // lista detallada
   const ul=$('#form-list');
   if(checks.length){
-    ul.innerHTML=checks.map(c=>`<li class="${c.level}${c.safety?' safety':''}">${c.safety?'🛡':iconFor(c.level)} ${c.msg}</li>`).join('');
+    ul.innerHTML=checks.map(c=>`<li class="${c.level}${c.safety?' safety':''}">${c.msg}</li>`).join('');
   }
   // recuento para el informe de técnica (solo con la serie activa)
   if(setActive && !paused){
@@ -1028,7 +1028,6 @@ function runFormChecks(lm){
     }
   }
 }
-function iconFor(l){ return l==='good'?'✅':l==='warn'?'⚠️':'❌'; }
 
 function tempoFeedback(){
   const t=counter.tempo, sub=$('#cue-tempo');
@@ -1099,7 +1098,7 @@ function checkTarget(reps){
   if(reps>=targetReps){
     targetReached=true; sfx.target();
     speak(`Objetivo cumplido, ${reps} repeticiones`,{force:true});
-    $('#cue-main').textContent=`✅ ¡Objetivo de ${targetReps} reps cumplido!`;
+    $('#cue-main').textContent=`¡Objetivo de ${targetReps} reps cumplido!`;
     $('#cue-main').className='cue good';
     if(guided.active) setTimeout(()=>{ if(setActive && guided.active) endSet(true); }, 1300); // avanza solo
   }
@@ -1293,14 +1292,14 @@ function buildReportHTML(){
   improve.sort((a,b)=>b.score-a.score);
   let html='';
   if(improve.length){
-    html+='<h3>⚠️ A trabajar</h3><ul class="rep-list">'+improve.slice(0,6).map(x=>
-      `<li class="${x.level}"><b>${iconFor(x.level)} ${x.msg}</b><span class="muted small"> · ${x.ex}</span><br><span class="rep-tip">${adaptationTip(x.msg)}</span></li>`).join('')+'</ul>';
+    html+='<h3>A trabajar</h3><ul class="rep-list">'+improve.slice(0,6).map(x=>
+      `<li class="${x.level}"><b>${x.msg}</b><span class="muted small"> · ${x.ex}</span><br><span class="rep-tip">${adaptationTip(x.msg)}</span></li>`).join('')+'</ul>';
   }
   if(good.length){
-    html+='<h3>✅ Bien ejecutado</h3><ul class="rep-list">'+good.slice(0,6).map(x=>
-      `<li class="good">✅ ${x.msg}<span class="muted small"> · ${x.ex}</span></li>`).join('')+'</ul>';
+    html+='<h3>Bien ejecutado</h3><ul class="rep-list">'+good.slice(0,6).map(x=>
+      `<li class="good">${x.msg}<span class="muted small"> · ${x.ex}</span></li>`).join('')+'</ul>';
   }
-  if(!improve.length) html='<p class="good" style="font-weight:600">🎉 Técnica sólida en toda la sesión. ¡Buen trabajo!</p>'+html;
+  if(!improve.length) html='<p class="good" style="font-weight:600">Técnica sólida en toda la sesión. ¡Buen trabajo!</p>'+html;
   return html;
 }
 
@@ -1362,7 +1361,7 @@ function renderHistory(){
     div.innerHTML=`<h4>${day}</h4>`+entries.map(e=>{
       const t=new Date(e.ts).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
       const w=e.weight?` · ${e.weight} ${e.wunit||'kg'}`:'';
-      const rpe=e.rpe?` · RPE ${e.rpe}${e.pain?' ⚠️':''}`:'';
+      const rpe=e.rpe?` · RPE ${e.rpe}${e.pain?' ':''}`:'';
       return `<div class="hist-ex"><span>${t} · ${e.name} (serie ${e.set})</span><b>${e.reps} ${e.unit}${w}${rpe}</b></div>`;
     }).join('');
     list.appendChild(div);
@@ -1437,7 +1436,7 @@ function renderCalendar(){
     }
     const done=byDate[key];
     if(done && done.length){
-      html+=`<span class="cal-vol">✓ ${done.length} ${done.length===1?'serie':'series'}</span>`;
+      html+=`<span class="cal-vol">${done.length} ${done.length===1?'serie':'series'}</span>`;
     }
     cell.innerHTML=html;
     // Día futuro con plan → abre la previsualización de la rutina; si no, el editor del día.
@@ -1576,10 +1575,10 @@ $('#btn-tutorial').addEventListener('click', ()=>startOnboarding(true));
 // Onboarding (Fase 1)
 // ======================================================
 const ONB_STEPS = [
-  {emoji:'🏃', h:'Bienvenido a Kinera', p:'Tu entrenador con cámara: cuenta series y repeticiones y te corrige la técnica en tiempo real. Todo se procesa en tu equipo.'},
-  {emoji:'🎯', h:'Elige objetivo y tiempo', p:'Marca tu equipamiento y objetivo, y usa la Rutina guiada (30/45/60 min): la app arma la sesión y avanza sola.'},
-  {emoji:'📷', h:'Coloca bien la cámara', p:'Ponte a 2-3 m, de cuerpo entero y con buena luz. Cada ejercicio te dice si mirar de frente o de lado.'},
-  {emoji:'🔊', h:'Sonido y accesibilidad', p:'Activa pitidos y voz para no mirar la pantalla. En Ajustes puedes agrandar el texto, subir el contraste y elegir tu nivel.'},
+  {emoji:'', h:'Bienvenido a Kinera', p:'Tu entrenador con cámara: cuenta series y repeticiones y te corrige la técnica en tiempo real. Todo se procesa en tu equipo.'},
+  {emoji:'', h:'Elige objetivo y tiempo', p:'Marca tu equipamiento y objetivo, y usa la Rutina guiada (30/45/60 min): la app arma la sesión y avanza sola.'},
+  {emoji:'', h:'Coloca bien la cámara', p:'Ponte a 2-3 m, de cuerpo entero y con buena luz. Cada ejercicio te dice si mirar de frente o de lado.'},
+  {emoji:'', h:'Sonido y accesibilidad', p:'Activa pitidos y voz para no mirar la pantalla. En Ajustes puedes agrandar el texto, subir el contraste y elegir tu nivel.'},
 ];
 let onbIdx=0;
 function startOnboarding(force){
@@ -1863,7 +1862,7 @@ $('#pf-save').addEventListener('click', async ()=>{
   applyProfileDefaults(p);
   updateTabsAccess();        // FIX: al crear perfil se desbloquean Calendario/Historial/Ajustes
   renderToday();             // refresca dashboard + oculta CTAs (FIX 2 y 4)
-  $('#pf-msg').textContent = '✓ Perfil guardado. La rutina guiada se ha ajustado a tu perfil.';
+  $('#pf-msg').textContent = 'Perfil guardado. La rutina guiada se ha ajustado a tu perfil.';
   setTimeout(()=>{ $('#pf-msg').textContent=''; }, 3000);
 });
 
@@ -2009,13 +2008,13 @@ function renderPlanStatus(){
   btnMain.hidden = false;
   if(active){
     // FIX 5 · Ya hay plan → el botón principal REVISA (va al Calendario), no regenera.
-    status.textContent = '✅ Plan activo: tienes sesiones programadas para las próximas semanas.';
-    btnMain.textContent = '📅 Revisar mi plan de entrenamiento';
+    status.textContent = 'Plan activo: tienes sesiones programadas para las próximas semanas.';
+    btnMain.textContent = 'Revisar mi plan de entrenamiento';
     btnMain.dataset.mode = 'review';
     btnRegen.hidden = false;             // regenerar queda como opción secundaria
   }else{
     status.textContent = 'Aún no tienes un plan mensual. Genera tu mesociclo para ver tu sesión cada día.';
-    btnMain.textContent = '🗓️ Generar Plan Mensual';
+    btnMain.textContent = 'Generar Plan Mensual';
     btnMain.dataset.mode = 'generate';
     btnRegen.hidden = true;
   }
@@ -2032,13 +2031,13 @@ $('#pf-plan-month')?.addEventListener('click', ()=>{
   // FIX 5 · Si ya hay plan, este botón lleva al Calendario en vez de regenerar.
   if($('#pf-plan-month').dataset.mode === 'review'){ goTo('calendario'); return; }
   const r=doGenerateMonthly();
-  $('#pf-msg').textContent = `🗓️ Plan mensual creado: ${r.count} sesiones en 4 semanas (${r.days} días/sem).`;
+  $('#pf-msg').textContent = `Plan mensual creado: ${r.count} sesiones en 4 semanas (${r.days} días/sem).`;
 });
 $('#pf-plan-regen')?.addEventListener('click', ()=>{
   // Advertencia de confirmación para no borrar el progreso por error
   if(!confirm('Regenerar sobrescribirá tu planificación FUTURA (los días automáticos).\n\nNo se borra tu historial ni tu progreso, y se respetan los días que editaste a mano.\n\n¿Continuar?')) return;
   const r=doGenerateMonthly();
-  $('#pf-msg').textContent = `♻ Plan regenerado: ${r.count} sesiones.`;
+  $('#pf-msg').textContent = `Plan regenerado: ${r.count} sesiones.`;
 });
 
 // "Modificar sesión de hoy" → despliega el input de IA
@@ -2055,7 +2054,7 @@ $('#btn-plan-month')?.addEventListener('click', ()=>{
   syncProgress();                         // los planes van al backend si hay sesión
   renderToday();
   if($('#view-calendario')?.classList.contains('active')) renderCalendar();
-  alert(`🗓️ Plan mensual creado.\n\n${r.count} sesiones programadas para las próximas 4 semanas (${r.days} días/semana).\nCada día verás tu sesión lista para empezar de un toque.`);
+  alert(`Plan mensual creado.\n\n${r.count} sesiones programadas para las próximas 4 semanas (${r.days} días/semana).\nCada día verás tu sesión lista para empezar de un toque.`);
 });
 $('#btn-freestyle')?.addEventListener('click', ()=>{ revealAI(false); $('#group-chips')?.scrollIntoView({behavior:'smooth',block:'start'}); });
 
@@ -2128,7 +2127,7 @@ async function runAI(){
   let p; try{ p = await api.parseUserRequest(text); }
   catch{ $('#ai-msg').textContent='No se pudo interpretar la petición.'; return; }
   applyParsed(p);
-  const src = p._source==='gemini' ? '🤖 Gemini' : '📝 Intérprete local';
+  const src = p._source==='gemini' ? 'Gemini' : 'Intérprete local';
   $('#ai-msg').textContent = `${src}: ${getGoal(p.objetivo).label} · ${sessionMinutes} min${(p.lesiones&&p.lesiones.length)?' · cuidando '+p.lesiones.join(', '):''}. Rutina actualizada ↓`;
 }
 $('#ai-go')?.addEventListener('click', runAI);
@@ -2137,7 +2136,7 @@ $('#ai-input')?.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventD
 // ======================================================
 // Copia de seguridad (export / import) — item 5
 // ======================================================
-$('#btn-export')?.addEventListener('click', ()=>{ store.exportUserData(); $('#backup-msg').textContent='✓ Descargado kinera_backup.json'; });
+$('#btn-export')?.addEventListener('click', ()=>{ store.exportUserData(); $('#backup-msg').textContent='Descargado kinera_backup.json'; });
 $('#btn-import')?.addEventListener('click', ()=> $('#import-file')?.click());
 $('#import-file')?.addEventListener('change', e=>{
   const f=e.target.files[0]; if(!f) return;
@@ -2148,8 +2147,8 @@ $('#import-file')?.addEventListener('change', e=>{
       settings=store.loadSettings(); applySettingsToUI();
       profileData=store.loadProfile()||profileData; if(profileData) applyProfileDefaults(profileData);
       updateTabsAccess(); renderHistory(); renderToday();
-      $('#backup-msg').textContent='✓ Datos restaurados en este navegador.';
-    }else{ $('#backup-msg').textContent='✗ '+res.error; }
+      $('#backup-msg').textContent='Datos restaurados en este navegador.';
+    }else{ $('#backup-msg').textContent=''+res.error; }
   };
   r.readAsText(f); e.target.value='';
 });

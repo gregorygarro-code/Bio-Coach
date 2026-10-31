@@ -1,6 +1,6 @@
 // Fase 2 · Captura de anamnesis del cliente → clients_dossier/{uid}
-import { FIREBASE_ENABLED, fb } from './firebase.js?v=55';
-import { EQUIPMENT_DETAIL } from './exercises.js?v=55';
+import { FIREBASE_ENABLED, fb } from './firebase.js?v=56';
+import { EQUIPMENT_DETAIL } from './exercises.js?v=56';
 
 const $ = s => document.querySelector(s);
 let M = null, mode = 'register';
@@ -105,7 +105,7 @@ $('#ob-form').addEventListener('submit', async ev => {
   };
   try{
     await M.setDoc(M.doc(M.db, 'clients_dossier', user.uid), dossier, { merge: true });
-    msg.textContent = '✅ Cuestionario guardado. Tu entrenador ya puede verlo.';
+    msg.textContent = 'Cuestionario guardado. Tu entrenador ya puede verlo.';
   }catch(err){ msg.textContent = err.message; }
 });
 
