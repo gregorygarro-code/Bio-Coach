@@ -1,6 +1,6 @@
 // Fase 2 · Captura de anamnesis del cliente → clients_dossier/{uid}
-import { FIREBASE_ENABLED, fb } from './firebase.js?v=56';
-import { EQUIPMENT_DETAIL } from './exercises.js?v=56';
+import { FIREBASE_ENABLED, fb } from './firebase.js?v=57';
+import { EQUIPMENT_DETAIL } from './exercises.js?v=57';
 
 const $ = s => document.querySelector(s);
 let M = null, mode = 'register';

@@ -1,16 +1,16 @@
 // ===== FitCoach Casa · app principal =====
-import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, getGoal, resolveGoalId, DEFAULT_GOAL, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS, parseWeightList, barbellLadder } from './exercises.js?v=56';
-import { createDemoPlayer, resolveDemo } from './demos.js?v=56';
-import { FIREBASE_ENABLED, fb } from './firebase.js?v=56';
-import { getTodaysPrescribedPlan, buildPlanFromPrescription } from './prescribed.js?v=56';
-import { createPoseLandmarker } from './pose.js?v=56';
-import * as generator from './generator.js?v=56';
-import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=56';
-import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=56';
-import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=56';
-import * as api from './api.js?v=56';
-import * as store from './storage.js?v=56';
-import { detectDeviations, signatureOf, MovementMatcher } from './biomech.js?v=56';
+import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, getGoal, resolveGoalId, DEFAULT_GOAL, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS, parseWeightList, barbellLadder } from './exercises.js?v=57';
+import { createDemoPlayer, resolveDemo } from './demos.js?v=57';
+import { FIREBASE_ENABLED, fb } from './firebase.js?v=57';
+import { getTodaysPrescribedPlan, buildPlanFromPrescription } from './prescribed.js?v=57';
+import { createPoseLandmarker } from './pose.js?v=57';
+import * as generator from './generator.js?v=57';
+import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=57';
+import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=57';
+import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=57';
+import * as api from './api.js?v=57';
+import * as store from './storage.js?v=57';
+import { detectDeviations, signatureOf, MovementMatcher } from './biomech.js?v=57';
 
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -112,11 +112,11 @@ const webmOk=()=> document.createElement('video').canPlayType('video/webm; codec
   const fig=document.querySelector('.hero-figure'), reps=document.getElementById('hero-reps');
   if(!fig) return;
   const base='media/3d/squat';
-  const img=Object.assign(document.createElement('img'), { src:`${base}.jpg?v=56`, alt:'', className:'hero-3d' });
+  const img=Object.assign(document.createElement('img'), { src:`${base}.jpg?v=57`, alt:'', className:'hero-3d' });
   img.onload=()=>fig.replaceWith(img);
   if(settings.reduceMotion) return;
   // Descarga completa como blob (igual que en la previsualización) para que el service worker la cachee
-  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=56`)
+  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=57`)
     .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.blob(); })
     .then(blob=>{
       const v=Object.assign(document.createElement('video'), { src:URL.createObjectURL(blob), muted:true, loop:true, autoplay:true, playsInline:true, className:'hero-3d' });
@@ -315,7 +315,7 @@ function gpItemHTML(s, n){
       <p class="gp-muscles">${s.ex.muscles} · ${s.ex.view}</p>
       <p class="gp-cues-title">Cómo hacerlo bien</p>
       <ul>${cues}</ul>
-      <button class="link gp-demo" data-id="${s.id}">▶ Ver demostración animada</button>
+      <button class="link gp-demo" data-id="${s.id}">�Ver demostración animada</button>
     </div>
   </details>`;
 }
@@ -518,7 +518,7 @@ $('#gb-quit').addEventListener('click', ()=>{ if(setActive) endSet(false); guide
 let previewEx=null, previewDemo=null, previewToken=0, previewBlobUrl=null;
 // Demos 3D pregrabadas (visor-3d → media/3d/<id>.webm|mp4|jpg); index.json lista los ids disponibles.
 let video3d=null;
-const video3dIds=()=> video3d ??= fetch('media/3d/index.json?v=56')
+const video3dIds=()=> video3d ??= fetch('media/3d/index.json?v=57')
   .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }).then(a=>new Set(a))
   .catch(()=>{ video3d=null; return new Set(); });   // sin memorizar el fallo: se reintenta en la siguiente demo
 
@@ -538,11 +538,11 @@ function renderPreviewVideo(ex){
 function renderPreview3d(box, ex, token){
   const base=`media/3d/${ex.id}`;
   const img=document.createElement('img');
-  img.className='demo-video'; img.src=`${base}.jpg?v=56`; img.alt=`Demostración 3D: ${ex.name}`;
+  img.className='demo-video'; img.src=`${base}.jpg?v=57`; img.alt=`Demostración 3D: ${ex.name}`;
   box.appendChild(img);                         // póster inmediato (y único fotograma con movimiento reducido)
   if(settings.reduceMotion) return;
   // Se descarga entero como blob: <video> pide rangos (206) que el service worker no puede cachear
-  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=56`)
+  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=57`)
     .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.blob(); })
     .then(blob=>{
       if(token!==previewToken) return;
@@ -1075,7 +1075,7 @@ function updatePauseBtn(){
   const btn=$('#btn-pause'), ov=$('#pause-overlay');
   if(btn){
     btn.classList.toggle('hidden', !canPause());
-    btn.textContent = paused ? '▶ Reanudar' : '⏸ Pausar';
+    btn.textContent = paused ? '�Reanudar' : '�Pausar';
     btn.classList.toggle('accent', paused);
   }
   if(ov) ov.classList.toggle('hidden', !(canPause() && paused));
@@ -1246,7 +1246,7 @@ function switchSide(){
 
 function updateSideBadge(){
   const b=$('#badge-side'); if(!b) return;
-  if(bilateralEx && setActive){ b.classList.remove('hidden'); b.textContent = sidePhase===2?'▶ Lado derecho':'▶ Lado izquierdo'; }
+  if(bilateralEx && setActive){ b.classList.remove('hidden'); b.textContent = sidePhase===2?'�Lado derecho':'�Lado izquierdo'; }
   else b.classList.add('hidden');
 }
 
@@ -1978,7 +1978,7 @@ function renderToday(){
     $('#today-summary').textContent = `${getGoal(goalId).label} · ${GROUPS[plan.focus]?.label||plan.focus} · ${mins} min`;
     const done = store.trainedToday();
     $('#today-done').hidden = !done;
-    $('#btn-start-today').textContent = done ? '▶ Entrenar otra vez' : '▶ INICIAR SESIÓN';
+    $('#btn-start-today').textContent = done ? '�Entrenar otra vez' : '�Iniciar sesión';
   }else{
     todayFocus = null; todaySession = null;
   }
