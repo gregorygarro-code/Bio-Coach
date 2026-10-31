@@ -315,7 +315,7 @@ function gpItemHTML(s, n){
       <p class="gp-muscles">${s.ex.muscles} 路 ${s.ex.view}</p>
       <p class="gp-cues-title">C贸mo hacerlo bien</p>
       <ul>${cues}</ul>
-      <button class="link gp-demo" data-id="${s.id}">鈻Ver demostraci贸n animada</button>
+      <button class="link gp-demo" data-id="${s.id}">Ver demostraci贸n animada</button>
     </div>
   </details>`;
 }
@@ -1075,7 +1075,7 @@ function updatePauseBtn(){
   const btn=$('#btn-pause'), ov=$('#pause-overlay');
   if(btn){
     btn.classList.toggle('hidden', !canPause());
-    btn.textContent = paused ? '鈻Reanudar' : '鈴Pausar';
+    btn.textContent = paused ? 'Reanudar' : 'Pausar';
     btn.classList.toggle('accent', paused);
   }
   if(ov) ov.classList.toggle('hidden', !(canPause() && paused));
@@ -1246,7 +1246,7 @@ function switchSide(){
 
 function updateSideBadge(){
   const b=$('#badge-side'); if(!b) return;
-  if(bilateralEx && setActive){ b.classList.remove('hidden'); b.textContent = sidePhase===2?'鈻Lado derecho':'鈻Lado izquierdo'; }
+  if(bilateralEx && setActive){ b.classList.remove('hidden'); b.textContent = sidePhase===2?'Lado derecho':'Lado izquierdo'; }
   else b.classList.add('hidden');
 }
 
@@ -1978,7 +1978,7 @@ function renderToday(){
     $('#today-summary').textContent = `${getGoal(goalId).label} 路 ${GROUPS[plan.focus]?.label||plan.focus} 路 ${mins} min`;
     const done = store.trainedToday();
     $('#today-done').hidden = !done;
-    $('#btn-start-today').textContent = done ? '鈻Entrenar otra vez' : '鈻Iniciar sesi贸n';
+    $('#btn-start-today').textContent = done ? 'Entrenar otra vez' : 'Iniciar sesi贸n';
   }else{
     todayFocus = null; todaySession = null;
   }
