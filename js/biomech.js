@@ -12,7 +12,7 @@
 // y peligrosos (sobre-bisagra, echarse hacia atrás en el lockout, colapso lateral,
 // valgo, cadera hundida/en pico, cadera despareja), no micro-curvaturas.
 
-import { LM, angle, midpoint, vis } from './utils.js?v=54';
+import { LM, angle, midpoint, vis } from './utils.js?v=55';
 
 const V = p => vis(p);
 const mid = (a,b)=> (a&&b) ? {x:(a.x+b.x)/2, y:(a.y+b.y)/2, visibility:Math.min(a.visibility??1,b.visibility??1)} : null;

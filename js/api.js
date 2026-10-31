@@ -99,7 +99,7 @@ const AI_SCHEMA_HINT = `Devuelve SOLO un objeto JSON válido, sin texto extra, c
 - equipo: subconjunto de ["peso corporal","mancuernas","kettlebell","bandas","barra","banca","dominadas"].
 - tiempo_minutos: entero (30, 45 o 60 aprox.).
 - lesiones: zonas mencionadas, p.ej. ["rodilla","hombro","espalda","lumbar","cadera","tobillo","muñeca","cuello"].
-- objetivo: uno de "general","fuerza","hipertrofia","potencia","resistencia","perdida_grasa".`;
+- objetivo: zona de volumen, uno de "mantenimiento" (mantener, poco tiempo), "base" (empezar, principiante) o "progreso" (ganar músculo/fuerza; por defecto).`;
 
 // Llama a Gemini y extrae el JSON estructurado del texto de la respuesta.
 async function callGemini(text, key){
@@ -135,12 +135,9 @@ function localParse(text){
   const lesiones=[];
   for(const z of ['rodilla','hombro','espalda','lumbar','cadera','tobillo','muñeca','muneca','cuello','codo'])
     if(t.includes(z)) lesiones.push(z==='muneca'?'muñeca':z);
-  let objetivo='general';
-  if(has('fuerza','fuerte')) objetivo='fuerza';
-  else if(has('hipertrofia','músculo','musculo','masa','volumen')) objetivo='hipertrofia';
-  else if(has('potencia','explosiv')) objetivo='potencia';
-  else if(has('resistencia','aguante')) objetivo='resistencia';
-  else if(has('grasa','adelgaz','perder peso','definir','quemar')) objetivo='perdida_grasa';
+  let objetivo='progreso';
+  if(has('mantener','mantenimiento','poco tiempo')) objetivo='mantenimiento';
+  else if(has('empezar','principiante','novato','volver a entrenar')) objetivo='base';
   let nivel='intermedio';
   if(has('principiante','empiezo','nuevo','novato')) nivel='principiante';
   else if(has('avanzado','experto')) nivel='avanzado';

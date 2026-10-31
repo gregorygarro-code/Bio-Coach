@@ -3,8 +3,8 @@
 // ejecuta el filtrado/selección según los parámetros del usuario. La parte
 // biomecánica (funciones de medición/checks) sigue viviendo en exercises.js;
 // aquí trabajamos solo con la parte declarativa + el historial (sobrecarga).
-import { buildGuidedPlan, getExercise } from './exercises.js?v=54';
-import { lastResultFor, loadPlans } from './storage.js?v=54';
+import { buildGuidedPlan, getExercise } from './exercises.js?v=55';
+import { lastResultFor, loadPlans } from './storage.js?v=55';
 
 // Semana del mesociclo (1..4+) a partir del primer día auto-planificado en el calendario
 function mesoWeek(){
@@ -29,7 +29,7 @@ let _catalog = null, _loading = null;
 export async function loadCatalog(){
   if(_catalog) return _catalog;
   if(_loading) return _loading;
-  _loading = fetch('data/exercises.json?v=54')
+  _loading = fetch('data/exercises.json?v=55')
     .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
     .then(j=>{ _catalog = j.exercises || []; return _catalog; })
     .catch(err=>{ console.warn('[generator] no se pudo cargar el catálogo JSON:', err.message); _catalog = []; return _catalog; });
@@ -138,8 +138,8 @@ function applyProgressiveOverload(plan, feel){
       if(step.mode==='hold'){
         step.secs = Math.max(10, step.secs + fd.secs);
       }else{
-        step.reps = Math.max(5, step.reps + fd.reps);
-        step.repsLabel = `${step.reps}`;
+        const [lo,hi] = String(step.repsLabel||'').split('-').map(Number);
+        step.reps = Math.min(hi||99, Math.max(lo||5, step.reps + fd.reps));
       }
       if(fd.tag) step.overload = { note:`Ajuste ${fd.tag}` };
     }
@@ -154,24 +154,23 @@ function applyProgressiveOverload(plan, feel){
         step.overload = { note:`Progresión: +5 s (antes ${last.reps}s)` };
       }
     } else {
-      // MATEMÁTICA (reps): prescripción = extremo alto (step.reps).
-      // Si la mejor serie previa (last.reps) ≥ prescrito → el ejercicio "se superó".
+      // Progresión de cargas (orden IPT): más peso → más reps → más series → menos descanso.
+      // Solo progresa si la última serie fue efectiva: alcanzó el extremo alto del rango.
       if(last.unit==='reps' && last.reps >= step.reps){
         if(step.ex && step.ex.weighted && last.weight>0){
-          // Con carga: mejor subir peso que acumular reps infinitas
-          step.overload = { note:`Progresión: sube el peso (última: ${last.weight}${last.wunit||'kg'} × ${last.reps})` };
-        } else if(step.reps < 15){
-          // Rango bajo/medio: +2 repeticiones
+          step.overload = { note:`Progresión: sube el peso (última: ${last.weight}${last.wunit||'kg'} × ${last.reps}) y vuelve al inicio del rango` };
+        } else if(step.reps < 20){
           step.reps += 2;
-          step.repsLabel = `${step.reps}`;
+          step.repsLabel = `${String(step.repsLabel||'').split('-')[0]||step.reps-2}-${step.reps}`;
           step.overload = { note:`Progresión: +2 reps (antes ${last.reps})` };
         } else if(step.sets < 4){
-          // Reps ya altas: mejor +1 serie que seguir subiendo reps
           step.sets += 1;
-          step.overload = { note:`Progresión: +1 serie (reps ya altas)` };
+          step.overload = { note:'Progresión: +1 serie efectiva (rango de reps completado)' };
+        } else if(step.rest && step.rest > 90){
+          step.rest -= 15;
+          step.overload = { note:`Progresión: descanso ${step.rest}s (−15 s)` };
         } else {
-          // Techo de volumen: progresa por tempo (más tiempo bajo tensión)
-          step.overload = { note:'Progresión: baja más lento (tempo 3-1-3)' };
+          step.overload = { note:'Progresión: usa una variante más difícil o añade carga' };
         }
       }
     }

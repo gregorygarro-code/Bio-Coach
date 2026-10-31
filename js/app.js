@@ -1,16 +1,16 @@
 // ===== FitCoach Casa · app principal =====
-import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS, parseWeightList, barbellLadder } from './exercises.js?v=54';
-import { createDemoPlayer, resolveDemo } from './demos.js?v=54';
-import { FIREBASE_ENABLED, fb } from './firebase.js?v=54';
-import { getTodaysPrescribedPlan, buildPlanFromPrescription } from './prescribed.js?v=54';
-import { createPoseLandmarker } from './pose.js?v=54';
-import * as generator from './generator.js?v=54';
-import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=54';
-import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=54';
-import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=54';
-import * as api from './api.js?v=54';
-import * as store from './storage.js?v=54';
-import { detectDeviations, signatureOf, MovementMatcher } from './biomech.js?v=54';
+import { EXERCISES, EQUIPMENT, EQUIPMENT_DETAIL, capsFromDetail, GROUPS, TRAIN_GOALS, getGoal, resolveGoalId, DEFAULT_GOAL, RepCounter, exercisesForGroup, buildGuidedPlan, levelReps, getExercise, POSE_CONNECTIONS, parseWeightList, barbellLadder } from './exercises.js?v=55';
+import { createDemoPlayer, resolveDemo } from './demos.js?v=55';
+import { FIREBASE_ENABLED, fb } from './firebase.js?v=55';
+import { getTodaysPrescribedPlan, buildPlanFromPrescription } from './prescribed.js?v=55';
+import { createPoseLandmarker } from './pose.js?v=55';
+import * as generator from './generator.js?v=55';
+import { generateMonthlyPlan, hasUpcomingPlan } from './planner.js?v=55';
+import { LandmarkSmoother, clamp, round, fmtTime, speak, setVoice, vis, LM } from './utils.js?v=55';
+import { sfx, setSound, unlock as unlockAudio } from './audio.js?v=55';
+import * as api from './api.js?v=55';
+import * as store from './storage.js?v=55';
+import { detectDeviations, signatureOf, MovementMatcher } from './biomech.js?v=55';
 
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -45,7 +45,7 @@ let prepInterval = null;
 let lastPhase = 'reset';
 let targetReached = false;
 let sessionMinutes = 45;                 // tiempo elegido para la rutina guiada
-let currentGoal = 'general';             // objetivo de entrenamiento
+let currentGoal = DEFAULT_GOAL;             // objetivo de entrenamiento
 let guestSex = '';                        // ajuste rápido para invitados (sexo)
 let guestAge = null;                      // ajuste rápido para invitados (edad)
 let currentInjuries = [];                 // lesiones activas (de la IA o del perfil) para excluir ejercicios
@@ -112,11 +112,11 @@ const webmOk=()=> document.createElement('video').canPlayType('video/webm; codec
   const fig=document.querySelector('.hero-figure'), reps=document.getElementById('hero-reps');
   if(!fig) return;
   const base='media/3d/squat';
-  const img=Object.assign(document.createElement('img'), { src:`${base}.jpg?v=54`, alt:'', className:'hero-3d' });
+  const img=Object.assign(document.createElement('img'), { src:`${base}.jpg?v=55`, alt:'', className:'hero-3d' });
   img.onload=()=>fig.replaceWith(img);
   if(settings.reduceMotion) return;
   // Descarga completa como blob (igual que en la previsualización) para que el service worker la cachee
-  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=54`)
+  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=55`)
     .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.blob(); })
     .then(blob=>{
       const v=Object.assign(document.createElement('video'), { src:URL.createObjectURL(blob), muted:true, loop:true, autoplay:true, playsInline:true, className:'hero-3d' });
@@ -199,7 +199,7 @@ function renderGoals(){
     el.onclick=()=>{ currentGoal=key; renderGoals(); $('#goal-info').textContent=g.info; regenPlan(); };
     wrap.appendChild(el);
   }
-  $('#goal-info').textContent = TRAIN_GOALS[currentGoal].info;
+  $('#goal-info').textContent = getGoal(currentGoal).info;
 }
 
 // ======================================================
@@ -303,10 +303,11 @@ function gpItemHTML(s, n){
   const ov = s.overload ? `<span class="gp-phase ov" title="${s.overload.note}">⬆ ${s.overload.note}</span>` : '';
   const cues = s.ex.cues.map(c=>`<li>${c}</li>`).join('');
   const tag = n ? `<span class="gp-station">${n}</span>` : '';
+  const rir = s.rir ? `<span class="gp-phase" title="${s.cat}: termina la serie con ${s.rir} repeticiones en reserva">${s.cat} · RIR ${s.rir}</span>` : '';
   return `<details class="gp-item">
     <summary class="gp-sum">
       ${tag}<span class="gp-emoji">${s.emoji}</span>
-      <span class="gp-main"><span class="gp-name">${s.name}</span> ${ov}</span>
+      <span class="gp-main"><span class="gp-name">${s.name}</span> ${rir} ${ov}</span>
       <span class="gp-sets">${dose}</span>
       <span class="gp-chevron">▾</span>
     </summary>
@@ -325,7 +326,6 @@ function renderGuidedPreview(){
   const label = GROUPS[currentGroup]?.label || 'Full body';
   const G = plan.goal;
   const fullRest = (G && G.rest) || settings.rest;
-  const roundRest = Math.max(25, Math.round(fullRest*0.6));   // igual que el runner (circuito)
 
   const warm = plan.steps.filter(s=>s.phase==='warmup');
   const main = plan.steps.filter(s=>s.phase==='main');
@@ -351,6 +351,7 @@ function renderGuidedPreview(){
     const size = block.length, rounds = Math.max(...block.map(s=>s.sets||1));
     const tipo = TIPO[size] || 'Circuito';
     const items = block.map((s,idx)=>gpItemHTML(s, size>1 ? STATION(idx) : '')).join('');
+    const roundRest = blockRest(block, fullRest);
     const rest = size>1
       ? `${rounds} rondas · ${INTRA_REST}s entre ejercicios · ${roundRest}s entre rondas`
       : `${rounds} series · ${roundRest}s de descanso`;
@@ -362,8 +363,8 @@ function renderGuidedPreview(){
 
   const nBlocks = Math.ceil(main.length/BLOCK_SIZE);
   box.innerHTML = `<div class="gp-head"><span>${label} · <b>${G.label}</b> · ~${plan.estMin} min · ${main.length} ejercicios · ${nBlocks} bloques</span></div>
-    <div class="gp-scheme">💪 Carga: ${G.load} · ⏱️ Descanso entre rondas: ${roundRest}s · Tempo: ${G.tempo}</div>
-    <p class="gp-hint muted small">Formato circuito: haz una serie de cada ejercicio del bloque y repite. Toca un ejercicio para ver su explicación.</p>
+    <div class="gp-scheme">Series efectivas: cerca del fallo (RIR indicado) y con técnica estricta · Cadencia ${G.tempo} · Descanso completo entre rondas (≥2 min)</div>
+    <p class="gp-hint muted small">Formato circuito: haz una serie de cada ejercicio del bloque y repite. RIR = repeticiones que te quedan en reserva al terminar la serie. Toca un ejercicio para ver su explicación.</p>
     ${html}`;
   box.querySelectorAll('.gp-demo').forEach(b=>b.addEventListener('click', e=>{
     e.preventDefault(); e.stopPropagation(); openPreview(getExercise(b.dataset.id), true);
@@ -378,23 +379,26 @@ const PHASE_REST = 10;   // descanso tras calentamiento/movilidad
 const BLOCK_SIZE = 3;    // ejercicios por bloque (formato circuito: 3 bloques de 3×3)
 // Fase principal en formato CIRCUITO: se agrupan los ejercicios en bloques de hasta 3.
 // En cada ronda se hace una serie de cada ejercicio del bloque (A→B→C) con un descanso
-// corto entre estaciones; el descanso "completo" (reducido ~40 %) va entre rondas, porque
-// mientras un músculo descansa se trabaja otro. Así se aprovecha mejor el tiempo del cliente.
+// corto entre estaciones y un descanso COMPLETO entre rondas (el del ejercicio más
+// exigente del bloque): los descansos largos favorecen la tensión mecánica.
+function blockRest(block, fallback){
+  return Math.max(...block.map(s=>s.rest||0), 0) || fallback;
+}
 function buildSupersetQueue(steps, fullRest){
   const warm = steps.filter(s=>s.phase==='warmup');
   const main = steps.filter(s=>s.phase==='main');
   const cool = steps.filter(s=>s.phase==='cooldown');
-  const roundRest = Math.max(25, Math.round(fullRest * 0.6));   // circuito: descanso reducido entre rondas
   const q=[]; let blockNo=0;
-  const single=(s,tipo,rest)=>{ blockNo++; const t=s.sets||1;
+  const single=(s,tipo,rest)=>{ blockNo++; const t=s.sets||1; const between=s.rest||fullRest;
     for(let set=1;set<=t;set++) q.push({ step:s, ex:s.ex, setNum:set, totalSets:t, blockNo, tipo,
-      posInBlock:0, blockSize:1, restAfter:(set===t?rest:roundRest), newExercise:(set===1) }); };
+      posInBlock:0, blockSize:1, restAfter:(set===t?rest:between), newExercise:(set===1) }); };
 
   warm.forEach(s=>single(s,'Calentamiento',PHASE_REST));
 
   const TIPO = {1:'Serie', 2:'Superserie', 3:'Circuito'};
   for(let i=0;i<main.length;i+=BLOCK_SIZE){
     const block=main.slice(i,i+BLOCK_SIZE);
+    const roundRest = blockRest(block, fullRest);
     if(block.length===1){ single(block[0],'Serie',roundRest); continue; }
     blockNo++;
     const size=block.length, tipo=TIPO[size]||'Circuito';
@@ -402,9 +406,8 @@ function buildSupersetQueue(steps, fullRest){
     for(let r=1;r<=rounds;r++){
       block.forEach((s,pos)=>{
         const lastStation = pos===size-1;
-        const lastRound = r===rounds;
-        // entre estaciones: descanso corto · fin de ronda: descanso reducido · fin de bloque: descanso reducido
-        const restAfter = !lastStation ? INTRA_REST : (lastRound ? roundRest : roundRest);
+        // entre estaciones: descanso corto · fin de ronda y de bloque: descanso completo
+        const restAfter = lastStation ? roundRest : INTRA_REST;
         q.push({ step:s, ex:s.ex, setNum:r, totalSets:rounds, blockNo, tipo,
                  posInBlock:pos, blockSize:size, restAfter, newExercise:true });
       });
@@ -436,7 +439,7 @@ function loadGuidedCell(qi){
   if(c.step.mode==='hold'){ $('#in-secs').value=c.step.secs; }
   else { $('#in-timed').checked=false; $('#obj-time').classList.add('hidden'); $('#in-target').value=c.step.reps; }
   const sp=$('#session-plan');
-  if(sp){ const g=c.step.mode==='hold'?`${c.step.secs}s`:`${c.step.repsLabel||c.step.reps} reps`; const w=c.ex.weighted?` · 🏋️ ${c.ex.suggestedWeight||0} ${c.ex.suggestedUnit||'kg'}`:''; sp.textContent=`🎯 ${g}${w}`; }
+  if(sp){ const g=c.step.mode==='hold'?`${c.step.secs}s`:`${c.step.repsLabel||c.step.reps} reps`; const w=c.ex.weighted?` · 🏋️ ${c.ex.suggestedWeight||0} ${c.ex.suggestedUnit||'kg'}`:''; sp.textContent=`🎯 ${g}${w}${c.step.rir?` · RIR ${c.step.rir}`:''}`; }
   $('#guided-bar').classList.remove('hidden');
   updateGuidedBar();
   if(running || c.ex.camOptional){ startSet(); }
@@ -489,7 +492,7 @@ function guidedFinish(){
   clearInterval(restInterval); $('#rest-timer').classList.add('hidden');
   paused=false; updatePauseBtn(); updateSideBadge();
   speak('Rutina completada, buen trabajo',{force:true});
-  const sub=`🎉 ¡Rutina completada! · ${total} series · ${GROUPS[currentGroup]?.label||'Full body'} · ${TRAIN_GOALS[currentGoal].label} · ${sessionMinutes} min`;
+  const sub=`🎉 ¡Rutina completada! · ${total} series · ${GROUPS[currentGroup]?.label||'Full body'} · ${getGoal(currentGoal).label} · ${sessionMinutes} min`;
   $('#panel-session').classList.add('hidden');
   $('#panel-setup').classList.remove('hidden');
   // Primero el feedback de esfuerzo (Likert 1-5), luego el informe de técnica.
@@ -515,7 +518,7 @@ $('#gb-quit').addEventListener('click', ()=>{ if(setActive) endSet(false); guide
 let previewEx=null, previewDemo=null, previewToken=0, previewBlobUrl=null;
 // Demos 3D pregrabadas (visor-3d → media/3d/<id>.webm|mp4|jpg); index.json lista los ids disponibles.
 let video3d=null;
-const video3dIds=()=> video3d ??= fetch('media/3d/index.json?v=54')
+const video3dIds=()=> video3d ??= fetch('media/3d/index.json?v=55')
   .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }).then(a=>new Set(a))
   .catch(()=>{ video3d=null; return new Set(); });   // sin memorizar el fallo: se reintenta en la siguiente demo
 
@@ -535,11 +538,11 @@ function renderPreviewVideo(ex){
 function renderPreview3d(box, ex, token){
   const base=`media/3d/${ex.id}`;
   const img=document.createElement('img');
-  img.className='demo-video'; img.src=`${base}.jpg?v=54`; img.alt=`Demostración 3D: ${ex.name}`;
+  img.className='demo-video'; img.src=`${base}.jpg?v=55`; img.alt=`Demostración 3D: ${ex.name}`;
   box.appendChild(img);                         // póster inmediato (y único fotograma con movimiento reducido)
   if(settings.reduceMotion) return;
   // Se descarga entero como blob: <video> pide rangos (206) que el service worker no puede cachear
-  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=54`)
+  fetch(`${base}.${webmOk() ? 'webm' : 'mp4'}?v=55`)
     .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.blob(); })
     .then(blob=>{
       if(token!==previewToken) return;
@@ -1477,7 +1480,7 @@ async function openRoutinePreview(key, plan, date){
   const minutes = plan.minutes || prof.time || sessionMinutes;
   previewPlanFocus = plan.focus;
   $('#mrp-title').textContent = date.toLocaleDateString('es-ES',{weekday:'long', day:'numeric', month:'long'});
-  $('#mrp-obj').textContent   = `Objetivo: ${TRAIN_GOALS[goalId]?.label||'General'} · ${GROUPS[plan.focus]?.label||plan.focus} · ${minutes} min`;
+  $('#mrp-obj').textContent   = `Objetivo: ${getGoal(goalId).label} · ${GROUPS[plan.focus]?.label||plan.focus} · ${minutes} min`;
   $('#mrp-est').textContent   = '';
   $('#mrp-body').innerHTML    = '<p class="muted">Generando vista previa…</p>';
   if(typeof dlg.showModal==='function') dlg.showModal(); else dlg.setAttribute('open','');
@@ -1692,7 +1695,7 @@ function applyProfileDefaults(p){
   if(p.notes){ const t=p.notes.toLowerCase();
     currentInjuries=['rodilla','hombro','espalda','lumbar','cadera','tobillo','muñeca','cuello','codo'].filter(z=>t.includes(z)); }
   selectedEquip = capsFromDetail(equipDetail);
-  if(p.goal && TRAIN_GOALS[p.goal]) currentGoal = p.goal;
+  if(p.goal) currentGoal = resolveGoalId(p.goal);
   if(p.time && [30,45,60].includes(+p.time)) sessionMinutes = +p.time;
   if(p.level){ settings.level = p.level; persistSettings(); const sl=$('#sel-level'); if(sl) sl.value=p.level; }
   renderEquip(); renderGoals(); renderTimeChips(); regenPlan();
@@ -1732,7 +1735,7 @@ function fillProfileForm(p){
   $('#pf-height').value = p.height ?? '';
   $('#pf-days').value = p.days ?? '';
   $('#pf-time').value = p.time ?? sessionMinutes;
-  $('#pf-goal').value = p.goal ?? currentGoal;
+  $('#pf-goal').value = resolveGoalId(p.goal ?? currentGoal);
   $('#pf-level').value = p.level ?? settings.level;
   $('#pf-notes').value = p.notes ?? '';
   if($('#pf-bajo-impacto')) $('#pf-bajo-impacto').checked = !!p.isBajoImpacto;   // toggle bajo impacto
@@ -1973,7 +1976,7 @@ function renderToday(){
     todayFocus = plan.focus;
     todaySession = { focus:plan.focus, goal:goalId, minutes:mins };
     // --- DOM: resumen de la sesión ---
-    $('#today-summary').textContent = `${TRAIN_GOALS[goalId]?.label||'General'} · ${GROUPS[plan.focus]?.label||plan.focus} · ${mins} min`;
+    $('#today-summary').textContent = `${getGoal(goalId).label} · ${GROUPS[plan.focus]?.label||plan.focus} · ${mins} min`;
     const done = store.trainedToday();
     $('#today-done').hidden = !done;
     $('#btn-start-today').textContent = done ? '▶ Entrenar otra vez' : '▶ INICIAR SESIÓN';
@@ -1988,7 +1991,7 @@ const renderTodayDashboard = renderToday;   // alias pedido en el requerimiento
 async function startTodaySession(){
   const s = todaySession; if(!s) return;
   currentGroup = s.focus;
-  if(s.goal && TRAIN_GOALS[s.goal]) currentGoal = s.goal;
+  if(s.goal) currentGoal = resolveGoalId(s.goal);
   if(s.minutes && [30,45,60].includes(+s.minutes)) sessionMinutes = +s.minutes;
   renderGroups(); renderGoals(); renderTimeChips();
   await regenPlan();          // JIT: arma la sesión en este instante (historial + RPE + lesiones)
@@ -2100,7 +2103,7 @@ function applyParsed(p){
   }
   // Foco/zona (grupo) que devuelve la IA → cambia el grupo muscular del día
   if(p.grupo && GROUPS[p.grupo]){ currentGroup=p.grupo; renderGroups(); }
-  if(p.objetivo && TRAIN_GOALS[p.objetivo]){ currentGoal=p.objetivo; renderGoals(); }
+  if(p.objetivo){ currentGoal=resolveGoalId(p.objetivo); renderGoals(); }
   if(p.tiempo_minutos){ // ajusta al chip más cercano (30/45/60)
     sessionMinutes=[30,45,60].reduce((a,b)=>Math.abs(b-p.tiempo_minutos)<Math.abs(a-p.tiempo_minutos)?b:a);
     renderTimeChips();
@@ -2126,7 +2129,7 @@ async function runAI(){
   catch{ $('#ai-msg').textContent='No se pudo interpretar la petición.'; return; }
   applyParsed(p);
   const src = p._source==='gemini' ? '🤖 Gemini' : '📝 Intérprete local';
-  $('#ai-msg').textContent = `${src}: ${TRAIN_GOALS[p.objetivo]?.label||p.objetivo} · ${sessionMinutes} min${(p.lesiones&&p.lesiones.length)?' · cuidando '+p.lesiones.join(', '):''}. Rutina actualizada ↓`;
+  $('#ai-msg').textContent = `${src}: ${getGoal(p.objetivo).label} · ${sessionMinutes} min${(p.lesiones&&p.lesiones.length)?' · cuidando '+p.lesiones.join(', '):''}. Rutina actualizada ↓`;
 }
 $('#ai-go')?.addEventListener('click', runAI);
 $('#ai-input')?.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); runAI(); } });

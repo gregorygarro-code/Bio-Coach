@@ -1,5 +1,5 @@
 // ===== Biblioteca de ejercicios + motor biomecánico =====
-import { LM, angle, angleFromVertical, midpoint, vis, clamp } from './utils.js?v=54';
+import { LM, angle, angleFromVertical, midpoint, vis, clamp } from './utils.js?v=55';
 
 // --- helpers de ángulos sobre landmarks ---
 function tri(lm, a, b, c){
@@ -1010,17 +1010,42 @@ export const GROUPS = {
   stretch:{label:'Estiramiento',   ic:'🧘'},
 };
 
-// Objetivos de entrenamiento: cada uno define un esquema (reps/series/descanso/tempo/carga)
-// y un sesgo de selección de ejercicios. Cambiarlo re-genera la rutina al instante.
-export const TRAIN_GOALS = {
-  general:      {label:'General / Salud',    ic:'✅', reps:[10,12], setsDelta:0,  rest:60,  load:'Moderado',                tempo:'Controlado',                 bias:'balanced',  exDelta:0,  info:'Equilibrio de fuerza y tono para estar en forma.'},
-  fuerza:       {label:'Fuerza',             ic:'🏋️', reps:[4,6],   setsDelta:1,  rest:120, load:'Pesado (≈85% 1RM)',       tempo:'Controlado, lejos del fallo',bias:'compound',  exDelta:-1, info:'Cargas altas, pocas reps y descansos largos. Ejercicios compuestos.'},
-  hipertrofia:  {label:'Hipertrofia',        ic:'💪', reps:[8,12],  setsDelta:0,  rest:75,  load:'Moderado-alto (≈70-80%)', tempo:'2-0-2, cerca del fallo',     bias:'balanced',  exDelta:0,  info:'Volumen moderado para ganar músculo.'},
-  potencia:     {label:'Potencia',           ic:'⚡', reps:[3,5],   setsDelta:1,  rest:90,  load:'Explosivo (≈50-70%)',     tempo:'Máxima velocidad al subir',  bias:'explosive', exDelta:0,  info:'Movimientos explosivos, pocas reps, descanso amplio.'},
-  resistencia:  {label:'Resistencia musc.',  ic:'🔁', reps:[15,20], setsDelta:-1, rest:40,  load:'Ligero',                  tempo:'Continuo',                   bias:'endurance', exDelta:0,  info:'Muchas reps con poco descanso para aguante muscular.'},
-  perdida_grasa:{label:'Pérdida de grasa',   ic:'🔥', reps:[12,15], setsDelta:0,  rest:25,  load:'Ligero-moderado',         tempo:'Ritmo alto (circuito)',      bias:'cardio',    exDelta:2,  info:'Formato circuito con cardio y descansos cortos.'},
+// Zonas de volumen (series efectivas por grupo muscular / semana). Sustituyen a los
+// antiguos objetivos por rango de repeticiones (fuerza/hipertrofia/resistencia…):
+// el estímulo lo determinan las series efectivas (cerca del fallo, técnica estricta),
+// la frecuencia y la progresión de cargas, no el rango de reps elegido.
+// MRV (>20 series) no se ofrece: es zona de riesgo de estancamiento.
+const GOAL_COMMON = {
+  rest:120, reps:[8,12], tempo:'1-0-1', bias:'balanced', setsDelta:0, exDelta:0,
+  load:'Series efectivas: RIR 2-3 en básicos, 1-2 en accesorios, 0-1 en aislamiento',
 };
-export function getGoal(id){ return TRAIN_GOALS[id] || TRAIN_GOALS.general; }
+export const TRAIN_GOALS = {
+  mantenimiento:{ ...GOAL_COMMON, label:'Mantenimiento (MV)', weekly:4,  setsPerEx:2,
+    info:'~4 series efectivas por grupo muscular a la semana. Conserva lo ganado con poco tiempo o para grupos secundarios.' },
+  base:         { ...GOAL_COMMON, label:'Base (MEV)',         weekly:6,  setsPerEx:2,
+    info:'~6 series efectivas por grupo/semana. Punto de partida para principiantes o ejercicios nuevos.' },
+  progreso:     { ...GOAL_COMMON, label:'Progreso (MAV)',     weekly:10, setsPerEx:3,
+    info:'8-12 series efectivas por grupo/semana: la zona más eficiente para ganar músculo y fuerza.' },
+};
+// Ids de objetivos antiguos (perfiles y planes guardados) → zona de volumen equivalente
+const LEGACY_GOALS = { general:'base', resistencia:'base', perdida_grasa:'base',
+  hipertrofia:'progreso', fuerza:'progreso', potencia:'progreso' };
+export const DEFAULT_GOAL = 'progreso';
+export function resolveGoalId(id){
+  if(TRAIN_GOALS[id]) return id;
+  return LEGACY_GOALS[id] || DEFAULT_GOAL;
+}
+export function getGoal(id){ return TRAIN_GOALS[resolveGoalId(id)]; }
+
+// Prescripción por TIPO de ejercicio (no por objetivo): básicos con menos reps y RIR
+// más alto, aislamiento con más reps cerca del fallo. Descanso completo (≥2 min) en
+// series efectivas pesadas; 60-90 s en ejercicios sencillos (estrés metabólico).
+export function exerciseDosing(ex){
+  if(ex.isolation) return { cat:'Aislamiento', reps:[12,20], rir:'0-1', rest:75 };
+  if(ex.compound && ex.weighted && (ex.equipment||[]).includes('bar'))
+    return { cat:'Básico', reps:[6,8], rir:'2-3', rest:150 };
+  return { cat:'Accesorio', reps:[8,15], rir:'1-2', rest:120 };
+}
 
 function matchGroup(e, group){
   if(group==='all')    return true;
@@ -1131,13 +1156,8 @@ function selectRotating(pool, g, n, bias){
 export function buildGuidedPlan(group, equip, minutes, opts={}){
   const level = opts.level || 'intermedio';
   const goal = getGoal(opts.goal);
-  const [repLo, repHi] = goal.reps;
-  const restS = goal.rest;
-  // Formato circuito (bloques de 3): el descanso real entre series se reduce ~40 %
-  // porque mientras un músculo descansa se trabaja otro ejercicio del bloque.
-  // Usamos este descanso reducido para estimar el tiempo y así aprovechar mejor
-  // los minutos disponibles del cliente. El runner (app.js) usa el mismo factor.
-  const restMain = Math.max(25, Math.round(restS * 0.6));
+  // Descanso completo entre series efectivas (la tensión mecánica manda sobre el estrés metabólico)
+  const restMain = goal.rest;
   const trans = 20;
   const g = (group==='all') ? 'full' : group;
   // Exclusión por lesiones (ids contraindicados que envía el generador experto)
@@ -1186,10 +1206,13 @@ export function buildGuidedPlan(group, equip, minutes, opts={}){
   let adjSets = 0;
   if(age>=60){ if(bias==='explosive'||bias==='cardio') bias='balanced'; adjSets = -1; }
   if(age && age<=15){ if(bias==='explosive') bias='balanced'; }
-  // Tope de series por ejercicio: 3 es suficiente en formato circuito (3 bloques de 3
-  // ejercicios × 3 series). Solo 60 min permite 4. Evita las 5 series que resultaban excesivas.
-  const setsCap = {30:3, 45:3, 60:4}[minutes] || 3;
-  const sets = Math.min(setsCap, Math.max(2, baseSets + goal.setsDelta + adjSets + (level==='avanzado'?1:0) - (level==='principiante'?1:0)));
+  // Series por ejercicio según la zona de volumen; principiantes empiezan con menos.
+  const sets = Math.max(2, goal.setsPerEx + adjSets - (level==='principiante' && goal.setsPerEx>2 ? 1 : 0));
+  // Series efectivas por patrón/grupo en ESTA sesión = volumen semanal / frecuencia (F2).
+  const freq = +opts.frequency || 2;
+  const perPattern = Math.max(sets, Math.round(goal.weekly / freq));
+  const nPatterns = {full:5, upper:5, lower:3, core:1}[g] || 3;
+  const maxMainSets = perPattern * nPatterns;
   let pool = exercisesForGroup(g, equip).filter(e=>e.group!=='stretch' && e.group!=='prevencion' && !exclude.has(e.id));
   if(age>=60) pool = pool.filter(e=>!e.explosive) .length ? pool.filter(e=>!e.explosive) : pool;  // mayores: evita explosivos si hay alternativa
   const warmIds=['worlds_greatest','hip_9090','cat_cow','thoracic_rot','shoulder_circles','hip_flexor'];  // movilidad (FRC) primero
@@ -1217,14 +1240,18 @@ export function buildGuidedPlan(group, equip, minutes, opts={}){
   }
   for(const ex of mainList){
     let st;
+    const dose = exerciseDosing(ex);
     if(ex.type==='hold'){
-      const secs = Math.round((ex.holdDefault||40) * (goal.bias==='endurance'?1.3 : goal.bias==='explosive'?0.7 : 1));
-      st = mk(ex,'hold',sets,0,secs,'main');
+      st = mk(ex,'hold',sets,0,ex.holdDefault||40,'main');
     }else{
-      st = mk(ex,'reps',sets,repHi,0,'main', `${repLo}-${repHi}`);  // el contador usa el extremo alto
+      const [lo,hi] = dose.reps;
+      st = mk(ex,'reps',sets,hi,0,'main', `${lo}-${hi}`);  // el contador usa el extremo alto
     }
+    st.cat = dose.cat; st.rir = dose.rir; st.rest = dose.rest;
     const mainCount = steps.filter(s=>s.phase==='main').length;
+    const mainSets = steps.filter(s=>s.phase==='main').reduce((a,s)=>a+s.sets,0);
     if(mainCount>=MAX_MAIN) break;
+    if(mainCount>=MIN_MAIN && mainSets+st.sets > maxMainSets) break;   // tope de volumen de la zona
     // Ajuste estricto al tiempo: solo añade si cabe en el presupuesto (mín MIN_MAIN).
     if(mainCount < MIN_MAIN || total()+st.est+coolReserve <= budget) steps.push(st);
     else break;

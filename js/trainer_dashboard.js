@@ -1,6 +1,6 @@
 // Fase 3 · Dashboard del entrenador (protegido por Firebase Auth + rol).
-import { FIREBASE_ENABLED, fb } from './firebase.js?v=54';
-import { EQUIPMENT_DETAIL } from './exercises.js?v=54';
+import { FIREBASE_ENABLED, fb } from './firebase.js?v=55';
+import { EQUIPMENT_DETAIL } from './exercises.js?v=55';
 
 const $ = s => document.querySelector(s);
 let M = null, meUid = null, currentClient = null;
@@ -101,7 +101,7 @@ $('#td-plan-send').onclick = async () => {
   const plan = {
     planId: date, date, trainerId: meUid, clientId: currentClient,
     title: $('#td-plan-title').value.trim() || 'Plan del entrenador',
-    goal: 'fuerza', steps, createdAt: Date.now(),
+    goal: 'progreso', steps, createdAt: Date.now(),
   };
   msg.textContent = 'Enviando…';
   try{

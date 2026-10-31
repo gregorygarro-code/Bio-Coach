@@ -65,12 +65,12 @@
   }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=54" />
+  <link rel="stylesheet" href="css/styles.css?v=55" />
 </head>
 <body>
   <header class="topbar">
     <div class="brand">
-      <img class="logo" src="icon.svg?v=54" alt="Kinera" width="40" height="40" />
+      <img class="logo" src="icon.svg?v=55" alt="Kinera" width="40" height="40" />
       <div>
         <h1>Kinera</h1>
         <p class="tagline">Movimiento inteligente · corrección de técnica por cámara</p>
@@ -121,7 +121,7 @@
         <div class="feat-grid">
           <div class="feat"><div class="feat-ic">🎯</div><h3>Corrige tu técnica</h3><p>Mide los ángulos de tus articulaciones y te avisa de errores (profundidad, rodillas, espalda…) mientras entrenas.</p></div>
           <div class="feat"><div class="feat-ic">🛡️</div><h3>Menos riesgo de lesión</h3><p>La buena ejecución protege articulaciones y columna. Recibes señales para parar o ajustar si algo no va bien.</p></div>
-          <div class="feat"><div class="feat-ic">🧠</div><h3>Rutinas inteligentes</h3><p>Elige objetivo (fuerza, hipertrofia, potencia…) y la app ajusta series, reps, descanso y ejercicios al instante.</p></div>
+          <div class="feat"><div class="feat-ic">🧠</div><h3>Rutinas inteligentes</h3><p>Elige tu zona de volumen y la app reparte las series efectivas por grupo muscular, con el RIR y el descanso adecuados a cada ejercicio.</p></div>
           <div class="feat"><div class="feat-ic">🏠</div><h3>Adaptado a tu casa</h3><p>Desde solo peso corporal hasta barra y banca: usa lo que tengas. La sesión se arma con tu equipo real.</p></div>
           <div class="feat"><div class="feat-ic">📈</div><h3>Progreso medible</h3><p>Historial, récords y volumen semanal. Ver avances es la mejor motivación para no abandonar.</p></div>
           <div class="feat"><div class="feat-ic">🔒</div><h3>Privado y sin coste</h3><p>Todo el análisis ocurre en tu navegador; el vídeo nunca se sube. Y es gratis.</p></div>
@@ -214,7 +214,7 @@
           <h2>🤖 Describe tu sesión</h2>
           <p class="muted small">Escríbelo con tus palabras y la IA ajusta objetivo, equipo, tiempo y lesiones. Ej.: <i>"Tengo 20 minutos, unas mancuernas y me duele la rodilla"</i>.</p>
           <div class="ai-row">
-            <input id="ai-input" type="text" placeholder="Tengo 30 min, bandas, quiero hipertrofia…" />
+            <input id="ai-input" type="text" placeholder="Tengo 30 min, bandas, quiero ganar músculo…" />
             <button id="ai-go" class="btn accent">Generar</button>
           </div>
           <p id="ai-msg" class="muted small"></p>
@@ -534,101 +534,56 @@
     <section id="view-guia" class="view">
       <div class="card guia-intro">
         <h2>📚 Guía técnica de entrenamiento</h2>
-        <p class="muted">Entiende <b>qué</b> estás entrenando y <b>por qué</b>. Cada objetivo cambia las repeticiones, la carga, el ritmo (tempo) y —sobre todo— el <b>descanso entre series</b>. Elegir bien estas variables es lo que hace que la sesión funcione.</p>
+        <p class="muted">Entiende <b>qué</b> estás entrenando y <b>por qué</b>. Ya no elegimos "fuerza", "hipertrofia" o "resistencia" por rangos de repeticiones: lo que hace crecer el músculo son las <b>series efectivas</b>, el <b>volumen semanal</b>, la <b>frecuencia</b> y la <b>progresión de cargas</b>.</p>
       </div>
 
-      <!-- Tipos de entrenamiento -->
       <div class="card">
-        <h2>🎯 Tipos de entrenamiento</h2>
-        <p class="muted small">Repeticiones, carga, tempo y descanso recomendados según el objetivo (referencia: NSCA / ACSM).</p>
+        <h2>Series efectivas e intensidad (RIR)</h2>
+        <p class="muted small">Una serie cuenta si se hace con <b>carga adecuada</b> (cerca del fallo) y <b>técnica estricta</b>. La intensidad se mide por el esfuerzo percibido: el <b>RIR</b> son las repeticiones que te quedan en reserva al terminar.</p>
         <div class="guia-grid">
-
           <article class="guia-type">
-            <h3>🏋️ Fuerza (halterofilia)</h3>
-            <p>Levantar <b>cargas altas</b> para producir la máxima tensión. El sistema nervioso aprende a reclutar más fibras: te vuelves más fuerte sin necesariamente ganar mucho tamaño.</p>
-            <ul class="guia-specs">
-              <li><b>Reps:</b> 3–6 por serie</li>
-              <li><b>Carga:</b> pesada (≈85–90% de tu 1RM)</li>
-              <li><b>Tempo:</b> controlado, sin llegar al fallo</li>
-              <li><b>Descanso:</b> 2–5 min (recuperación completa)</li>
-              <li><b>Ejemplos:</b> sentadilla, peso muerto, press</li>
-            </ul>
+            <h3>Básicos</h3>
+            <p>Multiarticulares con barra: sentadilla, peso muerto, press. Mucha fatiga por serie, así que se paran antes del fallo.</p>
+            <ul class="guia-specs"><li><b>Reps:</b> 6–8</li><li><b>RIR:</b> 2–3</li><li><b>Descanso:</b> 2–3 min</li></ul>
           </article>
-
           <article class="guia-type">
-            <h3>⚡ Potencia</h3>
-            <p>Mover una carga <b>submáxima lo más rápido posible</b>. No es lo mismo que fuerza: aquí importa la <b>velocidad</b> (fuerza × velocidad = potencia). Clave para salto, sprint y deporte.</p>
-            <ul class="guia-specs">
-              <li><b>Reps:</b> 3–5 explosivas</li>
-              <li><b>Carga:</b> ligera-moderada (≈50–70%) movida rápido</li>
-              <li><b>Tempo:</b> máxima velocidad en la fase de empuje</li>
-              <li><b>Descanso:</b> 2–3 min (para no perder velocidad)</li>
-              <li><b>Ejemplos:</b> sentadilla con salto, swing, cargadas</li>
-            </ul>
+            <h3>Accesorios</h3>
+            <p>Multiarticulares con mancuernas, bandas o peso corporal: zancadas, remos, flexiones.</p>
+            <ul class="guia-specs"><li><b>Reps:</b> 8–15</li><li><b>RIR:</b> 1–2</li><li><b>Descanso:</b> ~2 min</li></ul>
           </article>
-
           <article class="guia-type">
-            <h3>💪 Hipertrofia</h3>
-            <p>Maximizar el <b>crecimiento muscular</b> acumulando volumen (series × reps × carga) cerca del fallo.</p>
-            <ul class="guia-specs">
-              <li><b>Reps:</b> 8–12 por serie</li>
-              <li><b>Carga:</b> moderada-alta (≈70–80%)</li>
-              <li><b>Tempo:</b> 2-0-2, controlando la bajada</li>
-              <li><b>Descanso:</b> 30–90 s</li>
-            </ul>
+            <h3>Aislamiento</h3>
+            <p>Un solo músculo: curl, elevaciones laterales, extensiones. Poca fatiga sistémica: se pueden llevar casi al fallo.</p>
+            <ul class="guia-specs"><li><b>Reps:</b> 12–20</li><li><b>RIR:</b> 0–1</li><li><b>Descanso:</b> 60–90 s</li></ul>
           </article>
-
-          <article class="guia-type">
-            <h3>🔁 Resistencia muscular</h3>
-            <p>Aguantar <b>muchas repeticiones</b> con poco descanso. Mejora el tono y la capacidad de trabajo del músculo.</p>
-            <ul class="guia-specs">
-              <li><b>Reps:</b> 15–20+</li>
-              <li><b>Carga:</b> ligera</li>
-              <li><b>Tempo:</b> continuo y sostenido</li>
-              <li><b>Descanso:</b> ≤30–60 s</li>
-            </ul>
-          </article>
-
-          <article class="guia-type">
-            <h3>🔥 Pérdida de grasa</h3>
-            <p>Formato <b>circuito</b>: encadena ejercicios con descansos muy cortos para mantener alta la frecuencia cardíaca y el gasto calórico.</p>
-            <ul class="guia-specs">
-              <li><b>Reps:</b> 12–15</li>
-              <li><b>Carga:</b> ligera-moderada</li>
-              <li><b>Tempo:</b> ritmo alto</li>
-              <li><b>Descanso:</b> 15–30 s</li>
-            </ul>
-          </article>
-
-          <article class="guia-type">
-            <h3>🛡️ Prevención / Bajo impacto</h3>
-            <p>Trabajo de <b>estabilidad, movilidad y control</b> (prehab) para articulaciones sanas. Sin impacto ni cargas balísticas; ideal para rehabilitación o poblaciones especiales.</p>
-            <ul class="guia-specs">
-              <li><b>Reps:</b> 12–15 controladas o isométricos</li>
-              <li><b>Carga:</b> ligera y sin dolor</li>
-              <li><b>Tempo:</b> lento y consciente</li>
-              <li><b>Descanso:</b> el necesario para mantener la calidad</li>
-            </ul>
-          </article>
-
         </div>
-        <p class="muted small guia-note">⏱️ <b>¿Por qué el descanso importa?</b> Un descanso corto (30–60 s) mantiene el estímulo metabólico (hipertrofia/resistencia); uno largo (2–5 min) permite recuperar fuerza y velocidad para el trabajo pesado o explosivo. Descansar de más "enfría" la sesión; de menos, baja el rendimiento de las series siguientes.</p>
+        <p class="muted small guia-note"><b>Fallo volitivo → técnico → muscular.</b> Entrenar siempre al fallo muscular dispara la fatiga neuromuscular sin más crecimiento: quedarse a 1–3 repeticiones da resultados similares. Si la técnica se rompe, la serie termina.</p>
       </div>
 
-      <!-- Diferencia clave -->
+      <div class="card">
+        <h2>Volumen: tu zona de entrenamiento</h2>
+        <p class="muted small">Series efectivas por grupo muscular y semana. Es lo que eliges como "objetivo" en la app.</p>
+        <div class="guia-grid">
+          <article class="guia-type"><h3>Mantenimiento (MV)</h3><p>~4 series/semana. Conserva lo ganado con poco tiempo o en grupos secundarios.</p></article>
+          <article class="guia-type"><h3>Base (MEV)</h3><p>~6 series/semana. Punto de partida para principiantes y ejercicios nuevos. Progresa, pero lento.</p></article>
+          <article class="guia-type"><h3>Progreso (MAV)</h3><p>8–12 series/semana: la zona más eficiente. Por encima de 12 cada serie rinde menos; más de 20 (MRV) lleva al estancamiento.</p></article>
+        </div>
+        <p class="muted small guia-note">El plan mensual sube el volumen de MEV a MAV durante 3 semanas y descarga a MV en la cuarta.</p>
+      </div>
+
       <div class="card guia-compare">
-        <h2>⚖️ Halterofilia vs. Potencia</h2>
-        <p class="muted small">Se confunden a menudo, pero buscan cosas distintas:</p>
+        <h2>Frecuencia, descanso y cadencia</h2>
         <div class="guia-vs">
           <div class="vs-col">
-            <h4>🏋️ Fuerza / Halterofilia</h4>
-            <p>Prioriza <b>cuánto</b> peso mueves. Cargas máximas, pocas reps, mucha recuperación. La barra puede subir lento.</p>
+            <h4>Frecuencia 2 por grupo</h4>
+            <p>Cada grupo muscular se entrena 2 veces por semana, repartiendo el volumen para entrenar con menos fatiga. Estructuras: full body (2–3 días) o torso-pierna (4+ días), con 48–72 h entre sesiones del mismo grupo.</p>
           </div>
           <div class="vs-col">
-            <h4>⚡ Potencia</h4>
-            <p>Prioriza <b>qué tan rápido</b> mueves un peso menor. La velocidad es el objetivo; si la barra frena, la serie termina.</p>
+            <h4>Descansos completos · cadencia 1-0-1</h4>
+            <p>Descansar al menos 2 min entre series efectivas mantiene la tensión mecánica, que es lo que más importa. Cada repetición: 1 s al subir, sin pausa, 1 s al bajar, con recorrido completo.</p>
           </div>
         </div>
+        <p class="muted small guia-note"><b>Progresión de cargas:</b> cuando completas el rango de repeticiones, primero sube el peso; si no puedes, más repeticiones, luego una serie más y, por último, menos descanso.</p>
       </div>
 
       <!-- Grupos musculares -->
@@ -873,8 +828,8 @@
 
   <div id="loader" class="loader hidden"><div class="spinner"></div><p id="loader-msg">Cargando modelo de pose…</p></div>
 
-  <script src="js/config.js?v=54"></script>
-  <script type="module" src="js/app.js?v=54"></script>
+  <script src="js/config.js?v=55"></script>
+  <script type="module" src="js/app.js?v=55"></script>
 
   <!-- Registro del Service Worker (PWA / offline) -->
   <script>
